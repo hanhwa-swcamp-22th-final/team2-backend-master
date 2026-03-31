@@ -1,9 +1,11 @@
 package com.team2.master.controller;
 
+import com.team2.master.dto.BuyerResponse;
 import com.team2.master.dto.CreateBuyerRequest;
 import com.team2.master.dto.UpdateBuyerRequest;
 import com.team2.master.entity.Buyer;
 import com.team2.master.service.BuyerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,30 +21,36 @@ public class BuyerController {
     private final BuyerService buyerService;
 
     @PostMapping
-    public ResponseEntity<Buyer> createBuyer(@RequestBody CreateBuyerRequest request) {
+    public ResponseEntity<BuyerResponse> createBuyer(@Valid @RequestBody CreateBuyerRequest request) {
         Buyer buyer = buyerService.createBuyer(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(buyer);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BuyerResponse.from(buyer));
     }
 
     @GetMapping
-    public ResponseEntity<List<Buyer>> getAllBuyers() {
-        return ResponseEntity.ok(buyerService.getAllBuyers());
+    public ResponseEntity<List<BuyerResponse>> getAllBuyers() {
+        List<BuyerResponse> responses = buyerService.getAllBuyers().stream()
+                .map(BuyerResponse::from)
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Buyer> getBuyer(@PathVariable Integer id) {
-        return ResponseEntity.ok(buyerService.getBuyer(id));
+    public ResponseEntity<BuyerResponse> getBuyer(@PathVariable Integer id) {
+        return ResponseEntity.ok(BuyerResponse.from(buyerService.getBuyer(id)));
     }
 
     @GetMapping("/client/{clientId}")
-    public ResponseEntity<List<Buyer>> getBuyersByClient(@PathVariable Integer clientId) {
-        return ResponseEntity.ok(buyerService.getBuyersByClientId(clientId));
+    public ResponseEntity<List<BuyerResponse>> getBuyersByClient(@PathVariable Integer clientId) {
+        List<BuyerResponse> responses = buyerService.getBuyersByClientId(clientId).stream()
+                .map(BuyerResponse::from)
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Buyer> updateBuyer(@PathVariable Integer id,
-                                             @RequestBody UpdateBuyerRequest request) {
-        return ResponseEntity.ok(buyerService.updateBuyer(id, request));
+    public ResponseEntity<BuyerResponse> updateBuyer(@PathVariable Integer id,
+                                                     @Valid @RequestBody UpdateBuyerRequest request) {
+        return ResponseEntity.ok(BuyerResponse.from(buyerService.updateBuyer(id, request)));
     }
 
     @DeleteMapping("/{id}")

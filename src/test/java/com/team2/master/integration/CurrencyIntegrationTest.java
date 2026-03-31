@@ -3,7 +3,6 @@ package com.team2.master.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.master.entity.Currency;
 import com.team2.master.repository.CurrencyRepository;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -74,11 +72,9 @@ class CurrencyIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 통화 단건 조회 - 존재하지 않는 ID")
-    void getById_notFound() {
-        assertThatThrownBy(() ->
-                mockMvc.perform(get("/api/currencies/{id}", 9999))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+    void getById_notFound() throws Exception {
+        mockMvc.perform(get("/api/currencies/{id}", 9999))
+                .andExpect(status().isNotFound());
     }
 
     // ==================== POST /api/currencies ====================
@@ -109,7 +105,7 @@ class CurrencyIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 통화 생성 - 중복 코드")
-    void create_duplicateCode() {
+    void create_duplicateCode() throws Exception {
         currencyRepository.save(new Currency("USD", "US Dollar", "$"));
 
         Map<String, String> request = Map.of(
@@ -118,13 +114,11 @@ class CurrencyIntegrationTest {
                 "currencySymbol", "$"
         );
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(post("/api/currencies")
+        mockMvc.perform(post("/api/currencies")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalStateException.class);
+                .andExpect(status().isConflict());
 
         assertThat(currencyRepository.findAll()).hasSize(1);
     }
@@ -158,20 +152,18 @@ class CurrencyIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 통화 수정 - 존재하지 않는 ID")
-    void update_notFound() {
+    void update_notFound() throws Exception {
         Map<String, String> request = Map.of(
                 "currencyCode", "USD",
                 "currencyName", "US Dollar",
                 "currencySymbol", "$"
         );
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(put("/api/currencies/{id}", 9999)
+        mockMvc.perform(put("/api/currencies/{id}", 9999)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 
     // ==================== DELETE /api/currencies/{id} ====================
@@ -183,7 +175,7 @@ class CurrencyIntegrationTest {
 
         mockMvc.perform(delete("/api/currencies/{id}", saved.getId())
                         .with(csrf()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         Optional<Currency> deleted = currencyRepository.findById(saved.getId());
         assertThat(deleted).isEmpty();
@@ -191,11 +183,9 @@ class CurrencyIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 통화 삭제 - 존재하지 않는 ID")
-    void delete_notFound() {
-        assertThatThrownBy(() ->
-                mockMvc.perform(delete("/api/currencies/{id}", 9999)
+    void delete_notFound() throws Exception {
+        mockMvc.perform(delete("/api/currencies/{id}", 9999)
                         .with(csrf()))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 }

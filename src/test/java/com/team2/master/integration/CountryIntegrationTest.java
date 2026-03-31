@@ -3,7 +3,6 @@ package com.team2.master.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.master.entity.Country;
 import com.team2.master.repository.CountryRepository;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -74,11 +72,9 @@ class CountryIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 국가 단건 조회 - 존재하지 않는 ID")
-    void getById_notFound() {
-        assertThatThrownBy(() ->
-                mockMvc.perform(get("/api/countries/{id}", 9999))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+    void getById_notFound() throws Exception {
+        mockMvc.perform(get("/api/countries/{id}", 9999))
+                .andExpect(status().isNotFound());
     }
 
     // ==================== POST /api/countries ====================
@@ -108,8 +104,26 @@ class CountryIntegrationTest {
     }
 
     @Test
+    @DisplayName("통합테스트: 국가 생성 - 유효성 검증 실패 (빈 필드)")
+    void create_validationFail() throws Exception {
+        Map<String, String> request = Map.of(
+                "countryCode", "",
+                "countryName", ""
+        );
+
+        mockMvc.perform(post("/api/countries")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
+
+        assertThat(countryRepository.findAll()).isEmpty();
+    }
+
+    @Test
     @DisplayName("통합테스트: 국가 생성 - 중복 코드")
-    void create_duplicateCode() {
+    void create_duplicateCode() throws Exception {
         countryRepository.save(new Country("KR", "Korea", "한국"));
 
         Map<String, String> request = Map.of(
@@ -118,13 +132,11 @@ class CountryIntegrationTest {
                 "countryNameKr", "한국2"
         );
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(post("/api/countries")
+        mockMvc.perform(post("/api/countries")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalStateException.class);
+                .andExpect(status().isConflict());
 
         // DB에 1건만 존재
         assertThat(countryRepository.findAll()).hasSize(1);
@@ -159,20 +171,18 @@ class CountryIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 국가 수정 - 존재하지 않는 ID")
-    void update_notFound() {
+    void update_notFound() throws Exception {
         Map<String, String> request = Map.of(
                 "countryCode", "KR",
                 "countryName", "Korea",
                 "countryNameKr", "한국"
         );
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(put("/api/countries/{id}", 9999)
+        mockMvc.perform(put("/api/countries/{id}", 9999)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 
     // ==================== DELETE /api/countries/{id} ====================
@@ -184,7 +194,7 @@ class CountryIntegrationTest {
 
         mockMvc.perform(delete("/api/countries/{id}", saved.getId())
                         .with(csrf()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         // DB 검증
         Optional<Country> deleted = countryRepository.findById(saved.getId());
@@ -193,11 +203,9 @@ class CountryIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 국가 삭제 - 존재하지 않는 ID")
-    void delete_notFound() {
-        assertThatThrownBy(() ->
-                mockMvc.perform(delete("/api/countries/{id}", 9999)
+    void delete_notFound() throws Exception {
+        mockMvc.perform(delete("/api/countries/{id}", 9999)
                         .with(csrf()))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 }

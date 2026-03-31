@@ -4,6 +4,7 @@ import com.team2.master.dto.CreateBuyerRequest;
 import com.team2.master.dto.UpdateBuyerRequest;
 import com.team2.master.entity.Buyer;
 import com.team2.master.entity.Client;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.BuyerRepository;
 import com.team2.master.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class BuyerService {
     @Transactional
     public Buyer createBuyer(CreateBuyerRequest request) {
         Client client = clientRepository.findById(request.getClientId())
-                .orElseThrow(() -> new IllegalArgumentException("거래처를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("거래처를 찾을 수 없습니다."));
 
         Buyer buyer = Buyer.builder()
                 .client(client)
@@ -37,16 +38,16 @@ public class BuyerService {
     }
 
     public Buyer getBuyer(Integer id) {
-        return buyerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("바이어를 찾을 수 없습니다."));
+        return buyerRepository.findByIdWithClient(id)
+                .orElseThrow(() -> new ResourceNotFoundException("바이어를 찾을 수 없습니다."));
     }
 
     public List<Buyer> getAllBuyers() {
-        return buyerRepository.findAll();
+        return buyerRepository.findAllWithClient();
     }
 
     public List<Buyer> getBuyersByClientId(Integer clientId) {
-        return buyerRepository.findByClientId(clientId);
+        return buyerRepository.findByClientIdWithClient(clientId);
     }
 
     @Transactional

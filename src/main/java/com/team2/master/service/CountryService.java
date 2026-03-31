@@ -3,6 +3,7 @@ package com.team2.master.service;
 import com.team2.master.dto.CreateCountryRequest;
 import com.team2.master.dto.UpdateCountryRequest;
 import com.team2.master.entity.Country;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class CountryService {
 
     public Country getById(Integer id) {
         return countryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("국가를 찾을 수 없습니다. ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("국가를 찾을 수 없습니다. ID: " + id));
     }
 
     @Transactional
@@ -38,6 +39,11 @@ public class CountryService {
     @Transactional
     public Country update(Integer id, UpdateCountryRequest request) {
         Country country = getById(id);
+        countryRepository.findByCountryCode(request.getCountryCode())
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new IllegalStateException("이미 존재하는 국가 코드입니다: " + request.getCountryCode());
+                });
         country.update(request.getCountryCode(), request.getCountryName(), request.getCountryNameKr());
         return country;
     }

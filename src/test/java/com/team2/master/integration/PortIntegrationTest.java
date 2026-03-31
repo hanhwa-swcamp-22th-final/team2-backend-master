@@ -5,7 +5,6 @@ import com.team2.master.entity.Country;
 import com.team2.master.entity.Port;
 import com.team2.master.repository.CountryRepository;
 import com.team2.master.repository.PortRepository;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -78,11 +76,9 @@ class PortIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 항구 단건 조회 - 존재하지 않는 ID")
-    void getById_notFound() {
-        assertThatThrownBy(() ->
-                mockMvc.perform(get("/api/ports/{id}", 9999))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+    void getById_notFound() throws Exception {
+        mockMvc.perform(get("/api/ports/{id}", 9999))
+                .andExpect(status().isNotFound());
     }
 
     // ==================== POST /api/ports ====================
@@ -116,7 +112,7 @@ class PortIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 항구 생성 - 중복 코드")
-    void create_duplicateCode() {
+    void create_duplicateCode() throws Exception {
         Country country = countryRepository.save(new Country("KR", "Korea", "한국"));
         portRepository.save(new Port("KRPUS", "Busan Port", "Busan", country));
 
@@ -126,33 +122,29 @@ class PortIntegrationTest {
         request.put("portCity", "City");
         request.put("countryId", country.getId());
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(post("/api/ports")
+        mockMvc.perform(post("/api/ports")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalStateException.class);
+                .andExpect(status().isConflict());
 
         assertThat(portRepository.findAll()).hasSize(1);
     }
 
     @Test
     @DisplayName("통합테스트: 항구 생성 - 존재하지 않는 countryId")
-    void create_invalidCountryId() {
+    void create_invalidCountryId() throws Exception {
         Map<String, Object> request = new LinkedHashMap<>();
         request.put("portCode", "KRPUS");
         request.put("portName", "Busan Port");
         request.put("portCity", "Busan");
         request.put("countryId", 9999);
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(post("/api/ports")
+        mockMvc.perform(post("/api/ports")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
 
         assertThat(portRepository.findAll()).isEmpty();
     }
@@ -188,7 +180,7 @@ class PortIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 항구 수정 - 존재하지 않는 ID")
-    void update_notFound() {
+    void update_notFound() throws Exception {
         Country country = countryRepository.save(new Country("KR", "Korea", "한국"));
 
         Map<String, Object> request = new LinkedHashMap<>();
@@ -197,18 +189,16 @@ class PortIntegrationTest {
         request.put("portCity", "Busan");
         request.put("countryId", country.getId());
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(put("/api/ports/{id}", 9999)
+        mockMvc.perform(put("/api/ports/{id}", 9999)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("통합테스트: 항구 수정 - 존재하지 않는 countryId")
-    void update_invalidCountryId() {
+    void update_invalidCountryId() throws Exception {
         Country country = countryRepository.save(new Country("KR", "Korea", "한국"));
         Port saved = portRepository.save(new Port("KRPUS", "Busan Port", "Busan", country));
 
@@ -218,13 +208,11 @@ class PortIntegrationTest {
         request.put("portCity", "Busan");
         request.put("countryId", 9999);
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(put("/api/ports/{id}", saved.getId())
+        mockMvc.perform(put("/api/ports/{id}", saved.getId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 
     // ==================== DELETE /api/ports/{id} ====================
@@ -237,7 +225,7 @@ class PortIntegrationTest {
 
         mockMvc.perform(delete("/api/ports/{id}", saved.getId())
                         .with(csrf()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         Optional<Port> deleted = portRepository.findById(saved.getId());
         assertThat(deleted).isEmpty();
@@ -245,11 +233,9 @@ class PortIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 항구 삭제 - 존재하지 않는 ID")
-    void delete_notFound() {
-        assertThatThrownBy(() ->
-                mockMvc.perform(delete("/api/ports/{id}", 9999)
+    void delete_notFound() throws Exception {
+        mockMvc.perform(delete("/api/ports/{id}", 9999)
                         .with(csrf()))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 }

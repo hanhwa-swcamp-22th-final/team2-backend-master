@@ -4,6 +4,7 @@ import com.team2.master.dto.CreatePortRequest;
 import com.team2.master.dto.UpdatePortRequest;
 import com.team2.master.entity.Country;
 import com.team2.master.entity.Port;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.CountryRepository;
 import com.team2.master.repository.PortRepository;
 import com.team2.master.service.PortService;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +43,7 @@ class PortServiceTest {
         // given
         Country country = new Country("KR", "South Korea", "대한민국");
         Port port = new Port("KRPUS", "Busan Port", "Busan", country);
-        given(portRepository.findAll()).willReturn(List.of(port));
+        given(portRepository.findAllWithCountry()).willReturn(List.of(port));
 
         // when
         List<Port> result = portService.getAll();
@@ -74,7 +76,7 @@ class PortServiceTest {
 
         // when & then
         assertThatThrownBy(() -> portService.getById(999))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -117,7 +119,7 @@ class PortServiceTest {
 
         // when & then
         assertThatThrownBy(() -> portService.create(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -127,8 +129,10 @@ class PortServiceTest {
         Country country = new Country("KR", "South Korea", "대한민국");
         Country newCountry = new Country("JP", "Japan", "일본");
         Port port = new Port("KRPUS", "Busan Port", "Busan", country);
+        ReflectionTestUtils.setField(port, "id", 1);
         UpdatePortRequest request = new UpdatePortRequest("JPTYO", "Tokyo Port", "Tokyo", 2);
         given(portRepository.findById(1)).willReturn(Optional.of(port));
+        given(portRepository.findByPortCode("JPTYO")).willReturn(Optional.empty());
         given(countryRepository.findById(2)).willReturn(Optional.of(newCountry));
 
         // when
@@ -140,18 +144,38 @@ class PortServiceTest {
     }
 
     @Test
+    @DisplayName("항구 수정 시 중복 코드 예외 발생 테스트")
+    void update_duplicateCode() {
+        // given
+        Country country = new Country("KR", "South Korea", "대한민국");
+        Port port = new Port("KRPUS", "Busan Port", "Busan", country);
+        ReflectionTestUtils.setField(port, "id", 1);
+        Port existing = new Port("JPTYO", "Tokyo Port", "Tokyo", country);
+        ReflectionTestUtils.setField(existing, "id", 2);
+        UpdatePortRequest request = new UpdatePortRequest("JPTYO", "Tokyo Port Updated", "Tokyo", 1);
+        given(portRepository.findById(1)).willReturn(Optional.of(port));
+        given(portRepository.findByPortCode("JPTYO")).willReturn(Optional.of(existing));
+
+        // when & then
+        assertThatThrownBy(() -> portService.update(1, request))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     @DisplayName("존재하지 않는 국가로 항구 수정 시 예외 발생 테스트")
     void update_countryNotFound() {
         // given
         Country country = new Country("KR", "South Korea", "대한민국");
         Port port = new Port("KRPUS", "Busan Port", "Busan", country);
+        ReflectionTestUtils.setField(port, "id", 1);
         UpdatePortRequest request = new UpdatePortRequest("JPTYO", "Tokyo Port", "Tokyo", 999);
         given(portRepository.findById(1)).willReturn(Optional.of(port));
+        given(portRepository.findByPortCode("JPTYO")).willReturn(Optional.empty());
         given(countryRepository.findById(999)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> portService.update(1, request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("국가를 찾을 수 없습니다");
     }
 

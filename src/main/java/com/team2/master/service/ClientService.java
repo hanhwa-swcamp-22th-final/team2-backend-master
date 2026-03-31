@@ -4,6 +4,7 @@ import com.team2.master.dto.CreateClientRequest;
 import com.team2.master.dto.UpdateClientRequest;
 import com.team2.master.entity.*;
 import com.team2.master.entity.enums.ClientStatus;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class ClientService {
     @Transactional
     public Client createClient(CreateClientRequest request) {
         if (clientRepository.existsByClientCode(request.getClientCode())) {
-            throw new IllegalArgumentException("이미 사용 중인 거래처 코드입니다.");
+            throw new IllegalStateException("이미 사용 중인 거래처 코드입니다.");
         }
 
         Client client = Client.builder()
@@ -44,25 +45,25 @@ public class ClientService {
 
         if (request.getCountryId() != null) {
             Country country = countryRepository.findById(request.getCountryId())
-                    .orElseThrow(() -> new IllegalArgumentException("국가를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new ResourceNotFoundException("국가를 찾을 수 없습니다."));
             client.assignCountry(country);
         }
 
         if (request.getPortId() != null) {
             Port port = portRepository.findById(request.getPortId())
-                    .orElseThrow(() -> new IllegalArgumentException("항구를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new ResourceNotFoundException("항구를 찾을 수 없습니다."));
             client.assignPort(port);
         }
 
         if (request.getPaymentTermId() != null) {
             PaymentTerm paymentTerm = paymentTermRepository.findById(request.getPaymentTermId())
-                    .orElseThrow(() -> new IllegalArgumentException("결제조건을 찾을 수 없습니다."));
+                    .orElseThrow(() -> new ResourceNotFoundException("결제조건을 찾을 수 없습니다."));
             client.assignPaymentTerm(paymentTerm);
         }
 
         if (request.getCurrencyId() != null) {
             Currency currency = currencyRepository.findById(request.getCurrencyId())
-                    .orElseThrow(() -> new IllegalArgumentException("통화를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new ResourceNotFoundException("통화를 찾을 수 없습니다."));
             client.assignCurrency(currency);
         }
 
@@ -70,16 +71,16 @@ public class ClientService {
     }
 
     public Client getClient(Integer id) {
-        return clientRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("거래처를 찾을 수 없습니다."));
+        return clientRepository.findByIdWithRelations(id)
+                .orElseThrow(() -> new ResourceNotFoundException("거래처를 찾을 수 없습니다."));
     }
 
     public List<Client> getAllClients() {
-        return clientRepository.findAll();
+        return clientRepository.findAllWithRelations();
     }
 
     public List<Client> getClientsByDepartmentId(Integer departmentId) {
-        return clientRepository.findByDepartmentId(departmentId);
+        return clientRepository.findByDepartmentIdWithRelations(departmentId);
     }
 
     @Transactional
@@ -89,30 +90,30 @@ public class ClientService {
                 request.getClientName(), request.getClientNameKr(),
                 request.getClientCity(), request.getClientAddress(),
                 request.getClientTel(), request.getClientEmail(),
-                request.getClientManager()
+                request.getClientManager(), request.getDepartmentId()
         );
 
         if (request.getCountryId() != null) {
             Country country = countryRepository.findById(request.getCountryId())
-                    .orElseThrow(() -> new IllegalArgumentException("국가를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new ResourceNotFoundException("국가를 찾을 수 없습니다."));
             client.assignCountry(country);
         }
 
         if (request.getPortId() != null) {
             Port port = portRepository.findById(request.getPortId())
-                    .orElseThrow(() -> new IllegalArgumentException("항구를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new ResourceNotFoundException("항구를 찾을 수 없습니다."));
             client.assignPort(port);
         }
 
         if (request.getPaymentTermId() != null) {
             PaymentTerm paymentTerm = paymentTermRepository.findById(request.getPaymentTermId())
-                    .orElseThrow(() -> new IllegalArgumentException("결제조건을 찾을 수 없습니다."));
+                    .orElseThrow(() -> new ResourceNotFoundException("결제조건을 찾을 수 없습니다."));
             client.assignPaymentTerm(paymentTerm);
         }
 
         if (request.getCurrencyId() != null) {
             Currency currency = currencyRepository.findById(request.getCurrencyId())
-                    .orElseThrow(() -> new IllegalArgumentException("통화를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new ResourceNotFoundException("통화를 찾을 수 없습니다."));
             client.assignCurrency(currency);
         }
 

@@ -4,6 +4,7 @@ import com.team2.master.dto.CreatePortRequest;
 import com.team2.master.dto.UpdatePortRequest;
 import com.team2.master.entity.Country;
 import com.team2.master.entity.Port;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.CountryRepository;
 import com.team2.master.repository.PortRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +22,12 @@ public class PortService {
     private final CountryRepository countryRepository;
 
     public List<Port> getAll() {
-        return portRepository.findAll();
+        return portRepository.findAllWithCountry();
     }
 
     public Port getById(Integer id) {
         return portRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("항구를 찾을 수 없습니다. ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("항구를 찾을 수 없습니다. ID: " + id));
     }
 
     @Transactional
@@ -35,7 +36,7 @@ public class PortService {
             throw new IllegalStateException("이미 존재하는 항구 코드입니다: " + request.getPortCode());
         }
         Country country = countryRepository.findById(request.getCountryId())
-                .orElseThrow(() -> new IllegalArgumentException("국가를 찾을 수 없습니다. ID: " + request.getCountryId()));
+                .orElseThrow(() -> new ResourceNotFoundException("국가를 찾을 수 없습니다. ID: " + request.getCountryId()));
         Port port = new Port(request.getPortCode(), request.getPortName(), request.getPortCity(), country);
         return portRepository.save(port);
     }
@@ -43,8 +44,13 @@ public class PortService {
     @Transactional
     public Port update(Integer id, UpdatePortRequest request) {
         Port port = getById(id);
+        portRepository.findByPortCode(request.getPortCode())
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new IllegalStateException("이미 존재하는 항구 코드입니다: " + request.getPortCode());
+                });
         Country country = countryRepository.findById(request.getCountryId())
-                .orElseThrow(() -> new IllegalArgumentException("국가를 찾을 수 없습니다. ID: " + request.getCountryId()));
+                .orElseThrow(() -> new ResourceNotFoundException("국가를 찾을 수 없습니다. ID: " + request.getCountryId()));
         port.update(request.getPortCode(), request.getPortName(), request.getPortCity(), country);
         return port;
     }

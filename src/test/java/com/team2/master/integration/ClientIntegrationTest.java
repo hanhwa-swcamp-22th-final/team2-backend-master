@@ -7,7 +7,6 @@ import com.team2.master.dto.UpdateClientRequest;
 import com.team2.master.entity.*;
 import com.team2.master.entity.enums.ClientStatus;
 import com.team2.master.repository.*;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -102,10 +100,8 @@ class ClientIntegrationTest {
     @Test
     @DisplayName("통합테스트: 거래처 단건 조회 - 존재하지 않는 ID")
     void getById_notFound() throws Exception {
-        assertThatThrownBy(() ->
-                mockMvc.perform(get("/api/clients/{id}", 9999))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+        mockMvc.perform(get("/api/clients/{id}", 9999))
+                .andExpect(status().isNotFound());
     }
 
     // ==================== POST /api/clients ====================
@@ -176,13 +172,11 @@ class ClientIntegrationTest {
                 .departmentId(2)
                 .build();
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(post("/api/clients")
+        mockMvc.perform(post("/api/clients")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isConflict());
 
         // DB에 1건만 존재
         assertThat(clientRepository.findAll()).hasSize(1);
@@ -199,13 +193,11 @@ class ClientIntegrationTest {
                 .departmentId(1)
                 .build();
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(post("/api/clients")
+        mockMvc.perform(post("/api/clients")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
 
         assertThat(clientRepository.findAll()).isEmpty();
     }
@@ -221,13 +213,11 @@ class ClientIntegrationTest {
                 .departmentId(1)
                 .build();
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(post("/api/clients")
+        mockMvc.perform(post("/api/clients")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
 
         assertThat(clientRepository.findAll()).isEmpty();
     }
@@ -243,13 +233,11 @@ class ClientIntegrationTest {
                 .departmentId(1)
                 .build();
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(post("/api/clients")
+        mockMvc.perform(post("/api/clients")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
 
         assertThat(clientRepository.findAll()).isEmpty();
     }
@@ -265,13 +253,11 @@ class ClientIntegrationTest {
                 .departmentId(1)
                 .build();
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(post("/api/clients")
+        mockMvc.perform(post("/api/clients")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
 
         assertThat(clientRepository.findAll()).isEmpty();
     }
@@ -336,13 +322,11 @@ class ClientIntegrationTest {
                 .clientName("Updated Name")
                 .build();
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(put("/api/clients/{id}", 9999)
+        mockMvc.perform(put("/api/clients/{id}", 9999)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -356,13 +340,11 @@ class ClientIntegrationTest {
                 .countryId(9999)
                 .build();
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(put("/api/clients/{id}", saved.getId())
+        mockMvc.perform(put("/api/clients/{id}", saved.getId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 
     // ==================== PATCH /api/clients/{id}/status ====================
@@ -414,13 +396,27 @@ class ClientIntegrationTest {
     void changeStatus_notFound() throws Exception {
         ChangeStatusRequest request = new ChangeStatusRequest("비활성");
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(patch("/api/clients/{id}/status", 9999)
+        mockMvc.perform(patch("/api/clients/{id}/status", 9999)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("통합테스트: 거래처 상태 변경 - 잘못된 상태값")
+    void changeStatus_invalidStatus() throws Exception {
+        Client saved = clientRepository.save(Client.builder()
+                .clientCode("CLI001").clientName("Client").clientNameKr("거래처")
+                .clientStatus(ClientStatus.활성).departmentId(1).build());
+
+        ChangeStatusRequest request = new ChangeStatusRequest("INVALID");
+
+        mockMvc.perform(patch("/api/clients/{id}/status", saved.getId())
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -432,13 +428,11 @@ class ClientIntegrationTest {
 
         ChangeStatusRequest request = new ChangeStatusRequest("활성");
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(patch("/api/clients/{id}/status", saved.getId())
+        mockMvc.perform(patch("/api/clients/{id}/status", saved.getId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalStateException.class);
+                .andExpect(status().isConflict());
     }
 
     // ==================== GET /api/clients/department/{departmentId} ====================

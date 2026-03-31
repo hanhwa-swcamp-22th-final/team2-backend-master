@@ -4,6 +4,7 @@ import com.team2.master.dto.CreatePaymentTermRequest;
 import com.team2.master.dto.UpdatePaymentTermRequest;
 import com.team2.master.entity.PaymentTerm;
 import com.team2.master.service.PaymentTermService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,18 +30,18 @@ public class PaymentTermController {
     }
 
     @PostMapping
-    public ResponseEntity<PaymentTerm> create(@RequestBody CreatePaymentTermRequest request) {
+    public ResponseEntity<PaymentTerm> create(@Valid @RequestBody CreatePaymentTermRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(paymentTermService.create(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaymentTerm> update(@PathVariable Integer id, @RequestBody UpdatePaymentTermRequest request) {
+    public ResponseEntity<PaymentTerm> update(@PathVariable Integer id, @Valid @RequestBody UpdatePaymentTermRequest request) {
         return ResponseEntity.ok(paymentTermService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         paymentTermService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

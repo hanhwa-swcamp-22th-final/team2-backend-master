@@ -44,6 +44,9 @@ public class Buyer {
         if (client == null) {
             throw new IllegalArgumentException("거래처는 필수입니다.");
         }
+        if (buyerName == null) {
+            throw new IllegalArgumentException("바이어명은 필수입니다.");
+        }
         this.client = client;
         this.buyerName = buyerName;
         this.buyerPosition = buyerPosition;

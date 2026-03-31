@@ -3,6 +3,7 @@ package com.team2.master.service;
 import com.team2.master.dto.CreateIncotermRequest;
 import com.team2.master.dto.UpdateIncotermRequest;
 import com.team2.master.entity.Incoterm;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.IncotermRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class IncotermService {
 
     public Incoterm getById(Integer id) {
         return incotermRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("인코텀을 찾을 수 없습니다. ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("인코텀을 찾을 수 없습니다. ID: " + id));
     }
 
     @Transactional
@@ -42,6 +43,11 @@ public class IncotermService {
     @Transactional
     public Incoterm update(Integer id, UpdateIncotermRequest request) {
         Incoterm incoterm = getById(id);
+        incotermRepository.findByIncotermCode(request.getIncotermCode())
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new IllegalStateException("이미 존재하는 인코텀 코드입니다: " + request.getIncotermCode());
+                });
         incoterm.update(
                 request.getIncotermCode(), request.getIncotermName(), request.getIncotermNameKr(),
                 request.getIncotermDescription(), request.getIncotermTransportMode(),

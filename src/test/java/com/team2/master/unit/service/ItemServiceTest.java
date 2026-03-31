@@ -4,6 +4,7 @@ import com.team2.master.dto.CreateItemRequest;
 import com.team2.master.dto.UpdateItemRequest;
 import com.team2.master.entity.Item;
 import com.team2.master.entity.enums.ItemStatus;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.ItemRepository;
 import com.team2.master.service.ItemService;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,7 +87,7 @@ class ItemServiceTest {
 
         // when & then
         assertThatThrownBy(() -> itemService.createItem(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("이미 사용 중인 품목 코드");
     }
 
@@ -111,7 +112,7 @@ class ItemServiceTest {
 
         // when & then
         assertThatThrownBy(() -> itemService.getItem(999))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("품목을 찾을 수 없습니다");
     }
 

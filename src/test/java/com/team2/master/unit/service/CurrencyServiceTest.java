@@ -3,6 +3,7 @@ package com.team2.master.unit.service;
 import com.team2.master.dto.CreateCurrencyRequest;
 import com.team2.master.dto.UpdateCurrencyRequest;
 import com.team2.master.entity.Currency;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.CurrencyRepository;
 import com.team2.master.service.CurrencyService;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +69,7 @@ class CurrencyServiceTest {
 
         // when & then
         assertThatThrownBy(() -> currencyService.getById(999))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -103,14 +105,33 @@ class CurrencyServiceTest {
     void update() {
         // given
         Currency currency = new Currency("USD", "US Dollar", "$");
+        ReflectionTestUtils.setField(currency, "id", 1);
         UpdateCurrencyRequest request = new UpdateCurrencyRequest("USD", "United States Dollar", "US$");
         given(currencyRepository.findById(1)).willReturn(Optional.of(currency));
+        given(currencyRepository.findByCurrencyCode("USD")).willReturn(Optional.of(currency));
 
         // when
         Currency result = currencyService.update(1, request);
 
         // then
         assertThat(result.getCurrencyName()).isEqualTo("United States Dollar");
+    }
+
+    @Test
+    @DisplayName("통화 수정 시 중복 코드 예외 발생 테스트")
+    void update_duplicateCode() {
+        // given
+        Currency currency = new Currency("USD", "US Dollar", "$");
+        ReflectionTestUtils.setField(currency, "id", 1);
+        Currency existing = new Currency("EUR", "Euro", "E");
+        ReflectionTestUtils.setField(existing, "id", 2);
+        UpdateCurrencyRequest request = new UpdateCurrencyRequest("EUR", "Euro Updated", "EU");
+        given(currencyRepository.findById(1)).willReturn(Optional.of(currency));
+        given(currencyRepository.findByCurrencyCode("EUR")).willReturn(Optional.of(existing));
+
+        // when & then
+        assertThatThrownBy(() -> currencyService.update(1, request))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.team2.master.unit.service;
 import com.team2.master.dto.CreateIncotermRequest;
 import com.team2.master.dto.UpdateIncotermRequest;
 import com.team2.master.entity.Incoterm;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.IncotermRepository;
 import com.team2.master.service.IncotermService;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -69,7 +71,7 @@ class IncotermServiceTest {
 
         // when & then
         assertThatThrownBy(() -> incotermService.getById(999))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -109,15 +111,37 @@ class IncotermServiceTest {
         // given
         Incoterm incoterm = new Incoterm("FOB", "Free On Board", "본선인도",
                 null, null, null, null);
+        ReflectionTestUtils.setField(incoterm, "id", 1);
         UpdateIncotermRequest request = new UpdateIncotermRequest("FOB", "FOB Updated", "본선인도수정",
                 "desc", "Any", "F", "Place");
         given(incotermRepository.findById(1)).willReturn(Optional.of(incoterm));
+        given(incotermRepository.findByIncotermCode("FOB")).willReturn(Optional.of(incoterm));
 
         // when
         Incoterm result = incotermService.update(1, request);
 
         // then
         assertThat(result.getIncotermName()).isEqualTo("FOB Updated");
+    }
+
+    @Test
+    @DisplayName("인코텀 수정 시 중복 코드 예외 발생 테스트")
+    void update_duplicateCode() {
+        // given
+        Incoterm incoterm = new Incoterm("FOB", "Free On Board", "본선인도",
+                null, null, null, null);
+        ReflectionTestUtils.setField(incoterm, "id", 1);
+        Incoterm existing = new Incoterm("CIF", "Cost Insurance Freight", "운임보험료포함",
+                null, null, null, null);
+        ReflectionTestUtils.setField(existing, "id", 2);
+        UpdateIncotermRequest request = new UpdateIncotermRequest("CIF", "CIF Updated", "수정",
+                null, null, null, null);
+        given(incotermRepository.findById(1)).willReturn(Optional.of(incoterm));
+        given(incotermRepository.findByIncotermCode("CIF")).willReturn(Optional.of(existing));
+
+        // when & then
+        assertThatThrownBy(() -> incotermService.update(1, request))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test

@@ -6,6 +6,7 @@ import com.team2.master.dto.UpdateItemRequest;
 import com.team2.master.entity.Item;
 import com.team2.master.entity.enums.ItemStatus;
 import com.team2.master.service.ItemService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ResponseEntity<Item> createItem(@RequestBody CreateItemRequest request) {
+    public ResponseEntity<Item> createItem(@Valid @RequestBody CreateItemRequest request) {
         Item item = itemService.createItem(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(item);
     }
@@ -38,13 +39,13 @@ public class ItemController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Item> updateItem(@PathVariable Integer id,
-                                           @RequestBody UpdateItemRequest request) {
+                                           @Valid @RequestBody UpdateItemRequest request) {
         return ResponseEntity.ok(itemService.updateItem(id, request));
     }
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<Item> changeStatus(@PathVariable Integer id,
-                                             @RequestBody ChangeStatusRequest request) {
+                                             @Valid @RequestBody ChangeStatusRequest request) {
         ItemStatus status = ItemStatus.valueOf(request.getStatus());
         return ResponseEntity.ok(itemService.changeStatus(id, status));
     }

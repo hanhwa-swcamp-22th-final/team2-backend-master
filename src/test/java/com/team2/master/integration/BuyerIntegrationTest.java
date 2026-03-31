@@ -9,7 +9,6 @@ import com.team2.master.entity.Country;
 import com.team2.master.repository.BuyerRepository;
 import com.team2.master.repository.ClientRepository;
 import com.team2.master.repository.CountryRepository;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -100,10 +98,8 @@ class BuyerIntegrationTest {
     @Test
     @DisplayName("통합테스트: 바이어 단건 조회 - 존재하지 않는 ID")
     void getById_notFound() throws Exception {
-        assertThatThrownBy(() ->
-                mockMvc.perform(get("/api/buyers/{id}", 9999))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+        mockMvc.perform(get("/api/buyers/{id}", 9999))
+                .andExpect(status().isNotFound());
     }
 
     // ==================== GET /api/buyers/client/{clientId} ====================
@@ -184,13 +180,11 @@ class BuyerIntegrationTest {
                 .buyerTel("010-9999-9999")
                 .build();
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(post("/api/buyers")
+        mockMvc.perform(post("/api/buyers")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
 
         assertThat(buyerRepository.findAll()).isEmpty();
     }
@@ -236,13 +230,11 @@ class BuyerIntegrationTest {
                 .buyerName("Updated Name")
                 .build();
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(put("/api/buyers/{id}", 9999)
+        mockMvc.perform(put("/api/buyers/{id}", 9999)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 
     // ==================== DELETE /api/buyers/{id} ====================
@@ -266,10 +258,8 @@ class BuyerIntegrationTest {
     @Test
     @DisplayName("통합테스트: 바이어 삭제 - 존재하지 않는 ID")
     void delete_notFound() throws Exception {
-        assertThatThrownBy(() ->
-                mockMvc.perform(delete("/api/buyers/{id}", 9999)
+        mockMvc.perform(delete("/api/buyers/{id}", 9999)
                         .with(csrf()))
-        ).isInstanceOf(ServletException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 }

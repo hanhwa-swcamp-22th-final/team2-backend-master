@@ -4,6 +4,7 @@ import com.team2.master.dto.CreateCurrencyRequest;
 import com.team2.master.dto.UpdateCurrencyRequest;
 import com.team2.master.entity.Currency;
 import com.team2.master.service.CurrencyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,18 +30,18 @@ public class CurrencyController {
     }
 
     @PostMapping
-    public ResponseEntity<Currency> create(@RequestBody CreateCurrencyRequest request) {
+    public ResponseEntity<Currency> create(@Valid @RequestBody CreateCurrencyRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(currencyService.create(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Currency> update(@PathVariable Integer id, @RequestBody UpdateCurrencyRequest request) {
+    public ResponseEntity<Currency> update(@PathVariable Integer id, @Valid @RequestBody UpdateCurrencyRequest request) {
         return ResponseEntity.ok(currencyService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         currencyService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

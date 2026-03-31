@@ -5,6 +5,7 @@ import com.team2.master.dto.UpdateBuyerRequest;
 import com.team2.master.entity.Buyer;
 import com.team2.master.entity.Client;
 import com.team2.master.entity.enums.ClientStatus;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.BuyerRepository;
 import com.team2.master.repository.ClientRepository;
 import com.team2.master.service.BuyerService;
@@ -92,7 +93,7 @@ class BuyerServiceTest {
 
         // when & then
         assertThatThrownBy(() -> buyerService.createBuyer(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("거래처를 찾을 수 없습니다");
     }
 
@@ -100,7 +101,7 @@ class BuyerServiceTest {
     @DisplayName("ID로 바이어를 조회할 수 있다")
     void getBuyer_success() {
         // given
-        given(buyerRepository.findById(1)).willReturn(Optional.of(buyer));
+        given(buyerRepository.findByIdWithClient(1)).willReturn(Optional.of(buyer));
 
         // when
         Buyer result = buyerService.getBuyer(1);
@@ -113,11 +114,11 @@ class BuyerServiceTest {
     @DisplayName("존재하지 않는 ID로 조회 시 예외가 발생한다")
     void getBuyer_notFound() {
         // given
-        given(buyerRepository.findById(999)).willReturn(Optional.empty());
+        given(buyerRepository.findByIdWithClient(999)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> buyerService.getBuyer(999))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("바이어를 찾을 수 없습니다");
     }
 
@@ -125,7 +126,7 @@ class BuyerServiceTest {
     @DisplayName("전체 바이어 목록을 조회할 수 있다")
     void getAllBuyers() {
         // given
-        given(buyerRepository.findAll()).willReturn(List.of(buyer));
+        given(buyerRepository.findAllWithClient()).willReturn(List.of(buyer));
 
         // when
         List<Buyer> result = buyerService.getAllBuyers();
@@ -138,7 +139,7 @@ class BuyerServiceTest {
     @DisplayName("거래처 ID로 바이어 목록을 조회할 수 있다")
     void getBuyersByClientId() {
         // given
-        given(buyerRepository.findByClientId(1)).willReturn(List.of(buyer));
+        given(buyerRepository.findByClientIdWithClient(1)).willReturn(List.of(buyer));
 
         // when
         List<Buyer> result = buyerService.getBuyersByClientId(1);
@@ -158,7 +159,7 @@ class BuyerServiceTest {
                 .buyerEmail("jane@test.com")
                 .buyerTel("010-9876-5432")
                 .build();
-        given(buyerRepository.findById(1)).willReturn(Optional.of(buyer));
+        given(buyerRepository.findByIdWithClient(1)).willReturn(Optional.of(buyer));
 
         // when
         Buyer result = buyerService.updateBuyer(1, request);
@@ -172,7 +173,7 @@ class BuyerServiceTest {
     @DisplayName("바이어를 삭제할 수 있다 (hard delete)")
     void deleteBuyer_success() {
         // given
-        given(buyerRepository.findById(1)).willReturn(Optional.of(buyer));
+        given(buyerRepository.findByIdWithClient(1)).willReturn(Optional.of(buyer));
 
         // when
         buyerService.deleteBuyer(1);
@@ -185,11 +186,11 @@ class BuyerServiceTest {
     @DisplayName("존재하지 않는 바이어 삭제 시 예외가 발생한다")
     void deleteBuyer_notFound() {
         // given
-        given(buyerRepository.findById(999)).willReturn(Optional.empty());
+        given(buyerRepository.findByIdWithClient(999)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> buyerService.deleteBuyer(999))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("바이어를 찾을 수 없습니다");
     }
 }

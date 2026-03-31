@@ -144,7 +144,7 @@ class ClientTest {
 
         // when
         client.updateInfo("Updated Corp", "수정 주식회사", "Busan",
-                "456 New St", "051-9876-5432", "updated@corp.com", "김철수");
+                "456 New St", "051-9876-5432", "updated@corp.com", "김철수", 2);
 
         // then
         assertEquals("Updated Corp", client.getClientName());
@@ -154,6 +154,7 @@ class ClientTest {
         assertEquals("051-9876-5432", client.getClientTel());
         assertEquals("updated@corp.com", client.getClientEmail());
         assertEquals("김철수", client.getClientManager());
+        assertEquals(2, client.getDepartmentId());
     }
 
     @Test
@@ -163,7 +164,7 @@ class ClientTest {
         Client client = createDefaultClient();
 
         // when
-        client.updateInfo(null, null, null, null, null, null, null);
+        client.updateInfo(null, null, null, null, null, null, null, null);
 
         // then
         assertEquals("Test Corp", client.getClientName());

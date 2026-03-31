@@ -101,7 +101,7 @@ public class Client {
 
     public void updateInfo(String clientName, String clientNameKr, String clientCity,
                            String clientAddress, String clientTel, String clientEmail,
-                           String clientManager) {
+                           String clientManager, Integer departmentId) {
         if (clientName != null) this.clientName = clientName;
         if (clientNameKr != null) this.clientNameKr = clientNameKr;
         if (clientCity != null) this.clientCity = clientCity;
@@ -109,6 +109,7 @@ public class Client {
         if (clientTel != null) this.clientTel = clientTel;
         if (clientEmail != null) this.clientEmail = clientEmail;
         if (clientManager != null) this.clientManager = clientManager;
+        if (departmentId != null) this.departmentId = departmentId;
     }
 
     public void assignCountry(Country country) {

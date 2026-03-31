@@ -3,7 +3,6 @@ package com.team2.master.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.master.entity.Incoterm;
 import com.team2.master.repository.IncotermRepository;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -81,11 +79,9 @@ class IncotermIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 인코텀 단건 조회 - 존재하지 않는 ID")
-    void getById_notFound() {
-        assertThatThrownBy(() ->
-                mockMvc.perform(get("/api/incoterms/{id}", 9999))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+    void getById_notFound() throws Exception {
+        mockMvc.perform(get("/api/incoterms/{id}", 9999))
+                .andExpect(status().isNotFound());
     }
 
     // ==================== POST /api/incoterms ====================
@@ -128,7 +124,7 @@ class IncotermIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 인코텀 생성 - 중복 코드")
-    void create_duplicateCode() {
+    void create_duplicateCode() throws Exception {
         incotermRepository.save(createIncoterm("FOB", "Free On Board"));
 
         Map<String, String> request = new LinkedHashMap<>();
@@ -140,13 +136,11 @@ class IncotermIntegrationTest {
         request.put("incotermSellerSegments", "seg");
         request.put("incotermDefaultNamedPlace", "place");
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(post("/api/incoterms")
+        mockMvc.perform(post("/api/incoterms")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalStateException.class);
+                .andExpect(status().isConflict());
 
         assertThat(incotermRepository.findAll()).hasSize(1);
     }
@@ -183,7 +177,7 @@ class IncotermIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 인코텀 수정 - 존재하지 않는 ID")
-    void update_notFound() {
+    void update_notFound() throws Exception {
         Map<String, String> request = new LinkedHashMap<>();
         request.put("incotermCode", "FOB");
         request.put("incotermName", "Free On Board");
@@ -193,13 +187,11 @@ class IncotermIntegrationTest {
         request.put("incotermSellerSegments", "매도인");
         request.put("incotermDefaultNamedPlace", "부산항");
 
-        assertThatThrownBy(() ->
-                mockMvc.perform(put("/api/incoterms/{id}", 9999)
+        mockMvc.perform(put("/api/incoterms/{id}", 9999)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 
     // ==================== DELETE /api/incoterms/{id} ====================
@@ -211,7 +203,7 @@ class IncotermIntegrationTest {
 
         mockMvc.perform(delete("/api/incoterms/{id}", saved.getId())
                         .with(csrf()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         Optional<Incoterm> deleted = incotermRepository.findById(saved.getId());
         assertThat(deleted).isEmpty();
@@ -219,11 +211,9 @@ class IncotermIntegrationTest {
 
     @Test
     @DisplayName("통합테스트: 인코텀 삭제 - 존재하지 않는 ID")
-    void delete_notFound() {
-        assertThatThrownBy(() ->
-                mockMvc.perform(delete("/api/incoterms/{id}", 9999)
+    void delete_notFound() throws Exception {
+        mockMvc.perform(delete("/api/incoterms/{id}", 9999)
                         .with(csrf()))
-        ).isInstanceOf(ServletException.class)
-         .hasCauseInstanceOf(IllegalArgumentException.class);
+                .andExpect(status().isNotFound());
     }
 }

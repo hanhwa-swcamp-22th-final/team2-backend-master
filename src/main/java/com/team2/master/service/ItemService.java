@@ -4,6 +4,7 @@ import com.team2.master.dto.CreateItemRequest;
 import com.team2.master.dto.UpdateItemRequest;
 import com.team2.master.entity.Item;
 import com.team2.master.entity.enums.ItemStatus;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class ItemService {
     @Transactional
     public Item createItem(CreateItemRequest request) {
         if (itemRepository.existsByItemCode(request.getItemCode())) {
-            throw new IllegalArgumentException("이미 사용 중인 품목 코드입니다.");
+            throw new IllegalStateException("이미 사용 중인 품목 코드입니다.");
         }
 
         Item item = Item.builder()
@@ -44,7 +45,7 @@ public class ItemService {
 
     public Item getItem(Integer id) {
         return itemRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("품목을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("품목을 찾을 수 없습니다."));
     }
 
     public List<Item> getAllItems() {

@@ -4,6 +4,7 @@ import com.team2.master.dto.CreateClientRequest;
 import com.team2.master.dto.UpdateClientRequest;
 import com.team2.master.entity.*;
 import com.team2.master.entity.enums.ClientStatus;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.*;
 import com.team2.master.service.ClientService;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,7 +101,7 @@ class ClientServiceTest {
 
         // when & then
         assertThatThrownBy(() -> clientService.createClient(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("이미 사용 중인 거래처 코드");
     }
 
@@ -140,7 +141,7 @@ class ClientServiceTest {
 
         // when & then
         assertThatThrownBy(() -> clientService.createClient(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("국가를 찾을 수 없습니다");
     }
 
@@ -148,7 +149,7 @@ class ClientServiceTest {
     @DisplayName("ID로 거래처를 조회할 수 있다")
     void getClient_success() {
         // given
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
 
         // when
         Client result = clientService.getClient(1);
@@ -161,11 +162,11 @@ class ClientServiceTest {
     @DisplayName("존재하지 않는 ID로 조회 시 예외가 발생한다")
     void getClient_notFound() {
         // given
-        given(clientRepository.findById(999)).willReturn(Optional.empty());
+        given(clientRepository.findByIdWithRelations(999)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> clientService.getClient(999))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("거래처를 찾을 수 없습니다");
     }
 
@@ -173,7 +174,7 @@ class ClientServiceTest {
     @DisplayName("전체 거래처 목록을 조회할 수 있다")
     void getAllClients() {
         // given
-        given(clientRepository.findAll()).willReturn(List.of(client));
+        given(clientRepository.findAllWithRelations()).willReturn(List.of(client));
 
         // when
         List<Client> result = clientService.getAllClients();
@@ -186,7 +187,7 @@ class ClientServiceTest {
     @DisplayName("부서 ID로 거래처 목록을 조회할 수 있다 (RBAC)")
     void getClientsByDepartmentId() {
         // given
-        given(clientRepository.findByDepartmentId(1)).willReturn(List.of(client));
+        given(clientRepository.findByDepartmentIdWithRelations(1)).willReturn(List.of(client));
 
         // when
         List<Client> result = clientService.getClientsByDepartmentId(1);
@@ -205,7 +206,7 @@ class ClientServiceTest {
                 .clientNameKr("수정 주식회사")
                 .clientCity("Busan")
                 .build();
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
 
         // when
         Client result = clientService.updateClient(1, request);
@@ -220,7 +221,7 @@ class ClientServiceTest {
     @DisplayName("거래처 상태를 변경할 수 있다 (soft delete)")
     void changeStatus_success() {
         // given
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
 
         // when
         Client result = clientService.changeStatus(1, ClientStatus.비활성);
@@ -233,7 +234,7 @@ class ClientServiceTest {
     @DisplayName("동일 상태로 변경 시 예외가 발생한다")
     void changeStatus_sameStatus() {
         // given
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
 
         // when & then
         assertThatThrownBy(() -> clientService.changeStatus(1, ClientStatus.활성))
@@ -280,7 +281,7 @@ class ClientServiceTest {
 
         // when & then
         assertThatThrownBy(() -> clientService.createClient(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("항구를 찾을 수 없습니다");
     }
 
@@ -320,7 +321,7 @@ class ClientServiceTest {
 
         // when & then
         assertThatThrownBy(() -> clientService.createClient(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("결제조건을 찾을 수 없습니다");
     }
 
@@ -360,7 +361,7 @@ class ClientServiceTest {
 
         // when & then
         assertThatThrownBy(() -> clientService.createClient(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("통화를 찾을 수 없습니다");
     }
 
@@ -375,7 +376,7 @@ class ClientServiceTest {
                 .clientName("Updated Corp")
                 .countryId(1)
                 .build();
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
         given(countryRepository.findById(1)).willReturn(Optional.of(country));
 
         // when
@@ -393,12 +394,12 @@ class ClientServiceTest {
         UpdateClientRequest request = UpdateClientRequest.builder()
                 .countryId(999)
                 .build();
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
         given(countryRepository.findById(999)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> clientService.updateClient(1, request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("국가를 찾을 수 없습니다");
     }
 
@@ -411,7 +412,7 @@ class ClientServiceTest {
         UpdateClientRequest request = UpdateClientRequest.builder()
                 .portId(1)
                 .build();
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
         given(portRepository.findById(1)).willReturn(Optional.of(port));
 
         // when
@@ -429,12 +430,12 @@ class ClientServiceTest {
         UpdateClientRequest request = UpdateClientRequest.builder()
                 .portId(999)
                 .build();
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
         given(portRepository.findById(999)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> clientService.updateClient(1, request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("항구를 찾을 수 없습니다");
     }
 
@@ -446,7 +447,7 @@ class ClientServiceTest {
         UpdateClientRequest request = UpdateClientRequest.builder()
                 .paymentTermId(1)
                 .build();
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
         given(paymentTermRepository.findById(1)).willReturn(Optional.of(paymentTerm));
 
         // when
@@ -464,12 +465,12 @@ class ClientServiceTest {
         UpdateClientRequest request = UpdateClientRequest.builder()
                 .paymentTermId(999)
                 .build();
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
         given(paymentTermRepository.findById(999)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> clientService.updateClient(1, request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("결제조건을 찾을 수 없습니다");
     }
 
@@ -481,7 +482,7 @@ class ClientServiceTest {
         UpdateClientRequest request = UpdateClientRequest.builder()
                 .currencyId(1)
                 .build();
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
         given(currencyRepository.findById(1)).willReturn(Optional.of(currency));
 
         // when
@@ -499,12 +500,12 @@ class ClientServiceTest {
         UpdateClientRequest request = UpdateClientRequest.builder()
                 .currencyId(999)
                 .build();
-        given(clientRepository.findById(1)).willReturn(Optional.of(client));
+        given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
         given(currencyRepository.findById(999)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> clientService.updateClient(1, request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("통화를 찾을 수 없습니다");
     }
 }

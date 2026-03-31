@@ -3,6 +3,7 @@ package com.team2.master.unit.service;
 import com.team2.master.dto.CreateCountryRequest;
 import com.team2.master.dto.UpdateCountryRequest;
 import com.team2.master.entity.Country;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.CountryRepository;
 import com.team2.master.service.CountryService;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +69,7 @@ class CountryServiceTest {
 
         // when & then
         assertThatThrownBy(() -> countryService.getById(999))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -103,8 +105,10 @@ class CountryServiceTest {
     void update() {
         // given
         Country country = new Country("KR", "South Korea", "대한민국");
+        ReflectionTestUtils.setField(country, "id", 1);
         UpdateCountryRequest request = new UpdateCountryRequest("KOR", "Korea", "한국");
         given(countryRepository.findById(1)).willReturn(Optional.of(country));
+        given(countryRepository.findByCountryCode("KOR")).willReturn(Optional.empty());
 
         // when
         Country result = countryService.update(1, request);
@@ -112,6 +116,23 @@ class CountryServiceTest {
         // then
         assertThat(result.getCountryCode()).isEqualTo("KOR");
         assertThat(result.getCountryName()).isEqualTo("Korea");
+    }
+
+    @Test
+    @DisplayName("국가 수정 시 중복 코드 예외 발생 테스트")
+    void update_duplicateCode() {
+        // given
+        Country country = new Country("KR", "South Korea", "대한민국");
+        ReflectionTestUtils.setField(country, "id", 1);
+        Country existing = new Country("KOR", "Korea", "한국");
+        ReflectionTestUtils.setField(existing, "id", 2);
+        UpdateCountryRequest request = new UpdateCountryRequest("KOR", "Korea Updated", "한국수정");
+        given(countryRepository.findById(1)).willReturn(Optional.of(country));
+        given(countryRepository.findByCountryCode("KOR")).willReturn(Optional.of(existing));
+
+        // when & then
+        assertThatThrownBy(() -> countryService.update(1, request))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test

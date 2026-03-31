@@ -4,6 +4,7 @@ import com.team2.master.dto.CreateCountryRequest;
 import com.team2.master.dto.UpdateCountryRequest;
 import com.team2.master.entity.Country;
 import com.team2.master.service.CountryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,18 +30,18 @@ public class CountryController {
     }
 
     @PostMapping
-    public ResponseEntity<Country> create(@RequestBody CreateCountryRequest request) {
+    public ResponseEntity<Country> create(@Valid @RequestBody CreateCountryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(countryService.create(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Country> update(@PathVariable Integer id, @RequestBody UpdateCountryRequest request) {
+    public ResponseEntity<Country> update(@PathVariable Integer id, @Valid @RequestBody UpdateCountryRequest request) {
         return ResponseEntity.ok(countryService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         countryService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

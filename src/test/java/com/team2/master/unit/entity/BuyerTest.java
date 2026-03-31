@@ -89,6 +89,17 @@ class BuyerTest {
         assertEquals("010-1234-5678", buyer.getBuyerTel());
     }
 
+    @Test
+    @DisplayName("바이어 생성 실패: 바이어명이 null이면 예외가 발생한다.")
+    void createBuyer_NullBuyerName_ThrowsException() {
+        // when & then
+        assertThrows(IllegalArgumentException.class,
+                () -> Buyer.builder()
+                        .client(createDefaultClient())
+                        .buyerName(null)
+                        .build());
+    }
+
     // === 거래처 관계 ===
 
     @Test

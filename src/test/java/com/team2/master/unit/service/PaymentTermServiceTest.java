@@ -3,6 +3,7 @@ package com.team2.master.unit.service;
 import com.team2.master.dto.CreatePaymentTermRequest;
 import com.team2.master.dto.UpdatePaymentTermRequest;
 import com.team2.master.entity.PaymentTerm;
+import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.PaymentTermRepository;
 import com.team2.master.service.PaymentTermService;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +69,7 @@ class PaymentTermServiceTest {
 
         // when & then
         assertThatThrownBy(() -> paymentTermService.getById(999))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -103,8 +105,10 @@ class PaymentTermServiceTest {
     void update() {
         // given
         PaymentTerm paymentTerm = new PaymentTerm("TT", "Telegraphic Transfer", "전신환 송금");
+        ReflectionTestUtils.setField(paymentTerm, "id", 1);
         UpdatePaymentTermRequest request = new UpdatePaymentTermRequest("T/T", "T/T Transfer", "T/T 송금");
         given(paymentTermRepository.findById(1)).willReturn(Optional.of(paymentTerm));
+        given(paymentTermRepository.findByPaymentTermCode("T/T")).willReturn(Optional.empty());
 
         // when
         PaymentTerm result = paymentTermService.update(1, request);
@@ -112,6 +116,23 @@ class PaymentTermServiceTest {
         // then
         assertThat(result.getPaymentTermCode()).isEqualTo("T/T");
         assertThat(result.getPaymentTermName()).isEqualTo("T/T Transfer");
+    }
+
+    @Test
+    @DisplayName("결제조건 수정 시 중복 코드 예외 발생 테스트")
+    void update_duplicateCode() {
+        // given
+        PaymentTerm paymentTerm = new PaymentTerm("TT", "Telegraphic Transfer", "전신환 송금");
+        ReflectionTestUtils.setField(paymentTerm, "id", 1);
+        PaymentTerm existing = new PaymentTerm("LC", "Letter of Credit", "신용장");
+        ReflectionTestUtils.setField(existing, "id", 2);
+        UpdatePaymentTermRequest request = new UpdatePaymentTermRequest("LC", "LC Updated", "신용장수정");
+        given(paymentTermRepository.findById(1)).willReturn(Optional.of(paymentTerm));
+        given(paymentTermRepository.findByPaymentTermCode("LC")).willReturn(Optional.of(existing));
+
+        // when & then
+        assertThatThrownBy(() -> paymentTermService.update(1, request))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
