@@ -2,7 +2,7 @@ package com.team2.master.integration.repository;
 
 import com.team2.master.entity.Item;
 import com.team2.master.entity.enums.ItemStatus;
-import com.team2.master.repository.ItemRepository;
+import com.team2.master.command.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

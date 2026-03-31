@@ -6,26 +6,36 @@ import com.team2.master.dto.UpdateBuyerRequest;
 import com.team2.master.entity.Buyer;
 import com.team2.master.entity.Client;
 import com.team2.master.entity.Country;
-import com.team2.master.repository.BuyerRepository;
-import com.team2.master.repository.ClientRepository;
-import com.team2.master.repository.CountryRepository;
+import com.team2.master.command.repository.BuyerRepository;
+import com.team2.master.command.repository.ClientRepository;
+import com.team2.master.command.repository.CountryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import jakarta.persistence.EntityManager;
 import org.springframework.http.MediaType;
+import jakarta.persistence.EntityManager;
 import org.springframework.security.test.context.support.WithMockUser;
+import jakarta.persistence.EntityManager;
 import org.springframework.test.web.servlet.MockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import jakarta.persistence.EntityManager;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -35,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BuyerIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
+    @Autowired private EntityManager entityManager;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private BuyerRepository buyerRepository;
     @Autowired private ClientRepository clientRepository;
@@ -55,6 +66,7 @@ class BuyerIntegrationTest {
     @Test
     @DisplayName("통합테스트: 바이어 전체 조회 - 빈 목록")
     void getAll_empty() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/buyers"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -71,6 +83,7 @@ class BuyerIntegrationTest {
                 .client(client).buyerName("Buyer B").buyerPosition("Director")
                 .buyerEmail("b@test.com").buyerTel("010-2222-2222").build());
 
+        entityManager.flush();
         mockMvc.perform(get("/api/buyers"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -87,6 +100,7 @@ class BuyerIntegrationTest {
                 .client(client).buyerName("Buyer A").buyerPosition("Manager")
                 .buyerEmail("a@test.com").buyerTel("010-1111-1111").build());
 
+        entityManager.flush();
         mockMvc.perform(get("/api/buyers/{id}", saved.getBuyerId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.buyerName").value("Buyer A"))
@@ -98,6 +112,7 @@ class BuyerIntegrationTest {
     @Test
     @DisplayName("통합테스트: 바이어 단건 조회 - 존재하지 않는 ID")
     void getById_notFound() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/buyers/{id}", 9999))
                 .andExpect(status().isNotFound());
     }
@@ -122,6 +137,7 @@ class BuyerIntegrationTest {
                 .client(otherClient).buyerName("Buyer C").buyerPosition("Staff")
                 .buyerEmail("c@test.com").buyerTel("010-3333-3333").build());
 
+        entityManager.flush();
         mockMvc.perform(get("/api/buyers/client/{clientId}", client.getClientId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -132,6 +148,7 @@ class BuyerIntegrationTest {
     @Test
     @DisplayName("통합테스트: 거래처별 바이어 조회 - 빈 결과")
     void getByClientId_empty() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/buyers/client/{clientId}", 9999))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())

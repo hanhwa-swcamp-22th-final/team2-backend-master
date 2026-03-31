@@ -6,15 +6,22 @@ import com.team2.master.dto.CreateItemRequest;
 import com.team2.master.dto.UpdateItemRequest;
 import com.team2.master.entity.Item;
 import com.team2.master.entity.enums.ItemStatus;
-import com.team2.master.repository.ItemRepository;
+import com.team2.master.command.repository.ItemRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import jakarta.persistence.EntityManager;
 import org.springframework.http.MediaType;
+import jakarta.persistence.EntityManager;
 import org.springframework.security.test.context.support.WithMockUser;
+import jakarta.persistence.EntityManager;
 import org.springframework.test.web.servlet.MockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -22,8 +29,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import jakarta.persistence.EntityManager;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -33,6 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ItemIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
+    @Autowired private EntityManager entityManager;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private ItemRepository itemRepository;
 
@@ -41,6 +52,7 @@ class ItemIntegrationTest {
     @Test
     @DisplayName("통합테스트: 품목 전체 조회 - 빈 목록")
     void getAll_empty() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/items"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -57,6 +69,7 @@ class ItemIntegrationTest {
                 .itemCode("ITM002").itemName("Item B").itemNameKr("품목B")
                 .build());
 
+        entityManager.flush();
         mockMvc.perform(get("/api/items"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -77,6 +90,7 @@ class ItemIntegrationTest {
                 .itemHsCode("8501.10").itemCategory("전자부품")
                 .build());
 
+        entityManager.flush();
         mockMvc.perform(get("/api/items/{id}", saved.getItemId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.itemCode").value("ITM001"))
@@ -90,6 +104,7 @@ class ItemIntegrationTest {
     @Test
     @DisplayName("통합테스트: 품목 단건 조회 - 존재하지 않는 ID")
     void getById_notFound() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/items/{id}", 9999))
                 .andExpect(status().isNotFound());
     }

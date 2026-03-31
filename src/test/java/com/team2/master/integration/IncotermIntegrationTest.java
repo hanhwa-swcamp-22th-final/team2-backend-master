@@ -2,15 +2,22 @@ package com.team2.master.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.master.entity.Incoterm;
-import com.team2.master.repository.IncotermRepository;
+import com.team2.master.command.repository.IncotermRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import jakarta.persistence.EntityManager;
 import org.springframework.http.MediaType;
+import jakarta.persistence.EntityManager;
 import org.springframework.security.test.context.support.WithMockUser;
+import jakarta.persistence.EntityManager;
 import org.springframework.test.web.servlet.MockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
@@ -19,8 +26,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import jakarta.persistence.EntityManager;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -30,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class IncotermIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
+    @Autowired private EntityManager entityManager;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private IncotermRepository incotermRepository;
 
@@ -42,6 +53,7 @@ class IncotermIntegrationTest {
     @Test
     @DisplayName("통합테스트: 인코텀 전체 조회 - 빈 목록")
     void getAll_empty() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/incoterms"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -54,6 +66,7 @@ class IncotermIntegrationTest {
         incotermRepository.save(createIncoterm("FOB", "Free On Board"));
         incotermRepository.save(createIncoterm("CIF", "Cost Insurance Freight"));
 
+        entityManager.flush();
         mockMvc.perform(get("/api/incoterms"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
@@ -66,6 +79,7 @@ class IncotermIntegrationTest {
     void getById_success() throws Exception {
         Incoterm saved = incotermRepository.save(createIncoterm("FOB", "Free On Board"));
 
+        entityManager.flush();
         mockMvc.perform(get("/api/incoterms/{id}", saved.getIncotermId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.incotermCode").value("FOB"))
@@ -80,6 +94,7 @@ class IncotermIntegrationTest {
     @Test
     @DisplayName("통합테스트: 인코텀 단건 조회 - 존재하지 않는 ID")
     void getById_notFound() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/incoterms/{id}", 9999))
                 .andExpect(status().isNotFound());
     }

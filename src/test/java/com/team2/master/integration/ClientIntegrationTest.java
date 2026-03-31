@@ -6,24 +6,34 @@ import com.team2.master.dto.CreateClientRequest;
 import com.team2.master.dto.UpdateClientRequest;
 import com.team2.master.entity.*;
 import com.team2.master.entity.enums.ClientStatus;
-import com.team2.master.repository.*;
+import com.team2.master.command.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import jakarta.persistence.EntityManager;
 import org.springframework.http.MediaType;
+import jakarta.persistence.EntityManager;
 import org.springframework.security.test.context.support.WithMockUser;
+import jakarta.persistence.EntityManager;
 import org.springframework.test.web.servlet.MockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import jakarta.persistence.EntityManager;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -33,6 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ClientIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
+    @Autowired private EntityManager entityManager;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private ClientRepository clientRepository;
     @Autowired private CountryRepository countryRepository;
@@ -58,6 +69,7 @@ class ClientIntegrationTest {
     @Test
     @DisplayName("통합테스트: 거래처 전체 조회 - 빈 목록")
     void getAll_empty() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/clients"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -74,6 +86,7 @@ class ClientIntegrationTest {
                 .clientCode("CLI002").clientName("Client B").clientNameKr("거래처B")
                 .departmentId(2).build());
 
+        entityManager.flush();
         mockMvc.perform(get("/api/clients"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -90,6 +103,7 @@ class ClientIntegrationTest {
                 .clientCode("CLI001").clientName("Client A").clientNameKr("거래처A")
                 .departmentId(1).build());
 
+        entityManager.flush();
         mockMvc.perform(get("/api/clients/{id}", saved.getClientId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.clientCode").value("CLI001"))
@@ -100,6 +114,7 @@ class ClientIntegrationTest {
     @Test
     @DisplayName("통합테스트: 거래처 단건 조회 - 존재하지 않는 ID")
     void getById_notFound() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/clients/{id}", 9999))
                 .andExpect(status().isNotFound());
     }
@@ -450,6 +465,7 @@ class ClientIntegrationTest {
                 .clientCode("CLI003").clientName("Client C").clientNameKr("거래처C")
                 .departmentId(2).build());
 
+        entityManager.flush();
         mockMvc.perform(get("/api/clients/department/{departmentId}", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -460,6 +476,7 @@ class ClientIntegrationTest {
     @Test
     @DisplayName("통합테스트: 부서별 거래처 조회 - 빈 결과")
     void getByDepartment_empty() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/clients/department/{departmentId}", 9999))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())

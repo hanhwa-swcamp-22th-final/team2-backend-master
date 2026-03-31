@@ -2,15 +2,22 @@ package com.team2.master.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.master.entity.PaymentTerm;
-import com.team2.master.repository.PaymentTermRepository;
+import com.team2.master.command.repository.PaymentTermRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import jakarta.persistence.EntityManager;
 import org.springframework.http.MediaType;
+import jakarta.persistence.EntityManager;
 import org.springframework.security.test.context.support.WithMockUser;
+import jakarta.persistence.EntityManager;
 import org.springframework.test.web.servlet.MockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,8 +25,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import jakarta.persistence.EntityManager;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -29,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PaymentTermIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
+    @Autowired private EntityManager entityManager;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private PaymentTermRepository paymentTermRepository;
 
@@ -37,6 +48,7 @@ class PaymentTermIntegrationTest {
     @Test
     @DisplayName("통합테스트: 결제조건 전체 조회 - 빈 목록")
     void getAll_empty() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/payment-terms"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -49,6 +61,7 @@ class PaymentTermIntegrationTest {
         paymentTermRepository.save(new PaymentTerm("TT", "Telegraphic Transfer", "전신환송금"));
         paymentTermRepository.save(new PaymentTerm("LC", "Letter of Credit", "신용장"));
 
+        entityManager.flush();
         mockMvc.perform(get("/api/payment-terms"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -63,6 +76,7 @@ class PaymentTermIntegrationTest {
     void getById_success() throws Exception {
         PaymentTerm saved = paymentTermRepository.save(new PaymentTerm("TT", "Telegraphic Transfer", "전신환송금"));
 
+        entityManager.flush();
         mockMvc.perform(get("/api/payment-terms/{id}", saved.getPaymentTermId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paymentTermCode").value("TT"))
@@ -73,6 +87,7 @@ class PaymentTermIntegrationTest {
     @Test
     @DisplayName("통합테스트: 결제조건 단건 조회 - 존재하지 않는 ID")
     void getById_notFound() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/payment-terms/{id}", 9999))
                 .andExpect(status().isNotFound());
     }

@@ -2,15 +2,22 @@ package com.team2.master.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.master.entity.Currency;
-import com.team2.master.repository.CurrencyRepository;
+import com.team2.master.command.repository.CurrencyRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import jakarta.persistence.EntityManager;
 import org.springframework.http.MediaType;
+import jakarta.persistence.EntityManager;
 import org.springframework.security.test.context.support.WithMockUser;
+import jakarta.persistence.EntityManager;
 import org.springframework.test.web.servlet.MockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,8 +25,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import jakarta.persistence.EntityManager;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -29,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CurrencyIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
+    @Autowired private EntityManager entityManager;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private CurrencyRepository currencyRepository;
 
@@ -37,6 +48,7 @@ class CurrencyIntegrationTest {
     @Test
     @DisplayName("통합테스트: 통화 전체 조회 - 빈 목록")
     void getAll_empty() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/currencies"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -49,6 +61,7 @@ class CurrencyIntegrationTest {
         currencyRepository.save(new Currency("USD", "US Dollar", "$"));
         currencyRepository.save(new Currency("KRW", "Korean Won", "₩"));
 
+        entityManager.flush();
         mockMvc.perform(get("/api/currencies"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -63,6 +76,7 @@ class CurrencyIntegrationTest {
     void getById_success() throws Exception {
         Currency saved = currencyRepository.save(new Currency("USD", "US Dollar", "$"));
 
+        entityManager.flush();
         mockMvc.perform(get("/api/currencies/{id}", saved.getCurrencyId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.currencyCode").value("USD"))
@@ -73,6 +87,7 @@ class CurrencyIntegrationTest {
     @Test
     @DisplayName("통합테스트: 통화 단건 조회 - 존재하지 않는 ID")
     void getById_notFound() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/currencies/{id}", 9999))
                 .andExpect(status().isNotFound());
     }

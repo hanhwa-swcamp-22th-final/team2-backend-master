@@ -4,9 +4,12 @@ import com.team2.master.dto.CreateCountryRequest;
 import com.team2.master.dto.UpdateCountryRequest;
 import com.team2.master.entity.Country;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.repository.CountryRepository;
-import com.team2.master.service.CountryService;
+import com.team2.master.query.mapper.CountryQueryMapper;
+import com.team2.master.command.repository.CountryRepository;
+import com.team2.master.command.service.CountryCommandService;
+import com.team2.master.query.service.CountryQueryService;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,126 +29,142 @@ import static org.mockito.BDDMockito.then;
 @ExtendWith(MockitoExtension.class)
 class CountryServiceTest {
 
-    @Mock
-    private CountryRepository countryRepository;
+    @Nested
+    @DisplayName("CountryQueryService 테스트")
+    class QueryServiceTest {
 
-    @InjectMocks
-    private CountryService countryService;
+        @Mock
+        private CountryQueryMapper countryQueryMapper;
 
-    @Test
-    @DisplayName("전체 국가 목록 조회 테스트")
-    void getAll() {
-        // given
-        Country country = new Country("KR", "South Korea", "대한민국");
-        given(countryRepository.findAll()).willReturn(List.of(country));
+        @InjectMocks
+        private CountryQueryService countryQueryService;
 
-        // when
-        List<Country> result = countryService.getAll();
+        @Test
+        @DisplayName("전체 국가 목록 조회 테스트")
+        void getAll() {
+            // given
+            Country country = new Country("KR", "South Korea", "대한민국");
+            given(countryQueryMapper.findAll()).willReturn(List.of(country));
 
-        // then
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getCountryCode()).isEqualTo("KR");
+            // when
+            List<Country> result = countryQueryService.getAll();
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getCountryCode()).isEqualTo("KR");
+        }
+
+        @Test
+        @DisplayName("국가 ID로 조회 테스트")
+        void getById() {
+            // given
+            Country country = new Country("KR", "South Korea", "대한민국");
+            given(countryQueryMapper.findById(1)).willReturn(country);
+
+            // when
+            Country result = countryQueryService.getById(1);
+
+            // then
+            assertThat(result.getCountryCode()).isEqualTo("KR");
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 국가 ID 조회 시 예외 발생 테스트")
+        void getById_notFound() {
+            // given
+            given(countryQueryMapper.findById(999)).willReturn(null);
+
+            // when & then
+            assertThatThrownBy(() -> countryQueryService.getById(999))
+                    .isInstanceOf(ResourceNotFoundException.class);
+        }
     }
 
-    @Test
-    @DisplayName("국가 ID로 조회 테스트")
-    void getById() {
-        // given
-        Country country = new Country("KR", "South Korea", "대한민국");
-        given(countryRepository.findById(1)).willReturn(Optional.of(country));
+    @Nested
+    @DisplayName("CountryCommandService 테스트")
+    class CommandServiceTest {
 
-        // when
-        Country result = countryService.getById(1);
+        @Mock
+        private CountryRepository countryRepository;
 
-        // then
-        assertThat(result.getCountryCode()).isEqualTo("KR");
-    }
+        @InjectMocks
+        private CountryCommandService countryCommandService;
 
-    @Test
-    @DisplayName("존재하지 않는 국가 ID 조회 시 예외 발생 테스트")
-    void getById_notFound() {
-        // given
-        given(countryRepository.findById(999)).willReturn(Optional.empty());
+        @Test
+        @DisplayName("국가 생성 테스트")
+        void create() {
+            // given
+            CreateCountryRequest request = new CreateCountryRequest("KR", "South Korea", "대한민국");
+            Country country = new Country("KR", "South Korea", "대한민국");
+            given(countryRepository.existsByCountryCode("KR")).willReturn(false);
+            given(countryRepository.save(any(Country.class))).willReturn(country);
 
-        // when & then
-        assertThatThrownBy(() -> countryService.getById(999))
-                .isInstanceOf(ResourceNotFoundException.class);
-    }
+            // when
+            Country result = countryCommandService.create(request);
 
-    @Test
-    @DisplayName("국가 생성 테스트")
-    void create() {
-        // given
-        CreateCountryRequest request = new CreateCountryRequest("KR", "South Korea", "대한민국");
-        Country country = new Country("KR", "South Korea", "대한민국");
-        given(countryRepository.existsByCountryCode("KR")).willReturn(false);
-        given(countryRepository.save(any(Country.class))).willReturn(country);
+            // then
+            assertThat(result.getCountryCode()).isEqualTo("KR");
+        }
 
-        // when
-        Country result = countryService.create(request);
+        @Test
+        @DisplayName("중복 국가 코드로 생성 시 예외 발생 테스트")
+        void create_duplicateCode() {
+            // given
+            CreateCountryRequest request = new CreateCountryRequest("KR", "South Korea", "대한민국");
+            given(countryRepository.existsByCountryCode("KR")).willReturn(true);
 
-        // then
-        assertThat(result.getCountryCode()).isEqualTo("KR");
-    }
+            // when & then
+            assertThatThrownBy(() -> countryCommandService.create(request))
+                    .isInstanceOf(IllegalStateException.class);
+        }
 
-    @Test
-    @DisplayName("중복 국가 코드로 생성 시 예외 발생 테스트")
-    void create_duplicateCode() {
-        // given
-        CreateCountryRequest request = new CreateCountryRequest("KR", "South Korea", "대한민국");
-        given(countryRepository.existsByCountryCode("KR")).willReturn(true);
+        @Test
+        @DisplayName("국가 수정 테스트")
+        void update() {
+            // given
+            Country country = new Country("KR", "South Korea", "대한민국");
+            ReflectionTestUtils.setField(country, "countryId", 1);
+            UpdateCountryRequest request = new UpdateCountryRequest("KOR", "Korea", "한국");
+            given(countryRepository.findById(1)).willReturn(Optional.of(country));
+            given(countryRepository.findByCountryCode("KOR")).willReturn(Optional.empty());
 
-        // when & then
-        assertThatThrownBy(() -> countryService.create(request))
-                .isInstanceOf(IllegalStateException.class);
-    }
+            // when
+            Country result = countryCommandService.update(1, request);
 
-    @Test
-    @DisplayName("국가 수정 테스트")
-    void update() {
-        // given
-        Country country = new Country("KR", "South Korea", "대한민국");
-        ReflectionTestUtils.setField(country, "countryId", 1);
-        UpdateCountryRequest request = new UpdateCountryRequest("KOR", "Korea", "한국");
-        given(countryRepository.findById(1)).willReturn(Optional.of(country));
-        given(countryRepository.findByCountryCode("KOR")).willReturn(Optional.empty());
+            // then
+            assertThat(result.getCountryCode()).isEqualTo("KOR");
+            assertThat(result.getCountryName()).isEqualTo("Korea");
+        }
 
-        // when
-        Country result = countryService.update(1, request);
+        @Test
+        @DisplayName("국가 수정 시 중복 코드 예외 발생 테스트")
+        void update_duplicateCode() {
+            // given
+            Country country = new Country("KR", "South Korea", "대한민국");
+            ReflectionTestUtils.setField(country, "countryId", 1);
+            Country existing = new Country("KOR", "Korea", "한국");
+            ReflectionTestUtils.setField(existing, "countryId", 2);
+            UpdateCountryRequest request = new UpdateCountryRequest("KOR", "Korea Updated", "한국수정");
+            given(countryRepository.findById(1)).willReturn(Optional.of(country));
+            given(countryRepository.findByCountryCode("KOR")).willReturn(Optional.of(existing));
 
-        // then
-        assertThat(result.getCountryCode()).isEqualTo("KOR");
-        assertThat(result.getCountryName()).isEqualTo("Korea");
-    }
+            // when & then
+            assertThatThrownBy(() -> countryCommandService.update(1, request))
+                    .isInstanceOf(IllegalStateException.class);
+        }
 
-    @Test
-    @DisplayName("국가 수정 시 중복 코드 예외 발생 테스트")
-    void update_duplicateCode() {
-        // given
-        Country country = new Country("KR", "South Korea", "대한민국");
-        ReflectionTestUtils.setField(country, "countryId", 1);
-        Country existing = new Country("KOR", "Korea", "한국");
-        ReflectionTestUtils.setField(existing, "countryId", 2);
-        UpdateCountryRequest request = new UpdateCountryRequest("KOR", "Korea Updated", "한국수정");
-        given(countryRepository.findById(1)).willReturn(Optional.of(country));
-        given(countryRepository.findByCountryCode("KOR")).willReturn(Optional.of(existing));
+        @Test
+        @DisplayName("국가 삭제 테스트")
+        void delete() {
+            // given
+            Country country = new Country("KR", "South Korea", "대한민국");
+            given(countryRepository.findById(1)).willReturn(Optional.of(country));
 
-        // when & then
-        assertThatThrownBy(() -> countryService.update(1, request))
-                .isInstanceOf(IllegalStateException.class);
-    }
+            // when
+            countryCommandService.delete(1);
 
-    @Test
-    @DisplayName("국가 삭제 테스트")
-    void delete() {
-        // given
-        Country country = new Country("KR", "South Korea", "대한민국");
-        given(countryRepository.findById(1)).willReturn(Optional.of(country));
-
-        // when
-        countryService.delete(1);
-
-        // then
-        then(countryRepository).should().delete(country);
+            // then
+            then(countryRepository).should().delete(country);
+        }
     }
 }

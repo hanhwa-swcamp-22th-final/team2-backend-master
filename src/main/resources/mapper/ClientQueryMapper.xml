@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.team2.master.mapper.ClientQueryMapper">
+<mapper namespace="com.team2.master.query.mapper.ClientQueryMapper">
 
     <resultMap id="ClientResponseMap" type="com.team2.master.dto.ClientResponse">
         <result property="id"              column="client_id"/>

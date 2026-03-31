@@ -3,16 +3,23 @@ package com.team2.master.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.master.entity.Country;
 import com.team2.master.entity.Port;
-import com.team2.master.repository.CountryRepository;
-import com.team2.master.repository.PortRepository;
+import com.team2.master.command.repository.CountryRepository;
+import com.team2.master.command.repository.PortRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import jakarta.persistence.EntityManager;
 import org.springframework.http.MediaType;
+import jakarta.persistence.EntityManager;
 import org.springframework.security.test.context.support.WithMockUser;
+import jakarta.persistence.EntityManager;
 import org.springframework.test.web.servlet.MockMvc;
+import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
@@ -21,8 +28,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import jakarta.persistence.EntityManager;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import jakarta.persistence.EntityManager;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -32,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PortIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
+    @Autowired private EntityManager entityManager;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private PortRepository portRepository;
     @Autowired private CountryRepository countryRepository;
@@ -41,6 +52,7 @@ class PortIntegrationTest {
     @Test
     @DisplayName("통합테스트: 항구 전체 조회 - 빈 목록")
     void getAll_empty() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/ports"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -54,6 +66,7 @@ class PortIntegrationTest {
         portRepository.save(new Port("KRPUS", "Busan Port", "Busan", country));
         portRepository.save(new Port("KRICN", "Incheon Port", "Incheon", country));
 
+        entityManager.flush();
         mockMvc.perform(get("/api/ports"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
@@ -67,6 +80,7 @@ class PortIntegrationTest {
         Country country = countryRepository.save(new Country("KR", "Korea", "한국"));
         Port saved = portRepository.save(new Port("KRPUS", "Busan Port", "Busan", country));
 
+        entityManager.flush();
         mockMvc.perform(get("/api/ports/{id}", saved.getPortId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.portCode").value("KRPUS"))
@@ -77,6 +91,7 @@ class PortIntegrationTest {
     @Test
     @DisplayName("통합테스트: 항구 단건 조회 - 존재하지 않는 ID")
     void getById_notFound() throws Exception {
+        entityManager.flush();
         mockMvc.perform(get("/api/ports/{id}", 9999))
                 .andExpect(status().isNotFound());
     }

@@ -16,3 +16,9 @@ spring:
 
 server:
   port: 0
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.team2.master.entity,com.team2.master.dto
+  configuration:
+    map-underscore-to-camel-case: true

@@ -1,7 +1,7 @@
 package com.team2.master.integration.repository;
 
 import com.team2.master.entity.Incoterm;
-import com.team2.master.repository.IncotermRepository;
+import com.team2.master.command.repository.IncotermRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
