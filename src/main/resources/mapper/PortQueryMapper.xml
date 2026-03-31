@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team2.master.mapper.PortQueryMapper">
+
+    <resultMap id="PortResponseMap" type="com.team2.master.dto.PortResponse">
+        <result property="id"          column="port_id"/>
+        <result property="portCode"    column="port_code"/>
+        <result property="portName"    column="port_name"/>
+        <result property="portCity"    column="port_city"/>
+        <result property="countryId"   column="country_id"/>
+        <result property="countryName" column="country_name"/>
+    </resultMap>
+
+    <sql id="selectPortBase">
+        SELECT
+            p.port_id,
+            p.port_code,
+            p.port_name,
+            p.port_city,
+            p.country_id,
+            c.country_name
+        FROM ports p
+        JOIN countries c ON p.country_id = c.country_id
+    </sql>
+
+    <select id="findById" resultMap="PortResponseMap">
+        <include refid="selectPortBase"/>
+        WHERE p.port_id = #{portId}
+    </select>
+
+    <select id="findAll" resultMap="PortResponseMap">
+        <include refid="selectPortBase"/>
+    </select>
+
+</mapper>

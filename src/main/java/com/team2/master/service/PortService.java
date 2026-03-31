@@ -8,12 +8,10 @@ import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.CountryRepository;
 import com.team2.master.repository.PortRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PortService {

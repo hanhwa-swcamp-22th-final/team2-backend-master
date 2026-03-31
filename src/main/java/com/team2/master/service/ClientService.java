@@ -7,12 +7,10 @@ import com.team2.master.entity.enums.ClientStatus;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ClientService {

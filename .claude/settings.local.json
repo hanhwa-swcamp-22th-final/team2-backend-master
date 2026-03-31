@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:curiousjinan.tistory.com)",
+      "Bash(find /d/Users/Documents/be22-final-team2-project/team2-backend-master/src/test -type f -name *.java)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(./gradlew clean:*)",
+      "Bash(python3:*)",
+      "Bash(./gradlew jacocoTestCoverageVerification)",
+      "Bash(./gradlew test:*)"
+    ]
+  }
+}

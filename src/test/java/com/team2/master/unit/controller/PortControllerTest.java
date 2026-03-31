@@ -2,13 +2,15 @@ package com.team2.master.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.master.dto.CreatePortRequest;
+import com.team2.master.dto.PortResponse;
 import com.team2.master.dto.UpdatePortRequest;
 import com.team2.master.entity.Country;
 import com.team2.master.entity.Port;
 import com.team2.master.controller.PortController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.service.PortService;
+import com.team2.master.service.PortCommandService;
+import com.team2.master.service.PortQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,15 +44,25 @@ class PortControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private PortService portService;
+    private PortCommandService portCommandService;
+
+    @MockitoBean
+    private PortQueryService portQueryService;
+
+    private PortResponse createTestPortResponse() {
+        return PortResponse.builder()
+                .portCode("KRPUS")
+                .portName("Busan Port")
+                .portCity("Busan")
+                .countryName("South Korea")
+                .build();
+    }
 
     @Test
     @DisplayName("전체 항구 목록 조회 API 테스트")
     void getAll() throws Exception {
         // given
-        Country country = new Country("KR", "South Korea", "대한민국");
-        Port port = new Port("KRPUS", "Busan Port", "Busan", country);
-        given(portService.getAll()).willReturn(List.of(port));
+        given(portQueryService.getAll()).willReturn(List.of(createTestPortResponse()));
 
         // when & then
         mockMvc.perform(get("/api/ports"))
@@ -65,9 +77,7 @@ class PortControllerTest {
     @DisplayName("항구 ID로 조회 API 테스트")
     void getById() throws Exception {
         // given
-        Country country = new Country("KR", "South Korea", "대한민국");
-        Port port = new Port("KRPUS", "Busan Port", "Busan", country);
-        given(portService.getById(1)).willReturn(port);
+        given(portQueryService.getById(1)).willReturn(createTestPortResponse());
 
         // when & then
         mockMvc.perform(get("/api/ports/1"))
@@ -81,7 +91,7 @@ class PortControllerTest {
     @DisplayName("항구 ID로 조회 - 존재하지 않는 항구 (404)")
     void getById_notFound() throws Exception {
         // given
-        given(portService.getById(999))
+        given(portQueryService.getById(999))
                 .willThrow(new ResourceNotFoundException("항구를 찾을 수 없습니다: 999"));
 
         // when & then
@@ -97,7 +107,7 @@ class PortControllerTest {
         CreatePortRequest request = new CreatePortRequest("KRPUS", "Busan Port", "Busan", 1);
         Country country = new Country("KR", "South Korea", "대한민국");
         Port port = new Port("KRPUS", "Busan Port", "Busan", country);
-        given(portService.create(any(CreatePortRequest.class))).willReturn(port);
+        given(portCommandService.create(any(CreatePortRequest.class))).willReturn(port);
 
         // when & then
         mockMvc.perform(post("/api/ports")
@@ -114,7 +124,7 @@ class PortControllerTest {
     void create_duplicate() throws Exception {
         // given
         CreatePortRequest request = new CreatePortRequest("KRPUS", "Busan Port", "Busan", 1);
-        given(portService.create(any(CreatePortRequest.class)))
+        given(portCommandService.create(any(CreatePortRequest.class)))
                 .willThrow(new IllegalStateException("이미 존재하는 항구 코드입니다: KRPUS"));
 
         // when & then
@@ -133,7 +143,7 @@ class PortControllerTest {
         UpdatePortRequest request = new UpdatePortRequest("KRPUS2", "Busan New Port", "Busan City", 1);
         Country country = new Country("KR", "South Korea", "대한민국");
         Port port = new Port("KRPUS2", "Busan New Port", "Busan City", country);
-        given(portService.update(eq(1), any(UpdatePortRequest.class))).willReturn(port);
+        given(portCommandService.update(eq(1), any(UpdatePortRequest.class))).willReturn(port);
 
         // when & then
         mockMvc.perform(put("/api/ports/1")
@@ -150,7 +160,7 @@ class PortControllerTest {
     void update_notFound() throws Exception {
         // given
         UpdatePortRequest request = new UpdatePortRequest("KRPUS2", "Busan New Port", "Busan City", 1);
-        given(portService.update(eq(999), any(UpdatePortRequest.class)))
+        given(portCommandService.update(eq(999), any(UpdatePortRequest.class)))
                 .willThrow(new ResourceNotFoundException("항구를 찾을 수 없습니다: 999"));
 
         // when & then
@@ -166,7 +176,7 @@ class PortControllerTest {
     @DisplayName("항구 삭제 API 테스트")
     void deletePort() throws Exception {
         // given
-        willDoNothing().given(portService).delete(1);
+        willDoNothing().given(portCommandService).delete(1);
 
         // when & then
         mockMvc.perform(delete("/api/ports/1")
@@ -179,7 +189,7 @@ class PortControllerTest {
     void deletePort_notFound() throws Exception {
         // given
         willThrow(new ResourceNotFoundException("항구를 찾을 수 없습니다: 999"))
-                .given(portService).delete(999);
+                .given(portCommandService).delete(999);
 
         // when & then
         mockMvc.perform(delete("/api/ports/999")

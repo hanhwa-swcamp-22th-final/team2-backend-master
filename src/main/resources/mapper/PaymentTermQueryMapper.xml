@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team2.master.mapper.PaymentTermQueryMapper">
+
+    <resultMap id="PaymentTermMap" type="com.team2.master.entity.PaymentTerm">
+        <result property="paymentTermId"          column="payment_term_id"/>
+        <result property="paymentTermCode"        column="payment_term_code"/>
+        <result property="paymentTermName"        column="payment_term_name"/>
+        <result property="paymentTermDescription" column="payment_term_description"/>
+    </resultMap>
+
+    <select id="findById" resultMap="PaymentTermMap">
+        SELECT payment_term_id, payment_term_code, payment_term_name, payment_term_description
+        FROM payment_terms
+        WHERE payment_term_id = #{paymentTermId}
+    </select>
+
+    <select id="findAll" resultMap="PaymentTermMap">
+        SELECT payment_term_id, payment_term_code, payment_term_name, payment_term_description
+        FROM payment_terms
+    </select>
+
+</mapper>

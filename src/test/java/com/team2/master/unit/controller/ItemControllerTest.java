@@ -9,7 +9,8 @@ import com.team2.master.entity.enums.ItemStatus;
 import com.team2.master.controller.ItemController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.service.ItemService;
+import com.team2.master.service.ItemCommandService;
+import com.team2.master.service.ItemQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,10 @@ class ItemControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private ItemService itemService;
+    private ItemCommandService itemCommandService;
+
+    @MockitoBean
+    private ItemQueryService itemQueryService;
 
     private Item createTestItem() {
         return Item.builder()
@@ -67,7 +71,7 @@ class ItemControllerTest {
                 .itemName("Test Product")
                 .itemNameKr("테스트 제품")
                 .build();
-        given(itemService.createItem(any(CreateItemRequest.class))).willReturn(createTestItem());
+        given(itemCommandService.createItem(any(CreateItemRequest.class))).willReturn(createTestItem());
 
         // when & then
         mockMvc.perform(post("/api/items")
@@ -87,7 +91,7 @@ class ItemControllerTest {
                 .itemCode("ITM001")
                 .itemName("Test Product")
                 .build();
-        given(itemService.createItem(any(CreateItemRequest.class)))
+        given(itemCommandService.createItem(any(CreateItemRequest.class)))
                 .willThrow(new IllegalStateException("이미 존재하는 품목 코드입니다: ITM001"));
 
         // when & then
@@ -103,7 +107,7 @@ class ItemControllerTest {
     @DisplayName("GET /api/items - 전체 품목 목록 조회")
     void getAllItems_success() throws Exception {
         // given
-        given(itemService.getAllItems()).willReturn(List.of(createTestItem()));
+        given(itemQueryService.getAllItems()).willReturn(List.of(createTestItem()));
 
         // when & then
         mockMvc.perform(get("/api/items"))
@@ -115,7 +119,7 @@ class ItemControllerTest {
     @DisplayName("GET /api/items/{id} - 품목 상세 조회")
     void getItem_success() throws Exception {
         // given
-        given(itemService.getItem(1)).willReturn(createTestItem());
+        given(itemQueryService.getItem(1)).willReturn(createTestItem());
 
         // when & then
         mockMvc.perform(get("/api/items/1"))
@@ -127,7 +131,7 @@ class ItemControllerTest {
     @DisplayName("GET /api/items/{id} - 존재하지 않는 품목 조회 (404)")
     void getItem_notFound() throws Exception {
         // given
-        given(itemService.getItem(999))
+        given(itemQueryService.getItem(999))
                 .willThrow(new ResourceNotFoundException("품목을 찾을 수 없습니다: 999"));
 
         // when & then
@@ -150,7 +154,7 @@ class ItemControllerTest {
                 .itemNameKr("수정 제품")
                 .itemStatus(ItemStatus.ACTIVE)
                 .build();
-        given(itemService.updateItem(eq(1), any(UpdateItemRequest.class))).willReturn(updatedItem);
+        given(itemCommandService.updateItem(eq(1), any(UpdateItemRequest.class))).willReturn(updatedItem);
 
         // when & then
         mockMvc.perform(put("/api/items/1")
@@ -168,7 +172,7 @@ class ItemControllerTest {
         UpdateItemRequest request = UpdateItemRequest.builder()
                 .itemName("Updated Product")
                 .build();
-        given(itemService.updateItem(eq(999), any(UpdateItemRequest.class)))
+        given(itemCommandService.updateItem(eq(999), any(UpdateItemRequest.class)))
                 .willThrow(new ResourceNotFoundException("품목을 찾을 수 없습니다: 999"));
 
         // when & then
@@ -190,7 +194,7 @@ class ItemControllerTest {
                 .itemName("Test Product")
                 .itemStatus(ItemStatus.INACTIVE)
                 .build();
-        given(itemService.changeStatus(eq(1), eq(ItemStatus.INACTIVE))).willReturn(inactiveItem);
+        given(itemCommandService.changeStatus(eq(1), eq(ItemStatus.INACTIVE))).willReturn(inactiveItem);
 
         // when & then
         mockMvc.perform(patch("/api/items/1/status")
@@ -206,7 +210,7 @@ class ItemControllerTest {
     void changeStatus_conflict() throws Exception {
         // given
         ChangeStatusRequest request = new ChangeStatusRequest("ACTIVE");
-        given(itemService.changeStatus(eq(1), eq(ItemStatus.ACTIVE)))
+        given(itemCommandService.changeStatus(eq(1), eq(ItemStatus.ACTIVE)))
                 .willThrow(new IllegalStateException("이미 ACTIVE 상태입니다."));
 
         // when & then

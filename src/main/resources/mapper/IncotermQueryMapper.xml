@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team2.master.mapper.IncotermQueryMapper">
+
+    <resultMap id="IncotermMap" type="com.team2.master.entity.Incoterm">
+        <result property="incotermId"               column="incoterm_id"/>
+        <result property="incotermCode"             column="incoterm_code"/>
+        <result property="incotermName"             column="incoterm_name"/>
+        <result property="incotermNameKr"           column="incoterm_name_kr"/>
+        <result property="incotermDescription"      column="incoterm_description"/>
+        <result property="incotermTransportMode"    column="incoterm_transport_mode"/>
+        <result property="incotermSellerSegments"   column="incoterm_seller_segments"/>
+        <result property="incotermDefaultNamedPlace" column="incoterm_default_named_place"/>
+    </resultMap>
+
+    <select id="findById" resultMap="IncotermMap">
+        SELECT incoterm_id, incoterm_code, incoterm_name, incoterm_name_kr,
+               incoterm_description, incoterm_transport_mode,
+               incoterm_seller_segments, incoterm_default_named_place
+        FROM incoterms
+        WHERE incoterm_id = #{incotermId}
+    </select>
+
+    <select id="findAll" resultMap="IncotermMap">
+        SELECT incoterm_id, incoterm_code, incoterm_name, incoterm_name_kr,
+               incoterm_description, incoterm_transport_mode,
+               incoterm_seller_segments, incoterm_default_named_place
+        FROM incoterms
+    </select>
+
+</mapper>

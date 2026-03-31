@@ -3,7 +3,8 @@ package com.team2.master.controller;
 import com.team2.master.dto.CreatePaymentTermRequest;
 import com.team2.master.dto.UpdatePaymentTermRequest;
 import com.team2.master.entity.PaymentTerm;
-import com.team2.master.service.PaymentTermService;
+import com.team2.master.service.PaymentTermCommandService;
+import com.team2.master.service.PaymentTermQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,31 +18,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PaymentTermController {
 
-    private final PaymentTermService paymentTermService;
+    private final PaymentTermCommandService paymentTermCommandService;
+    private final PaymentTermQueryService paymentTermQueryService;
 
     @GetMapping
     public ResponseEntity<List<PaymentTerm>> getAll() {
-        return ResponseEntity.ok(paymentTermService.getAll());
+        return ResponseEntity.ok(paymentTermQueryService.getAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PaymentTerm> getById(@PathVariable Integer id) {
-        return ResponseEntity.ok(paymentTermService.getById(id));
+        return ResponseEntity.ok(paymentTermQueryService.getById(id));
     }
 
     @PostMapping
     public ResponseEntity<PaymentTerm> create(@Valid @RequestBody CreatePaymentTermRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(paymentTermService.create(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(paymentTermCommandService.create(request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<PaymentTerm> update(@PathVariable Integer id, @Valid @RequestBody UpdatePaymentTermRequest request) {
-        return ResponseEntity.ok(paymentTermService.update(id, request));
+        return ResponseEntity.ok(paymentTermCommandService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        paymentTermService.delete(id);
+        paymentTermCommandService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

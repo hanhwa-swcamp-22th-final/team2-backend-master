@@ -7,7 +7,8 @@ import com.team2.master.entity.Country;
 import com.team2.master.controller.CountryController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.service.CountryService;
+import com.team2.master.service.CountryCommandService;
+import com.team2.master.service.CountryQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +42,17 @@ class CountryControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private CountryService countryService;
+    private CountryCommandService countryCommandService;
+
+    @MockitoBean
+    private CountryQueryService countryQueryService;
 
     @Test
     @DisplayName("전체 국가 목록 조회 API 테스트")
     void getAll() throws Exception {
         // given
         Country country = new Country("KR", "South Korea", "대한민국");
-        given(countryService.getAll()).willReturn(List.of(country));
+        given(countryQueryService.getAll()).willReturn(List.of(country));
 
         // when & then
         mockMvc.perform(get("/api/countries"))
@@ -62,7 +66,7 @@ class CountryControllerTest {
     void getById() throws Exception {
         // given
         Country country = new Country("KR", "South Korea", "대한민국");
-        given(countryService.getById(1)).willReturn(country);
+        given(countryQueryService.getById(1)).willReturn(country);
 
         // when & then
         mockMvc.perform(get("/api/countries/1"))
@@ -74,7 +78,7 @@ class CountryControllerTest {
     @DisplayName("국가 ID로 조회 - 존재하지 않는 국가 (404)")
     void getById_notFound() throws Exception {
         // given
-        given(countryService.getById(999))
+        given(countryQueryService.getById(999))
                 .willThrow(new ResourceNotFoundException("국가를 찾을 수 없습니다: 999"));
 
         // when & then
@@ -89,7 +93,7 @@ class CountryControllerTest {
         // given
         CreateCountryRequest request = new CreateCountryRequest("KR", "South Korea", "대한민국");
         Country country = new Country("KR", "South Korea", "대한민국");
-        given(countryService.create(any(CreateCountryRequest.class))).willReturn(country);
+        given(countryCommandService.create(any(CreateCountryRequest.class))).willReturn(country);
 
         // when & then
         mockMvc.perform(post("/api/countries")
@@ -105,7 +109,7 @@ class CountryControllerTest {
     void create_duplicate() throws Exception {
         // given
         CreateCountryRequest request = new CreateCountryRequest("KR", "South Korea", "대한민국");
-        given(countryService.create(any(CreateCountryRequest.class)))
+        given(countryCommandService.create(any(CreateCountryRequest.class)))
                 .willThrow(new IllegalStateException("이미 존재하는 국가 코드입니다: KR"));
 
         // when & then
@@ -123,7 +127,7 @@ class CountryControllerTest {
         // given
         UpdateCountryRequest request = new UpdateCountryRequest("KOR", "Korea", "한국");
         Country country = new Country("KOR", "Korea", "한국");
-        given(countryService.update(eq(1), any(UpdateCountryRequest.class))).willReturn(country);
+        given(countryCommandService.update(eq(1), any(UpdateCountryRequest.class))).willReturn(country);
 
         // when & then
         mockMvc.perform(put("/api/countries/1")
@@ -139,7 +143,7 @@ class CountryControllerTest {
     void update_notFound() throws Exception {
         // given
         UpdateCountryRequest request = new UpdateCountryRequest("KOR", "Korea", "한국");
-        given(countryService.update(eq(999), any(UpdateCountryRequest.class)))
+        given(countryCommandService.update(eq(999), any(UpdateCountryRequest.class)))
                 .willThrow(new ResourceNotFoundException("국가를 찾을 수 없습니다: 999"));
 
         // when & then
@@ -155,7 +159,7 @@ class CountryControllerTest {
     @DisplayName("국가 삭제 API 테스트")
     void deleteCountry() throws Exception {
         // given
-        willDoNothing().given(countryService).delete(1);
+        willDoNothing().given(countryCommandService).delete(1);
 
         // when & then
         mockMvc.perform(delete("/api/countries/1")
@@ -168,7 +172,7 @@ class CountryControllerTest {
     void deleteCountry_notFound() throws Exception {
         // given
         willThrow(new ResourceNotFoundException("국가를 찾을 수 없습니다: 999"))
-                .given(countryService).delete(999);
+                .given(countryCommandService).delete(999);
 
         // when & then
         mockMvc.perform(delete("/api/countries/999")

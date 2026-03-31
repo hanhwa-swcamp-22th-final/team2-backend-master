@@ -2,14 +2,18 @@ package com.team2.master.dto;
 
 import com.team2.master.entity.Client;
 import com.team2.master.entity.enums.ClientStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientResponse {
     private Integer id;
     private String clientCode;

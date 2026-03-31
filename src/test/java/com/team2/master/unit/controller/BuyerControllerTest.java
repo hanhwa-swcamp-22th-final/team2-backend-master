@@ -1,6 +1,7 @@
 package com.team2.master.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team2.master.dto.BuyerResponse;
 import com.team2.master.dto.CreateBuyerRequest;
 import com.team2.master.dto.UpdateBuyerRequest;
 import com.team2.master.entity.Buyer;
@@ -9,7 +10,8 @@ import com.team2.master.entity.enums.ClientStatus;
 import com.team2.master.controller.BuyerController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.service.BuyerService;
+import com.team2.master.service.BuyerCommandService;
+import com.team2.master.service.BuyerQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,10 @@ class BuyerControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private BuyerService buyerService;
+    private BuyerCommandService buyerCommandService;
+
+    @MockitoBean
+    private BuyerQueryService buyerQueryService;
 
     private Client createTestClient() {
         return Client.builder()
@@ -64,6 +69,16 @@ class BuyerControllerTest {
                 .build();
     }
 
+    private BuyerResponse createTestBuyerResponse() {
+        return BuyerResponse.builder()
+                .clientName("Test Corp")
+                .buyerName("John Doe")
+                .buyerPosition("Manager")
+                .buyerEmail("john@test.com")
+                .buyerTel("010-1234-5678")
+                .build();
+    }
+
     @Test
     @DisplayName("POST /api/buyers - 바이어 생성 성공")
     void createBuyer_success() throws Exception {
@@ -75,7 +90,7 @@ class BuyerControllerTest {
                 .buyerEmail("john@test.com")
                 .buyerTel("010-1234-5678")
                 .build();
-        given(buyerService.createBuyer(any(CreateBuyerRequest.class))).willReturn(createTestBuyer());
+        given(buyerCommandService.createBuyer(any(CreateBuyerRequest.class))).willReturn(createTestBuyer());
 
         // when & then
         mockMvc.perform(post("/api/buyers")
@@ -98,7 +113,7 @@ class BuyerControllerTest {
                 .clientId(999)
                 .buyerName("John Doe")
                 .build();
-        given(buyerService.createBuyer(any(CreateBuyerRequest.class)))
+        given(buyerCommandService.createBuyer(any(CreateBuyerRequest.class)))
                 .willThrow(new ResourceNotFoundException("거래처를 찾을 수 없습니다: 999"));
 
         // when & then
@@ -114,7 +129,7 @@ class BuyerControllerTest {
     @DisplayName("GET /api/buyers - 전체 바이어 목록 조회")
     void getAllBuyers_success() throws Exception {
         // given
-        given(buyerService.getAllBuyers()).willReturn(List.of(createTestBuyer()));
+        given(buyerQueryService.getAllBuyers()).willReturn(List.of(createTestBuyerResponse()));
 
         // when & then
         mockMvc.perform(get("/api/buyers"))
@@ -127,7 +142,7 @@ class BuyerControllerTest {
     @DisplayName("GET /api/buyers/{id} - 바이어 상세 조회")
     void getBuyer_success() throws Exception {
         // given
-        given(buyerService.getBuyer(1)).willReturn(createTestBuyer());
+        given(buyerQueryService.getBuyer(1)).willReturn(createTestBuyerResponse());
 
         // when & then
         mockMvc.perform(get("/api/buyers/1"))
@@ -140,7 +155,7 @@ class BuyerControllerTest {
     @DisplayName("GET /api/buyers/{id} - 존재하지 않는 바이어 조회 (404)")
     void getBuyer_notFound() throws Exception {
         // given
-        given(buyerService.getBuyer(999))
+        given(buyerQueryService.getBuyer(999))
                 .willThrow(new ResourceNotFoundException("바이어를 찾을 수 없습니다: 999"));
 
         // when & then
@@ -153,7 +168,7 @@ class BuyerControllerTest {
     @DisplayName("GET /api/buyers/client/{clientId} - 거래처별 바이어 목록 조회")
     void getBuyersByClient_success() throws Exception {
         // given
-        given(buyerService.getBuyersByClientId(1)).willReturn(List.of(createTestBuyer()));
+        given(buyerQueryService.getBuyersByClientId(1)).willReturn(List.of(createTestBuyerResponse()));
 
         // when & then
         mockMvc.perform(get("/api/buyers/client/1"))
@@ -177,7 +192,7 @@ class BuyerControllerTest {
                 .buyerEmail("john@test.com")
                 .buyerTel("010-1234-5678")
                 .build();
-        given(buyerService.updateBuyer(eq(1), any(UpdateBuyerRequest.class))).willReturn(updatedBuyer);
+        given(buyerCommandService.updateBuyer(eq(1), any(UpdateBuyerRequest.class))).willReturn(updatedBuyer);
 
         // when & then
         mockMvc.perform(put("/api/buyers/1")
@@ -196,7 +211,7 @@ class BuyerControllerTest {
         UpdateBuyerRequest request = UpdateBuyerRequest.builder()
                 .buyerName("Jane Smith")
                 .build();
-        given(buyerService.updateBuyer(eq(999), any(UpdateBuyerRequest.class)))
+        given(buyerCommandService.updateBuyer(eq(999), any(UpdateBuyerRequest.class)))
                 .willThrow(new ResourceNotFoundException("바이어를 찾을 수 없습니다: 999"));
 
         // when & then
@@ -212,7 +227,7 @@ class BuyerControllerTest {
     @DisplayName("DELETE /api/buyers/{id} - 바이어 삭제 성공")
     void deleteBuyer_success() throws Exception {
         // given
-        willDoNothing().given(buyerService).deleteBuyer(1);
+        willDoNothing().given(buyerCommandService).deleteBuyer(1);
 
         // when & then
         mockMvc.perform(delete("/api/buyers/1")
@@ -225,7 +240,7 @@ class BuyerControllerTest {
     void deleteBuyer_notFound() throws Exception {
         // given
         willThrow(new ResourceNotFoundException("바이어를 찾을 수 없습니다: 999"))
-                .given(buyerService).deleteBuyer(999);
+                .given(buyerCommandService).deleteBuyer(999);
 
         // when & then
         mockMvc.perform(delete("/api/buyers/999")

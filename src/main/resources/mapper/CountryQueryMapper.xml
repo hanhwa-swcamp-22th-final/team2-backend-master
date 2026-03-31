@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team2.master.mapper.CountryQueryMapper">
+
+    <resultMap id="CountryMap" type="com.team2.master.entity.Country">
+        <result property="countryId"     column="country_id"/>
+        <result property="countryCode"   column="country_code"/>
+        <result property="countryName"   column="country_name"/>
+        <result property="countryNameKr" column="country_name_kr"/>
+    </resultMap>
+
+    <select id="findById" resultMap="CountryMap">
+        SELECT country_id, country_code, country_name, country_name_kr
+        FROM countries
+        WHERE country_id = #{countryId}
+    </select>
+
+    <select id="findAll" resultMap="CountryMap">
+        SELECT country_id, country_code, country_name, country_name_kr
+        FROM countries
+    </select>
+
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team2.master.mapper.BuyerQueryMapper">
+
+    <resultMap id="BuyerResponseMap" type="com.team2.master.dto.BuyerResponse">
+        <result property="id"            column="buyer_id"/>
+        <result property="clientId"      column="client_id"/>
+        <result property="clientName"    column="client_name"/>
+        <result property="buyerName"     column="buyer_name"/>
+        <result property="buyerPosition" column="buyer_position"/>
+        <result property="buyerEmail"    column="buyer_email"/>
+        <result property="buyerTel"      column="buyer_tel"/>
+        <result property="createdAt"     column="created_at"/>
+        <result property="updatedAt"     column="updated_at"/>
+    </resultMap>
+
+    <sql id="selectBuyerBase">
+        SELECT
+            b.buyer_id,
+            b.client_id,
+            cl.client_name,
+            b.buyer_name,
+            b.buyer_position,
+            b.buyer_email,
+            b.buyer_tel,
+            b.created_at,
+            b.updated_at
+        FROM buyers b
+        JOIN clients cl ON b.client_id = cl.client_id
+    </sql>
+
+    <select id="findById" resultMap="BuyerResponseMap">
+        <include refid="selectBuyerBase"/>
+        WHERE b.buyer_id = #{buyerId}
+    </select>
+
+    <select id="findAll" resultMap="BuyerResponseMap">
+        <include refid="selectBuyerBase"/>
+    </select>
+
+    <select id="findByClientId" resultMap="BuyerResponseMap">
+        <include refid="selectBuyerBase"/>
+        WHERE b.client_id = #{clientId}
+    </select>
+
+</mapper>

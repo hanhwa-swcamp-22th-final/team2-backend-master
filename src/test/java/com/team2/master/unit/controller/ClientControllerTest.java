@@ -2,6 +2,7 @@ package com.team2.master.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.master.dto.ChangeStatusRequest;
+import com.team2.master.dto.ClientResponse;
 import com.team2.master.dto.CreateClientRequest;
 import com.team2.master.dto.UpdateClientRequest;
 import com.team2.master.entity.Client;
@@ -9,7 +10,8 @@ import com.team2.master.entity.enums.ClientStatus;
 import com.team2.master.controller.ClientController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.service.ClientService;
+import com.team2.master.service.ClientCommandService;
+import com.team2.master.service.ClientQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +45,27 @@ class ClientControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private ClientService clientService;
+    private ClientCommandService clientCommandService;
+
+    @MockitoBean
+    private ClientQueryService clientQueryService;
 
     private Client createTestClient() {
         return Client.builder()
+                .clientCode("CLI001")
+                .clientName("Test Corp")
+                .clientNameKr("테스트 주식회사")
+                .clientCity("Seoul")
+                .clientEmail("test@corp.com")
+                .clientManager("홍길동")
+                .departmentId(1)
+                .clientStatus(ClientStatus.ACTIVE)
+                .clientRegDate(LocalDate.of(2025, 1, 1))
+                .build();
+    }
+
+    private ClientResponse createTestClientResponse() {
+        return ClientResponse.builder()
                 .clientCode("CLI001")
                 .clientName("Test Corp")
                 .clientNameKr("테스트 주식회사")
@@ -68,7 +87,7 @@ class ClientControllerTest {
                 .clientName("Test Corp")
                 .clientNameKr("테스트 주식회사")
                 .build();
-        given(clientService.createClient(any(CreateClientRequest.class))).willReturn(createTestClient());
+        given(clientCommandService.createClient(any(CreateClientRequest.class))).willReturn(createTestClient());
 
         // when & then
         mockMvc.perform(post("/api/clients")
@@ -101,7 +120,7 @@ class ClientControllerTest {
                 .clientCode("CLI001")
                 .clientName("Test Corp")
                 .build();
-        given(clientService.createClient(any(CreateClientRequest.class)))
+        given(clientCommandService.createClient(any(CreateClientRequest.class)))
                 .willThrow(new IllegalStateException("이미 존재하는 거래처 코드입니다: CLI001"));
 
         // when & then
@@ -117,7 +136,7 @@ class ClientControllerTest {
     @DisplayName("GET /api/clients - 전체 거래처 목록 조회")
     void getAllClients_success() throws Exception {
         // given
-        given(clientService.getAllClients()).willReturn(List.of(createTestClient()));
+        given(clientQueryService.getAllClients()).willReturn(List.of(createTestClientResponse()));
 
         // when & then
         mockMvc.perform(get("/api/clients"))
@@ -131,7 +150,7 @@ class ClientControllerTest {
     @DisplayName("GET /api/clients/{id} - 거래처 상세 조회")
     void getClient_success() throws Exception {
         // given
-        given(clientService.getClient(1)).willReturn(createTestClient());
+        given(clientQueryService.getClient(1)).willReturn(createTestClientResponse());
 
         // when & then
         mockMvc.perform(get("/api/clients/1"))
@@ -144,7 +163,7 @@ class ClientControllerTest {
     @DisplayName("GET /api/clients/{id} - 존재하지 않는 거래처 조회 (404)")
     void getClient_notFound() throws Exception {
         // given
-        given(clientService.getClient(999))
+        given(clientQueryService.getClient(999))
                 .willThrow(new ResourceNotFoundException("거래처를 찾을 수 없습니다: 999"));
 
         // when & then
@@ -167,7 +186,7 @@ class ClientControllerTest {
                 .clientNameKr("수정 주식회사")
                 .clientStatus(ClientStatus.ACTIVE)
                 .build();
-        given(clientService.updateClient(eq(1), any(UpdateClientRequest.class))).willReturn(updatedClient);
+        given(clientCommandService.updateClient(eq(1), any(UpdateClientRequest.class))).willReturn(updatedClient);
 
         // when & then
         mockMvc.perform(put("/api/clients/1")
@@ -186,7 +205,7 @@ class ClientControllerTest {
         UpdateClientRequest request = UpdateClientRequest.builder()
                 .clientName("Updated Corp")
                 .build();
-        given(clientService.updateClient(eq(999), any(UpdateClientRequest.class)))
+        given(clientCommandService.updateClient(eq(999), any(UpdateClientRequest.class)))
                 .willThrow(new ResourceNotFoundException("거래처를 찾을 수 없습니다: 999"));
 
         // when & then
@@ -208,7 +227,7 @@ class ClientControllerTest {
                 .clientName("Test Corp")
                 .clientStatus(ClientStatus.INACTIVE)
                 .build();
-        given(clientService.changeStatus(eq(1), eq(ClientStatus.INACTIVE))).willReturn(inactiveClient);
+        given(clientCommandService.changeStatus(eq(1), eq(ClientStatus.INACTIVE))).willReturn(inactiveClient);
 
         // when & then
         mockMvc.perform(patch("/api/clients/1/status")
@@ -224,7 +243,7 @@ class ClientControllerTest {
     void changeStatus_conflict() throws Exception {
         // given
         ChangeStatusRequest request = new ChangeStatusRequest("ACTIVE");
-        given(clientService.changeStatus(eq(1), eq(ClientStatus.ACTIVE)))
+        given(clientCommandService.changeStatus(eq(1), eq(ClientStatus.ACTIVE)))
                 .willThrow(new IllegalStateException("이미 ACTIVE 상태입니다."));
 
         // when & then
@@ -240,7 +259,7 @@ class ClientControllerTest {
     @DisplayName("GET /api/clients/department/{departmentId} - 부서별 거래처 조회 (RBAC)")
     void getClientsByDepartment_success() throws Exception {
         // given
-        given(clientService.getClientsByDepartmentId(1)).willReturn(List.of(createTestClient()));
+        given(clientQueryService.getClientsByDepartmentId(1)).willReturn(List.of(createTestClientResponse()));
 
         // when & then
         mockMvc.perform(get("/api/clients/department/1"))

@@ -6,12 +6,10 @@ import com.team2.master.entity.Currency;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.repository.CurrencyRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CurrencyService {

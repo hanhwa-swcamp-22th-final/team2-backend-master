@@ -7,7 +7,8 @@ import com.team2.master.entity.Incoterm;
 import com.team2.master.controller.IncotermController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.service.IncotermService;
+import com.team2.master.service.IncotermCommandService;
+import com.team2.master.service.IncotermQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,10 @@ class IncotermControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private IncotermService incotermService;
+    private IncotermCommandService incotermCommandService;
+
+    @MockitoBean
+    private IncotermQueryService incotermQueryService;
 
     @Test
     @DisplayName("전체 인코텀 목록 조회 API 테스트")
@@ -49,7 +53,7 @@ class IncotermControllerTest {
         // given
         Incoterm incoterm = new Incoterm("FOB", "Free On Board", "본선인도",
                 null, "Sea", null, null);
-        given(incotermService.getAll()).willReturn(List.of(incoterm));
+        given(incotermQueryService.getAll()).willReturn(List.of(incoterm));
 
         // when & then
         mockMvc.perform(get("/api/incoterms"))
@@ -64,7 +68,7 @@ class IncotermControllerTest {
         // given
         Incoterm incoterm = new Incoterm("FOB", "Free On Board", "본선인도",
                 null, null, null, null);
-        given(incotermService.getById(1)).willReturn(incoterm);
+        given(incotermQueryService.getById(1)).willReturn(incoterm);
 
         // when & then
         mockMvc.perform(get("/api/incoterms/1"))
@@ -76,7 +80,7 @@ class IncotermControllerTest {
     @DisplayName("인코텀 ID로 조회 - 존재하지 않는 인코텀 (404)")
     void getById_notFound() throws Exception {
         // given
-        given(incotermService.getById(999))
+        given(incotermQueryService.getById(999))
                 .willThrow(new ResourceNotFoundException("인코텀을 찾을 수 없습니다: 999"));
 
         // when & then
@@ -93,7 +97,7 @@ class IncotermControllerTest {
                 "desc", "Sea", "E", "Port");
         Incoterm incoterm = new Incoterm("FOB", "Free On Board", "본선인도",
                 "desc", "Sea", "E", "Port");
-        given(incotermService.create(any(CreateIncotermRequest.class))).willReturn(incoterm);
+        given(incotermCommandService.create(any(CreateIncotermRequest.class))).willReturn(incoterm);
 
         // when & then
         mockMvc.perform(post("/api/incoterms")
@@ -110,7 +114,7 @@ class IncotermControllerTest {
         // given
         CreateIncotermRequest request = new CreateIncotermRequest("FOB", "Free On Board", "본선인도",
                 "desc", "Sea", "E", "Port");
-        given(incotermService.create(any(CreateIncotermRequest.class)))
+        given(incotermCommandService.create(any(CreateIncotermRequest.class)))
                 .willThrow(new IllegalStateException("이미 존재하는 인코텀 코드입니다: FOB"));
 
         // when & then
@@ -130,7 +134,7 @@ class IncotermControllerTest {
                 null, null, null, null);
         Incoterm incoterm = new Incoterm("FOB", "FOB Updated", "본선인도수정",
                 null, null, null, null);
-        given(incotermService.update(eq(1), any(UpdateIncotermRequest.class))).willReturn(incoterm);
+        given(incotermCommandService.update(eq(1), any(UpdateIncotermRequest.class))).willReturn(incoterm);
 
         // when & then
         mockMvc.perform(put("/api/incoterms/1")
@@ -147,7 +151,7 @@ class IncotermControllerTest {
         // given
         UpdateIncotermRequest request = new UpdateIncotermRequest("FOB", "FOB Updated", "본선인도수정",
                 null, null, null, null);
-        given(incotermService.update(eq(999), any(UpdateIncotermRequest.class)))
+        given(incotermCommandService.update(eq(999), any(UpdateIncotermRequest.class)))
                 .willThrow(new ResourceNotFoundException("인코텀을 찾을 수 없습니다: 999"));
 
         // when & then
@@ -163,7 +167,7 @@ class IncotermControllerTest {
     @DisplayName("인코텀 삭제 API 테스트")
     void deleteIncoterm() throws Exception {
         // given
-        willDoNothing().given(incotermService).delete(1);
+        willDoNothing().given(incotermCommandService).delete(1);
 
         // when & then
         mockMvc.perform(delete("/api/incoterms/1")
@@ -176,7 +180,7 @@ class IncotermControllerTest {
     void deleteIncoterm_notFound() throws Exception {
         // given
         willThrow(new ResourceNotFoundException("인코텀을 찾을 수 없습니다: 999"))
-                .given(incotermService).delete(999);
+                .given(incotermCommandService).delete(999);
 
         // when & then
         mockMvc.perform(delete("/api/incoterms/999")

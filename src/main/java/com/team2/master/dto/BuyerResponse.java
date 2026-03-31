@@ -1,13 +1,17 @@
 package com.team2.master.dto;
 
 import com.team2.master.entity.Buyer;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BuyerResponse {
     private Integer id;
     private Integer clientId;

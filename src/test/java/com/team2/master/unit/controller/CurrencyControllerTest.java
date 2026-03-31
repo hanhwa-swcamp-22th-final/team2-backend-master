@@ -7,7 +7,8 @@ import com.team2.master.entity.Currency;
 import com.team2.master.controller.CurrencyController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.service.CurrencyService;
+import com.team2.master.service.CurrencyCommandService;
+import com.team2.master.service.CurrencyQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +42,17 @@ class CurrencyControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private CurrencyService currencyService;
+    private CurrencyCommandService currencyCommandService;
+
+    @MockitoBean
+    private CurrencyQueryService currencyQueryService;
 
     @Test
     @DisplayName("전체 통화 목록 조회 API 테스트")
     void getAll() throws Exception {
         // given
         Currency currency = new Currency("USD", "US Dollar", "$");
-        given(currencyService.getAll()).willReturn(List.of(currency));
+        given(currencyQueryService.getAll()).willReturn(List.of(currency));
 
         // when & then
         mockMvc.perform(get("/api/currencies"))
@@ -62,7 +66,7 @@ class CurrencyControllerTest {
     void getById() throws Exception {
         // given
         Currency currency = new Currency("USD", "US Dollar", "$");
-        given(currencyService.getById(1)).willReturn(currency);
+        given(currencyQueryService.getById(1)).willReturn(currency);
 
         // when & then
         mockMvc.perform(get("/api/currencies/1"))
@@ -74,7 +78,7 @@ class CurrencyControllerTest {
     @DisplayName("통화 ID로 조회 - 존재하지 않는 통화 (404)")
     void getById_notFound() throws Exception {
         // given
-        given(currencyService.getById(999))
+        given(currencyQueryService.getById(999))
                 .willThrow(new ResourceNotFoundException("통화를 찾을 수 없습니다: 999"));
 
         // when & then
@@ -89,7 +93,7 @@ class CurrencyControllerTest {
         // given
         CreateCurrencyRequest request = new CreateCurrencyRequest("USD", "US Dollar", "$");
         Currency currency = new Currency("USD", "US Dollar", "$");
-        given(currencyService.create(any(CreateCurrencyRequest.class))).willReturn(currency);
+        given(currencyCommandService.create(any(CreateCurrencyRequest.class))).willReturn(currency);
 
         // when & then
         mockMvc.perform(post("/api/currencies")
@@ -105,7 +109,7 @@ class CurrencyControllerTest {
     void create_duplicate() throws Exception {
         // given
         CreateCurrencyRequest request = new CreateCurrencyRequest("USD", "US Dollar", "$");
-        given(currencyService.create(any(CreateCurrencyRequest.class)))
+        given(currencyCommandService.create(any(CreateCurrencyRequest.class)))
                 .willThrow(new IllegalStateException("이미 존재하는 통화 코드입니다: USD"));
 
         // when & then
@@ -123,7 +127,7 @@ class CurrencyControllerTest {
         // given
         UpdateCurrencyRequest request = new UpdateCurrencyRequest("USD", "United States Dollar", "US$");
         Currency currency = new Currency("USD", "United States Dollar", "US$");
-        given(currencyService.update(eq(1), any(UpdateCurrencyRequest.class))).willReturn(currency);
+        given(currencyCommandService.update(eq(1), any(UpdateCurrencyRequest.class))).willReturn(currency);
 
         // when & then
         mockMvc.perform(put("/api/currencies/1")
@@ -139,7 +143,7 @@ class CurrencyControllerTest {
     void update_notFound() throws Exception {
         // given
         UpdateCurrencyRequest request = new UpdateCurrencyRequest("USD", "United States Dollar", "US$");
-        given(currencyService.update(eq(999), any(UpdateCurrencyRequest.class)))
+        given(currencyCommandService.update(eq(999), any(UpdateCurrencyRequest.class)))
                 .willThrow(new ResourceNotFoundException("통화를 찾을 수 없습니다: 999"));
 
         // when & then
@@ -155,7 +159,7 @@ class CurrencyControllerTest {
     @DisplayName("통화 삭제 API 테스트")
     void deleteCurrency() throws Exception {
         // given
-        willDoNothing().given(currencyService).delete(1);
+        willDoNothing().given(currencyCommandService).delete(1);
 
         // when & then
         mockMvc.perform(delete("/api/currencies/1")
@@ -168,7 +172,7 @@ class CurrencyControllerTest {
     void deleteCurrency_notFound() throws Exception {
         // given
         willThrow(new ResourceNotFoundException("통화를 찾을 수 없습니다: 999"))
-                .given(currencyService).delete(999);
+                .given(currencyCommandService).delete(999);
 
         // when & then
         mockMvc.perform(delete("/api/currencies/999")
