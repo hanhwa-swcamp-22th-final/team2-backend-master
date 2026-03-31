@@ -32,7 +32,7 @@ class ItemRepositoryTest {
                 .itemUnit("EA")
                 .itemUnitPrice(new BigDecimal("1500.00"))
                 .itemCategory("전자부품")
-                .itemStatus(ItemStatus.활성)
+                .itemStatus(ItemStatus.ACTIVE)
                 .build();
         savedItem = itemRepository.save(item);
     }
@@ -73,13 +73,13 @@ class ItemRepositoryTest {
         Item inactiveItem = Item.builder()
                 .itemCode("ITM002")
                 .itemName("Inactive Product")
-                .itemStatus(ItemStatus.비활성)
+                .itemStatus(ItemStatus.INACTIVE)
                 .build();
         itemRepository.save(inactiveItem);
 
         // when
-        List<Item> activeItems = itemRepository.findByItemStatus(ItemStatus.활성);
-        List<Item> inactiveItems = itemRepository.findByItemStatus(ItemStatus.비활성);
+        List<Item> activeItems = itemRepository.findByItemStatus(ItemStatus.ACTIVE);
+        List<Item> inactiveItems = itemRepository.findByItemStatus(ItemStatus.INACTIVE);
 
         // then
         assertThat(activeItems).hasSize(1);

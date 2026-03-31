@@ -31,7 +31,7 @@ class BuyerRepositoryTest {
         Client client = Client.builder()
                 .clientCode("CLI001")
                 .clientName("Test Corp")
-                .clientStatus(ClientStatus.활성)
+                .clientStatus(ClientStatus.ACTIVE)
                 .build();
         savedClient = clientRepository.save(client);
 
@@ -58,7 +58,7 @@ class BuyerRepositoryTest {
     @DisplayName("거래처 ID로 바이어 목록을 조회할 수 있다")
     void findByClientId() {
         // when
-        List<Buyer> buyers = buyerRepository.findByClientId(savedClient.getId());
+        List<Buyer> buyers = buyerRepository.findByClientClientId(savedClient.getClientId());
 
         // then
         assertThat(buyers).hasSize(2);
@@ -70,7 +70,7 @@ class BuyerRepositoryTest {
     @DisplayName("존재하지 않는 거래처 ID로 조회하면 빈 목록을 반환한다")
     void findByClientId_notFound() {
         // when
-        List<Buyer> buyers = buyerRepository.findByClientId(999);
+        List<Buyer> buyers = buyerRepository.findByClientClientId(999);
 
         // then
         assertThat(buyers).isEmpty();
@@ -80,14 +80,14 @@ class BuyerRepositoryTest {
     @DisplayName("바이어를 삭제할 수 있다 (hard delete)")
     void deleteBuyer() {
         // given
-        List<Buyer> buyers = buyerRepository.findByClientId(savedClient.getId());
+        List<Buyer> buyers = buyerRepository.findByClientClientId(savedClient.getClientId());
         assertThat(buyers).hasSize(2);
 
         // when
         buyerRepository.delete(buyers.get(0));
 
         // then
-        List<Buyer> remaining = buyerRepository.findByClientId(savedClient.getId());
+        List<Buyer> remaining = buyerRepository.findByClientClientId(savedClient.getClientId());
         assertThat(remaining).hasSize(1);
     }
 }

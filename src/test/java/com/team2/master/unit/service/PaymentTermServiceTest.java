@@ -105,7 +105,7 @@ class PaymentTermServiceTest {
     void update() {
         // given
         PaymentTerm paymentTerm = new PaymentTerm("TT", "Telegraphic Transfer", "전신환 송금");
-        ReflectionTestUtils.setField(paymentTerm, "id", 1);
+        ReflectionTestUtils.setField(paymentTerm, "paymentTermId", 1);
         UpdatePaymentTermRequest request = new UpdatePaymentTermRequest("T/T", "T/T Transfer", "T/T 송금");
         given(paymentTermRepository.findById(1)).willReturn(Optional.of(paymentTerm));
         given(paymentTermRepository.findByPaymentTermCode("T/T")).willReturn(Optional.empty());
@@ -123,9 +123,9 @@ class PaymentTermServiceTest {
     void update_duplicateCode() {
         // given
         PaymentTerm paymentTerm = new PaymentTerm("TT", "Telegraphic Transfer", "전신환 송금");
-        ReflectionTestUtils.setField(paymentTerm, "id", 1);
+        ReflectionTestUtils.setField(paymentTerm, "paymentTermId", 1);
         PaymentTerm existing = new PaymentTerm("LC", "Letter of Credit", "신용장");
-        ReflectionTestUtils.setField(existing, "id", 2);
+        ReflectionTestUtils.setField(existing, "paymentTermId", 2);
         UpdatePaymentTermRequest request = new UpdatePaymentTermRequest("LC", "LC Updated", "신용장수정");
         given(paymentTermRepository.findById(1)).willReturn(Optional.of(paymentTerm));
         given(paymentTermRepository.findByPaymentTermCode("LC")).willReturn(Optional.of(existing));

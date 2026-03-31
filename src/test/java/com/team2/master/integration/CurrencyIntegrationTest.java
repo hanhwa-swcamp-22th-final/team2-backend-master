@@ -63,7 +63,7 @@ class CurrencyIntegrationTest {
     void getById_success() throws Exception {
         Currency saved = currencyRepository.save(new Currency("USD", "US Dollar", "$"));
 
-        mockMvc.perform(get("/api/currencies/{id}", saved.getId()))
+        mockMvc.perform(get("/api/currencies/{id}", saved.getCurrencyId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.currencyCode").value("USD"))
                 .andExpect(jsonPath("$.currencyName").value("US Dollar"))
@@ -136,7 +136,7 @@ class CurrencyIntegrationTest {
                 "currencySymbol", "US$"
         );
 
-        mockMvc.perform(put("/api/currencies/{id}", saved.getId())
+        mockMvc.perform(put("/api/currencies/{id}", saved.getCurrencyId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -145,7 +145,7 @@ class CurrencyIntegrationTest {
                 .andExpect(jsonPath("$.currencySymbol").value("US$"));
 
         // DB 검증
-        Currency updated = currencyRepository.findById(saved.getId()).orElseThrow();
+        Currency updated = currencyRepository.findById(saved.getCurrencyId()).orElseThrow();
         assertThat(updated.getCurrencyName()).isEqualTo("United States Dollar");
         assertThat(updated.getCurrencySymbol()).isEqualTo("US$");
     }
@@ -173,11 +173,11 @@ class CurrencyIntegrationTest {
     void delete_success() throws Exception {
         Currency saved = currencyRepository.save(new Currency("USD", "US Dollar", "$"));
 
-        mockMvc.perform(delete("/api/currencies/{id}", saved.getId())
+        mockMvc.perform(delete("/api/currencies/{id}", saved.getCurrencyId())
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
-        Optional<Currency> deleted = currencyRepository.findById(saved.getId());
+        Optional<Currency> deleted = currencyRepository.findById(saved.getCurrencyId());
         assertThat(deleted).isEmpty();
     }
 

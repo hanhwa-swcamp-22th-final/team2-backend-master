@@ -36,7 +36,7 @@ public class ItemService {
                 .itemWeight(request.getItemWeight())
                 .itemHsCode(request.getItemHsCode())
                 .itemCategory(request.getItemCategory())
-                .itemStatus(ItemStatus.활성)
+                .itemStatus(ItemStatus.ACTIVE)
                 .itemRegDate(request.getItemRegDate())
                 .build();
 

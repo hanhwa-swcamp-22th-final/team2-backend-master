@@ -24,7 +24,7 @@ class ItemTest {
                 .itemWeight(new BigDecimal("2.500"))
                 .itemHsCode("8541.10")
                 .itemCategory("전자부품")
-                .itemStatus(ItemStatus.활성)
+                .itemStatus(ItemStatus.ACTIVE)
                 .itemRegDate(LocalDate.of(2025, 1, 1))
                 .build();
     }
@@ -48,7 +48,7 @@ class ItemTest {
         assertEquals(new BigDecimal("2.500"), item.getItemWeight());
         assertEquals("8541.10", item.getItemHsCode());
         assertEquals("전자부품", item.getItemCategory());
-        assertEquals(ItemStatus.활성, item.getItemStatus());
+        assertEquals(ItemStatus.ACTIVE, item.getItemStatus());
     }
 
     @Test
@@ -61,7 +61,7 @@ class ItemTest {
                 .build();
 
         // then
-        assertEquals(ItemStatus.활성, item.getItemStatus());
+        assertEquals(ItemStatus.ACTIVE, item.getItemStatus());
     }
 
     // === 상태 변경 ===
@@ -73,10 +73,10 @@ class ItemTest {
         Item item = createDefaultItem();
 
         // when
-        item.changeStatus(ItemStatus.비활성);
+        item.changeStatus(ItemStatus.INACTIVE);
 
         // then
-        assertEquals(ItemStatus.비활성, item.getItemStatus());
+        assertEquals(ItemStatus.INACTIVE, item.getItemStatus());
     }
 
     @Test
@@ -86,14 +86,14 @@ class ItemTest {
         Item item = Item.builder()
                 .itemCode("ITM003")
                 .itemName("Inactive Product")
-                .itemStatus(ItemStatus.비활성)
+                .itemStatus(ItemStatus.INACTIVE)
                 .build();
 
         // when
-        item.changeStatus(ItemStatus.활성);
+        item.changeStatus(ItemStatus.ACTIVE);
 
         // then
-        assertEquals(ItemStatus.활성, item.getItemStatus());
+        assertEquals(ItemStatus.ACTIVE, item.getItemStatus());
     }
 
     @Test
@@ -104,7 +104,7 @@ class ItemTest {
 
         // when & then
         assertThrows(IllegalStateException.class,
-                () -> item.changeStatus(ItemStatus.활성));
+                () -> item.changeStatus(ItemStatus.ACTIVE));
     }
 
     // === 활성 확인 ===
@@ -126,7 +126,7 @@ class ItemTest {
         Item item = Item.builder()
                 .itemCode("ITM004")
                 .itemName("Inactive Product")
-                .itemStatus(ItemStatus.비활성)
+                .itemStatus(ItemStatus.INACTIVE)
                 .build();
 
         // when & then

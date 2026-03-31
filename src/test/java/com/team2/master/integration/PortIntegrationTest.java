@@ -67,7 +67,7 @@ class PortIntegrationTest {
         Country country = countryRepository.save(new Country("KR", "Korea", "한국"));
         Port saved = portRepository.save(new Port("KRPUS", "Busan Port", "Busan", country));
 
-        mockMvc.perform(get("/api/ports/{id}", saved.getId()))
+        mockMvc.perform(get("/api/ports/{id}", saved.getPortId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.portCode").value("KRPUS"))
                 .andExpect(jsonPath("$.portName").value("Busan Port"))
@@ -92,7 +92,7 @@ class PortIntegrationTest {
         request.put("portCode", "KRPUS");
         request.put("portName", "Busan Port");
         request.put("portCity", "Busan");
-        request.put("countryId", country.getId());
+        request.put("countryId", country.getCountryId());
 
         mockMvc.perform(post("/api/ports")
                         .with(csrf())
@@ -107,7 +107,7 @@ class PortIntegrationTest {
         List<Port> all = portRepository.findAll();
         assertThat(all).hasSize(1);
         assertThat(all.get(0).getPortCode()).isEqualTo("KRPUS");
-        assertThat(all.get(0).getCountry().getId()).isEqualTo(country.getId());
+        assertThat(all.get(0).getCountry().getCountryId()).isEqualTo(country.getCountryId());
     }
 
     @Test
@@ -120,7 +120,7 @@ class PortIntegrationTest {
         request.put("portCode", "KRPUS");
         request.put("portName", "Duplicate Port");
         request.put("portCity", "City");
-        request.put("countryId", country.getId());
+        request.put("countryId", country.getCountryId());
 
         mockMvc.perform(post("/api/ports")
                         .with(csrf())
@@ -162,9 +162,9 @@ class PortIntegrationTest {
         request.put("portCode", "JPTYO");
         request.put("portName", "Tokyo Port");
         request.put("portCity", "Tokyo");
-        request.put("countryId", country2.getId());
+        request.put("countryId", country2.getCountryId());
 
-        mockMvc.perform(put("/api/ports/{id}", saved.getId())
+        mockMvc.perform(put("/api/ports/{id}", saved.getPortId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -173,9 +173,9 @@ class PortIntegrationTest {
                 .andExpect(jsonPath("$.portName").value("Tokyo Port"));
 
         // DB 검증
-        Port updated = portRepository.findById(saved.getId()).orElseThrow();
+        Port updated = portRepository.findById(saved.getPortId()).orElseThrow();
         assertThat(updated.getPortCode()).isEqualTo("JPTYO");
-        assertThat(updated.getCountry().getId()).isEqualTo(country2.getId());
+        assertThat(updated.getCountry().getCountryId()).isEqualTo(country2.getCountryId());
     }
 
     @Test
@@ -187,7 +187,7 @@ class PortIntegrationTest {
         request.put("portCode", "KRPUS");
         request.put("portName", "Busan Port");
         request.put("portCity", "Busan");
-        request.put("countryId", country.getId());
+        request.put("countryId", country.getCountryId());
 
         mockMvc.perform(put("/api/ports/{id}", 9999)
                         .with(csrf())
@@ -208,7 +208,7 @@ class PortIntegrationTest {
         request.put("portCity", "Busan");
         request.put("countryId", 9999);
 
-        mockMvc.perform(put("/api/ports/{id}", saved.getId())
+        mockMvc.perform(put("/api/ports/{id}", saved.getPortId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -223,11 +223,11 @@ class PortIntegrationTest {
         Country country = countryRepository.save(new Country("KR", "Korea", "한국"));
         Port saved = portRepository.save(new Port("KRPUS", "Busan Port", "Busan", country));
 
-        mockMvc.perform(delete("/api/ports/{id}", saved.getId())
+        mockMvc.perform(delete("/api/ports/{id}", saved.getPortId())
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
-        Optional<Port> deleted = portRepository.findById(saved.getId());
+        Optional<Port> deleted = portRepository.findById(saved.getPortId());
         assertThat(deleted).isEmpty();
     }
 

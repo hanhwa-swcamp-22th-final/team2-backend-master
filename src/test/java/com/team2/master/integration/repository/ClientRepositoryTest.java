@@ -39,7 +39,7 @@ class ClientRepositoryTest {
                 .clientEmail("test@corp.com")
                 .clientManager("홍길동")
                 .departmentId(1)
-                .clientStatus(ClientStatus.활성)
+                .clientStatus(ClientStatus.ACTIVE)
                 .clientRegDate(LocalDate.of(2025, 1, 1))
                 .build();
 
@@ -84,13 +84,13 @@ class ClientRepositoryTest {
         Client inactiveClient = Client.builder()
                 .clientCode("CLI002")
                 .clientName("Inactive Corp")
-                .clientStatus(ClientStatus.비활성)
+                .clientStatus(ClientStatus.INACTIVE)
                 .build();
         clientRepository.save(inactiveClient);
 
         // when
-        List<Client> activeClients = clientRepository.findByClientStatus(ClientStatus.활성);
-        List<Client> inactiveClients = clientRepository.findByClientStatus(ClientStatus.비활성);
+        List<Client> activeClients = clientRepository.findByClientStatus(ClientStatus.ACTIVE);
+        List<Client> inactiveClients = clientRepository.findByClientStatus(ClientStatus.INACTIVE);
 
         // then
         assertThat(activeClients).hasSize(1);
@@ -105,7 +105,7 @@ class ClientRepositoryTest {
                 .clientCode("CLI003")
                 .clientName("Same Dept Corp")
                 .departmentId(1)
-                .clientStatus(ClientStatus.활성)
+                .clientStatus(ClientStatus.ACTIVE)
                 .build();
         clientRepository.save(client2);
 
@@ -113,7 +113,7 @@ class ClientRepositoryTest {
                 .clientCode("CLI004")
                 .clientName("Other Dept Corp")
                 .departmentId(2)
-                .clientStatus(ClientStatus.활성)
+                .clientStatus(ClientStatus.ACTIVE)
                 .build();
         clientRepository.save(client3);
 

@@ -63,7 +63,7 @@ class CountryIntegrationTest {
     void getById_success() throws Exception {
         Country saved = countryRepository.save(new Country("KR", "Korea", "한국"));
 
-        mockMvc.perform(get("/api/countries/{id}", saved.getId()))
+        mockMvc.perform(get("/api/countries/{id}", saved.getCountryId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.countryCode").value("KR"))
                 .andExpect(jsonPath("$.countryName").value("Korea"))
@@ -155,7 +155,7 @@ class CountryIntegrationTest {
                 "countryNameKr", "대한민국"
         );
 
-        mockMvc.perform(put("/api/countries/{id}", saved.getId())
+        mockMvc.perform(put("/api/countries/{id}", saved.getCountryId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -164,7 +164,7 @@ class CountryIntegrationTest {
                 .andExpect(jsonPath("$.countryNameKr").value("대한민국"));
 
         // DB 검증
-        Country updated = countryRepository.findById(saved.getId()).orElseThrow();
+        Country updated = countryRepository.findById(saved.getCountryId()).orElseThrow();
         assertThat(updated.getCountryName()).isEqualTo("South Korea");
         assertThat(updated.getCountryNameKr()).isEqualTo("대한민국");
     }
@@ -192,12 +192,12 @@ class CountryIntegrationTest {
     void delete_success() throws Exception {
         Country saved = countryRepository.save(new Country("KR", "Korea", "한국"));
 
-        mockMvc.perform(delete("/api/countries/{id}", saved.getId())
+        mockMvc.perform(delete("/api/countries/{id}", saved.getCountryId())
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
         // DB 검증
-        Optional<Country> deleted = countryRepository.findById(saved.getId());
+        Optional<Country> deleted = countryRepository.findById(saved.getCountryId());
         assertThat(deleted).isEmpty();
     }
 

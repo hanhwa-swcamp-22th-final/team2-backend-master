@@ -66,7 +66,7 @@ class IncotermIntegrationTest {
     void getById_success() throws Exception {
         Incoterm saved = incotermRepository.save(createIncoterm("FOB", "Free On Board"));
 
-        mockMvc.perform(get("/api/incoterms/{id}", saved.getId()))
+        mockMvc.perform(get("/api/incoterms/{id}", saved.getIncotermId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.incotermCode").value("FOB"))
                 .andExpect(jsonPath("$.incotermName").value("Free On Board"))
@@ -161,7 +161,7 @@ class IncotermIntegrationTest {
         request.put("incotermSellerSegments", "매도인수정");
         request.put("incotermDefaultNamedPlace", "인천항");
 
-        mockMvc.perform(put("/api/incoterms/{id}", saved.getId())
+        mockMvc.perform(put("/api/incoterms/{id}", saved.getIncotermId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -170,7 +170,7 @@ class IncotermIntegrationTest {
                 .andExpect(jsonPath("$.incotermDefaultNamedPlace").value("인천항"));
 
         // DB 검증
-        Incoterm updated = incotermRepository.findById(saved.getId()).orElseThrow();
+        Incoterm updated = incotermRepository.findById(saved.getIncotermId()).orElseThrow();
         assertThat(updated.getIncotermName()).isEqualTo("Free On Board Updated");
         assertThat(updated.getIncotermDefaultNamedPlace()).isEqualTo("인천항");
     }
@@ -201,11 +201,11 @@ class IncotermIntegrationTest {
     void delete_success() throws Exception {
         Incoterm saved = incotermRepository.save(createIncoterm("FOB", "Free On Board"));
 
-        mockMvc.perform(delete("/api/incoterms/{id}", saved.getId())
+        mockMvc.perform(delete("/api/incoterms/{id}", saved.getIncotermId())
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
-        Optional<Incoterm> deleted = incotermRepository.findById(saved.getId());
+        Optional<Incoterm> deleted = incotermRepository.findById(saved.getIncotermId());
         assertThat(deleted).isEmpty();
     }
 

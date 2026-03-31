@@ -1,6 +1,6 @@
 package com.team2.master.entity.enums;
 
 public enum ClientStatus {
-    활성,
-    비활성
+    ACTIVE,   // 활성
+    INACTIVE  // 비활성
 }

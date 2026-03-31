@@ -129,7 +129,7 @@ class PortServiceTest {
         Country country = new Country("KR", "South Korea", "대한민국");
         Country newCountry = new Country("JP", "Japan", "일본");
         Port port = new Port("KRPUS", "Busan Port", "Busan", country);
-        ReflectionTestUtils.setField(port, "id", 1);
+        ReflectionTestUtils.setField(port, "portId", 1);
         UpdatePortRequest request = new UpdatePortRequest("JPTYO", "Tokyo Port", "Tokyo", 2);
         given(portRepository.findById(1)).willReturn(Optional.of(port));
         given(portRepository.findByPortCode("JPTYO")).willReturn(Optional.empty());
@@ -149,9 +149,9 @@ class PortServiceTest {
         // given
         Country country = new Country("KR", "South Korea", "대한민국");
         Port port = new Port("KRPUS", "Busan Port", "Busan", country);
-        ReflectionTestUtils.setField(port, "id", 1);
+        ReflectionTestUtils.setField(port, "portId", 1);
         Port existing = new Port("JPTYO", "Tokyo Port", "Tokyo", country);
-        ReflectionTestUtils.setField(existing, "id", 2);
+        ReflectionTestUtils.setField(existing, "portId", 2);
         UpdatePortRequest request = new UpdatePortRequest("JPTYO", "Tokyo Port Updated", "Tokyo", 1);
         given(portRepository.findById(1)).willReturn(Optional.of(port));
         given(portRepository.findByPortCode("JPTYO")).willReturn(Optional.of(existing));
@@ -167,7 +167,7 @@ class PortServiceTest {
         // given
         Country country = new Country("KR", "South Korea", "대한민국");
         Port port = new Port("KRPUS", "Busan Port", "Busan", country);
-        ReflectionTestUtils.setField(port, "id", 1);
+        ReflectionTestUtils.setField(port, "portId", 1);
         UpdatePortRequest request = new UpdatePortRequest("JPTYO", "Tokyo Port", "Tokyo", 999);
         given(portRepository.findById(1)).willReturn(Optional.of(port));
         given(portRepository.findByPortCode("JPTYO")).willReturn(Optional.empty());

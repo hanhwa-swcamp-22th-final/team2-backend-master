@@ -105,7 +105,7 @@ class CountryServiceTest {
     void update() {
         // given
         Country country = new Country("KR", "South Korea", "대한민국");
-        ReflectionTestUtils.setField(country, "id", 1);
+        ReflectionTestUtils.setField(country, "countryId", 1);
         UpdateCountryRequest request = new UpdateCountryRequest("KOR", "Korea", "한국");
         given(countryRepository.findById(1)).willReturn(Optional.of(country));
         given(countryRepository.findByCountryCode("KOR")).willReturn(Optional.empty());
@@ -123,9 +123,9 @@ class CountryServiceTest {
     void update_duplicateCode() {
         // given
         Country country = new Country("KR", "South Korea", "대한민국");
-        ReflectionTestUtils.setField(country, "id", 1);
+        ReflectionTestUtils.setField(country, "countryId", 1);
         Country existing = new Country("KOR", "Korea", "한국");
-        ReflectionTestUtils.setField(existing, "id", 2);
+        ReflectionTestUtils.setField(existing, "countryId", 2);
         UpdateCountryRequest request = new UpdateCountryRequest("KOR", "Korea Updated", "한국수정");
         given(countryRepository.findById(1)).willReturn(Optional.of(country));
         given(countryRepository.findByCountryCode("KOR")).willReturn(Optional.of(existing));

@@ -105,7 +105,7 @@ class CurrencyServiceTest {
     void update() {
         // given
         Currency currency = new Currency("USD", "US Dollar", "$");
-        ReflectionTestUtils.setField(currency, "id", 1);
+        ReflectionTestUtils.setField(currency, "currencyId", 1);
         UpdateCurrencyRequest request = new UpdateCurrencyRequest("USD", "United States Dollar", "US$");
         given(currencyRepository.findById(1)).willReturn(Optional.of(currency));
         given(currencyRepository.findByCurrencyCode("USD")).willReturn(Optional.of(currency));
@@ -122,9 +122,9 @@ class CurrencyServiceTest {
     void update_duplicateCode() {
         // given
         Currency currency = new Currency("USD", "US Dollar", "$");
-        ReflectionTestUtils.setField(currency, "id", 1);
+        ReflectionTestUtils.setField(currency, "currencyId", 1);
         Currency existing = new Currency("EUR", "Euro", "E");
-        ReflectionTestUtils.setField(existing, "id", 2);
+        ReflectionTestUtils.setField(existing, "currencyId", 2);
         UpdateCurrencyRequest request = new UpdateCurrencyRequest("EUR", "Euro Updated", "EU");
         given(currencyRepository.findById(1)).willReturn(Optional.of(currency));
         given(currencyRepository.findByCurrencyCode("EUR")).willReturn(Optional.of(existing));

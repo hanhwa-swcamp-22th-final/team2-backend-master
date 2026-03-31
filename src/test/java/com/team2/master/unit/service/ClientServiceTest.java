@@ -58,7 +58,7 @@ class ClientServiceTest {
                 .clientEmail("test@corp.com")
                 .clientManager("홍길동")
                 .departmentId(1)
-                .clientStatus(ClientStatus.활성)
+                .clientStatus(ClientStatus.ACTIVE)
                 .clientRegDate(LocalDate.of(2025, 1, 1))
                 .build();
     }
@@ -224,10 +224,10 @@ class ClientServiceTest {
         given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
 
         // when
-        Client result = clientService.changeStatus(1, ClientStatus.비활성);
+        Client result = clientService.changeStatus(1, ClientStatus.INACTIVE);
 
         // then
-        assertThat(result.getClientStatus()).isEqualTo(ClientStatus.비활성);
+        assertThat(result.getClientStatus()).isEqualTo(ClientStatus.INACTIVE);
     }
 
     @Test
@@ -237,9 +237,9 @@ class ClientServiceTest {
         given(clientRepository.findByIdWithRelations(1)).willReturn(Optional.of(client));
 
         // when & then
-        assertThatThrownBy(() -> clientService.changeStatus(1, ClientStatus.활성))
+        assertThatThrownBy(() -> clientService.changeStatus(1, ClientStatus.ACTIVE))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("이미 활성 상태입니다");
+                .hasMessageContaining("이미 ACTIVE 상태입니다");
     }
 
     // === createClient: 항구, 결제조건, 통화 지정 및 예외 테스트 ===

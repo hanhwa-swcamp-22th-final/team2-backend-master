@@ -16,11 +16,11 @@ public class PortResponse {
 
     public static PortResponse from(Port port) {
         return PortResponse.builder()
-                .id(port.getId())
+                .id(port.getPortId())
                 .portCode(port.getPortCode())
                 .portName(port.getPortName())
                 .portCity(port.getPortCity())
-                .countryId(port.getCountry().getId())
+                .countryId(port.getCountry().getCountryId())
                 .countryName(port.getCountry().getCountryName())
                 .build();
     }

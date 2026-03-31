@@ -70,7 +70,7 @@ class PortRepositoryTest {
         entityManager.clear();
 
         // when
-        List<Port> ports = portRepository.findByCountryId(country.getId());
+        List<Port> ports = portRepository.findByCountryCountryId(country.getCountryId());
 
         // then
         assertThat(ports).hasSize(2);

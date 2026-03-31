@@ -39,7 +39,7 @@ public class ClientService {
                 .clientEmail(request.getClientEmail())
                 .clientManager(request.getClientManager())
                 .departmentId(request.getDepartmentId())
-                .clientStatus(ClientStatus.활성)
+                .clientStatus(ClientStatus.ACTIVE)
                 .clientRegDate(request.getClientRegDate())
                 .build();
 

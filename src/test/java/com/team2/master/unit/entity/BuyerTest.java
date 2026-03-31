@@ -14,7 +14,7 @@ class BuyerTest {
         return Client.builder()
                 .clientCode("CLI001")
                 .clientName("Test Corp")
-                .clientStatus(ClientStatus.활성)
+                .clientStatus(ClientStatus.ACTIVE)
                 .build();
     }
 

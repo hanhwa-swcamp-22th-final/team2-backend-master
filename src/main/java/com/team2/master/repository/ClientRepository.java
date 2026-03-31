@@ -21,7 +21,7 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
     @Query("SELECT c FROM Client c LEFT JOIN FETCH c.country LEFT JOIN FETCH c.port LEFT JOIN FETCH c.paymentTerm LEFT JOIN FETCH c.currency")
     List<Client> findAllWithRelations();
 
-    @Query("SELECT c FROM Client c LEFT JOIN FETCH c.country LEFT JOIN FETCH c.port LEFT JOIN FETCH c.paymentTerm LEFT JOIN FETCH c.currency WHERE c.id = :id")
+    @Query("SELECT c FROM Client c LEFT JOIN FETCH c.country LEFT JOIN FETCH c.port LEFT JOIN FETCH c.paymentTerm LEFT JOIN FETCH c.currency WHERE c.clientId = :id")
     Optional<Client> findByIdWithRelations(Integer id);
 
     @Query("SELECT c FROM Client c LEFT JOIN FETCH c.country LEFT JOIN FETCH c.port LEFT JOIN FETCH c.paymentTerm LEFT JOIN FETCH c.currency WHERE c.departmentId = :departmentId")

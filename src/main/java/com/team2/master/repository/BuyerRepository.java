@@ -9,14 +9,14 @@ import java.util.Optional;
 
 public interface BuyerRepository extends JpaRepository<Buyer, Integer> {
 
-    List<Buyer> findByClientId(Integer clientId);
+    List<Buyer> findByClientClientId(Integer clientId);
 
     @Query("SELECT b FROM Buyer b JOIN FETCH b.client")
     List<Buyer> findAllWithClient();
 
-    @Query("SELECT b FROM Buyer b JOIN FETCH b.client WHERE b.id = :id")
+    @Query("SELECT b FROM Buyer b JOIN FETCH b.client WHERE b.buyerId = :id")
     Optional<Buyer> findByIdWithClient(Integer id);
 
-    @Query("SELECT b FROM Buyer b JOIN FETCH b.client WHERE b.client.id = :clientId")
+    @Query("SELECT b FROM Buyer b JOIN FETCH b.client WHERE b.client.clientId = :clientId")
     List<Buyer> findByClientIdWithClient(Integer clientId);
 }

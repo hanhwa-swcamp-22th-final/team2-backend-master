@@ -12,7 +12,7 @@ public class Incoterm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "incoterm_id")
-    private Integer id;
+    private Integer incotermId;
 
     @Column(name = "incoterm_code", nullable = false, unique = true, length = 10)
     private String incotermCode;

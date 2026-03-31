@@ -13,7 +13,7 @@ public interface PortRepository extends JpaRepository<Port, Integer> {
 
     boolean existsByPortCode(String portCode);
 
-    List<Port> findByCountryId(Integer countryId);
+    List<Port> findByCountryCountryId(Integer countryId);
 
     @Query("SELECT p FROM Port p JOIN FETCH p.country")
     List<Port> findAllWithCountry();

@@ -54,7 +54,7 @@ class ClientControllerTest {
                 .clientEmail("test@corp.com")
                 .clientManager("홍길동")
                 .departmentId(1)
-                .clientStatus(ClientStatus.활성)
+                .clientStatus(ClientStatus.ACTIVE)
                 .clientRegDate(LocalDate.of(2025, 1, 1))
                 .build();
     }
@@ -82,7 +82,7 @@ class ClientControllerTest {
                 .andExpect(jsonPath("$.clientEmail").value("test@corp.com"))
                 .andExpect(jsonPath("$.clientManager").value("홍길동"))
                 .andExpect(jsonPath("$.departmentId").value(1))
-                .andExpect(jsonPath("$.clientStatus").value("활성"))
+                .andExpect(jsonPath("$.clientStatus").value("ACTIVE"))
                 .andExpect(jsonPath("$.countryId").isEmpty())
                 .andExpect(jsonPath("$.countryName").isEmpty())
                 .andExpect(jsonPath("$.portId").isEmpty())
@@ -124,7 +124,7 @@ class ClientControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].clientName").value("Test Corp"))
                 .andExpect(jsonPath("$[0].clientCode").value("CLI001"))
-                .andExpect(jsonPath("$[0].clientStatus").value("활성"));
+                .andExpect(jsonPath("$[0].clientStatus").value("ACTIVE"));
     }
 
     @Test
@@ -165,7 +165,7 @@ class ClientControllerTest {
                 .clientCode("CLI001")
                 .clientName("Updated Corp")
                 .clientNameKr("수정 주식회사")
-                .clientStatus(ClientStatus.활성)
+                .clientStatus(ClientStatus.ACTIVE)
                 .build();
         given(clientService.updateClient(eq(1), any(UpdateClientRequest.class))).willReturn(updatedClient);
 
@@ -202,13 +202,13 @@ class ClientControllerTest {
     @DisplayName("PATCH /api/clients/{id}/status - 상태 변경 성공")
     void changeStatus_success() throws Exception {
         // given
-        ChangeStatusRequest request = new ChangeStatusRequest("비활성");
+        ChangeStatusRequest request = new ChangeStatusRequest("INACTIVE");
         Client inactiveClient = Client.builder()
                 .clientCode("CLI001")
                 .clientName("Test Corp")
-                .clientStatus(ClientStatus.비활성)
+                .clientStatus(ClientStatus.INACTIVE)
                 .build();
-        given(clientService.changeStatus(eq(1), eq(ClientStatus.비활성))).willReturn(inactiveClient);
+        given(clientService.changeStatus(eq(1), eq(ClientStatus.INACTIVE))).willReturn(inactiveClient);
 
         // when & then
         mockMvc.perform(patch("/api/clients/1/status")
@@ -216,16 +216,16 @@ class ClientControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.clientStatus").value("비활성"));
+                .andExpect(jsonPath("$.clientStatus").value("INACTIVE"));
     }
 
     @Test
     @DisplayName("PATCH /api/clients/{id}/status - 동일 상태로 변경 시 (409)")
     void changeStatus_conflict() throws Exception {
         // given
-        ChangeStatusRequest request = new ChangeStatusRequest("활성");
-        given(clientService.changeStatus(eq(1), eq(ClientStatus.활성)))
-                .willThrow(new IllegalStateException("이미 활성 상태입니다."));
+        ChangeStatusRequest request = new ChangeStatusRequest("ACTIVE");
+        given(clientService.changeStatus(eq(1), eq(ClientStatus.ACTIVE)))
+                .willThrow(new IllegalStateException("이미 ACTIVE 상태입니다."));
 
         // when & then
         mockMvc.perform(patch("/api/clients/1/status")
@@ -233,7 +233,7 @@ class ClientControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("이미 활성 상태입니다."));
+                .andExpect(jsonPath("$.message").value("이미 ACTIVE 상태입니다."));
     }
 
     @Test

@@ -46,7 +46,7 @@ class ItemServiceTest {
                 .itemUnit("EA")
                 .itemUnitPrice(new BigDecimal("1500.00"))
                 .itemCategory("전자부품")
-                .itemStatus(ItemStatus.활성)
+                .itemStatus(ItemStatus.ACTIVE)
                 .build();
     }
 
@@ -156,10 +156,10 @@ class ItemServiceTest {
         given(itemRepository.findById(1)).willReturn(Optional.of(item));
 
         // when
-        Item result = itemService.changeStatus(1, ItemStatus.비활성);
+        Item result = itemService.changeStatus(1, ItemStatus.INACTIVE);
 
         // then
-        assertThat(result.getItemStatus()).isEqualTo(ItemStatus.비활성);
+        assertThat(result.getItemStatus()).isEqualTo(ItemStatus.INACTIVE);
     }
 
     @Test
@@ -169,8 +169,8 @@ class ItemServiceTest {
         given(itemRepository.findById(1)).willReturn(Optional.of(item));
 
         // when & then
-        assertThatThrownBy(() -> itemService.changeStatus(1, ItemStatus.활성))
+        assertThatThrownBy(() -> itemService.changeStatus(1, ItemStatus.ACTIVE))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("이미 활성 상태입니다");
+                .hasMessageContaining("이미 ACTIVE 상태입니다");
     }
 }

@@ -12,7 +12,7 @@ public class Port {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "port_id")
-    private Integer id;
+    private Integer portId;
 
     @Column(name = "port_code", nullable = false, unique = true, length = 20)
     private String portCode;

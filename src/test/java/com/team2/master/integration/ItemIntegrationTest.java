@@ -77,7 +77,7 @@ class ItemIntegrationTest {
                 .itemHsCode("8501.10").itemCategory("전자부품")
                 .build());
 
-        mockMvc.perform(get("/api/items/{id}", saved.getId()))
+        mockMvc.perform(get("/api/items/{id}", saved.getItemId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.itemCode").value("ITM001"))
                 .andExpect(jsonPath("$.itemName").value("Item A"))
@@ -128,7 +128,7 @@ class ItemIntegrationTest {
                 .andExpect(jsonPath("$.itemWeight").value(1.250))
                 .andExpect(jsonPath("$.itemHsCode").value("8501.10"))
                 .andExpect(jsonPath("$.itemCategory").value("전자부품"))
-                .andExpect(jsonPath("$.itemStatus").value("활성"));
+                .andExpect(jsonPath("$.itemStatus").value("ACTIVE"));
 
         // DB 검증
         List<Item> all = itemRepository.findAll();
@@ -137,7 +137,7 @@ class ItemIntegrationTest {
         assertThat(saved.getItemCode()).isEqualTo("ITM001");
         assertThat(saved.getItemUnitPrice()).isEqualByComparingTo(new BigDecimal("2500.00"));
         assertThat(saved.getItemWeight()).isEqualByComparingTo(new BigDecimal("1.250"));
-        assertThat(saved.getItemStatus()).isEqualTo(ItemStatus.활성);
+        assertThat(saved.getItemStatus()).isEqualTo(ItemStatus.ACTIVE);
         assertThat(saved.getItemRegDate()).isEqualTo(LocalDate.of(2025, 3, 1));
     }
 
@@ -189,7 +189,7 @@ class ItemIntegrationTest {
                 .itemCategory("기계부품")
                 .build();
 
-        mockMvc.perform(put("/api/items/{id}", saved.getId())
+        mockMvc.perform(put("/api/items/{id}", saved.getItemId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -205,7 +205,7 @@ class ItemIntegrationTest {
                 .andExpect(jsonPath("$.itemCategory").value("기계부품"));
 
         // DB 검증
-        Item updated = itemRepository.findById(saved.getId()).orElseThrow();
+        Item updated = itemRepository.findById(saved.getItemId()).orElseThrow();
         assertThat(updated.getItemName()).isEqualTo("Updated Name");
         assertThat(updated.getItemUnitPrice()).isEqualByComparingTo(new BigDecimal("5000.00"));
         assertThat(updated.getItemWeight()).isEqualByComparingTo(new BigDecimal("3.500"));
@@ -232,26 +232,26 @@ class ItemIntegrationTest {
     void changeStatus_activeToInactive() throws Exception {
         Item saved = itemRepository.save(Item.builder()
                 .itemCode("ITM001").itemName("Item").itemNameKr("품목")
-                .itemStatus(ItemStatus.활성).build());
+                .itemStatus(ItemStatus.ACTIVE).build());
 
-        ChangeStatusRequest request = new ChangeStatusRequest("비활성");
+        ChangeStatusRequest request = new ChangeStatusRequest("INACTIVE");
 
-        mockMvc.perform(patch("/api/items/{id}/status", saved.getId())
+        mockMvc.perform(patch("/api/items/{id}/status", saved.getItemId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.itemStatus").value("비활성"));
+                .andExpect(jsonPath("$.itemStatus").value("INACTIVE"));
 
         // DB 검증
-        Item updated = itemRepository.findById(saved.getId()).orElseThrow();
-        assertThat(updated.getItemStatus()).isEqualTo(ItemStatus.비활성);
+        Item updated = itemRepository.findById(saved.getItemId()).orElseThrow();
+        assertThat(updated.getItemStatus()).isEqualTo(ItemStatus.INACTIVE);
     }
 
     @Test
     @DisplayName("통합테스트: 품목 상태 변경 - 존재하지 않는 ID")
     void changeStatus_notFound() throws Exception {
-        ChangeStatusRequest request = new ChangeStatusRequest("비활성");
+        ChangeStatusRequest request = new ChangeStatusRequest("INACTIVE");
 
         mockMvc.perform(patch("/api/items/{id}/status", 9999)
                         .with(csrf())
@@ -265,11 +265,11 @@ class ItemIntegrationTest {
     void changeStatus_sameStatus() throws Exception {
         Item saved = itemRepository.save(Item.builder()
                 .itemCode("ITM001").itemName("Item").itemNameKr("품목")
-                .itemStatus(ItemStatus.활성).build());
+                .itemStatus(ItemStatus.ACTIVE).build());
 
-        ChangeStatusRequest request = new ChangeStatusRequest("활성");
+        ChangeStatusRequest request = new ChangeStatusRequest("ACTIVE");
 
-        mockMvc.perform(patch("/api/items/{id}/status", saved.getId())
+        mockMvc.perform(patch("/api/items/{id}/status", saved.getItemId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))

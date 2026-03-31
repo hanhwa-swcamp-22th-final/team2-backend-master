@@ -12,7 +12,7 @@ public class Currency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "currency_id")
-    private Integer id;
+    private Integer currencyId;
 
     @Column(name = "currency_code", nullable = false, unique = true, length = 10)
     private String currencyCode;

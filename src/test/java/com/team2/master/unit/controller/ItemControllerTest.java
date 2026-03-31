@@ -54,7 +54,7 @@ class ItemControllerTest {
                 .itemUnit("EA")
                 .itemUnitPrice(new BigDecimal("1500.00"))
                 .itemCategory("전자부품")
-                .itemStatus(ItemStatus.활성)
+                .itemStatus(ItemStatus.ACTIVE)
                 .build();
     }
 
@@ -148,7 +148,7 @@ class ItemControllerTest {
                 .itemCode("ITM001")
                 .itemName("Updated Product")
                 .itemNameKr("수정 제품")
-                .itemStatus(ItemStatus.활성)
+                .itemStatus(ItemStatus.ACTIVE)
                 .build();
         given(itemService.updateItem(eq(1), any(UpdateItemRequest.class))).willReturn(updatedItem);
 
@@ -184,13 +184,13 @@ class ItemControllerTest {
     @DisplayName("PATCH /api/items/{id}/status - 상태 변경 성공")
     void changeStatus_success() throws Exception {
         // given
-        ChangeStatusRequest request = new ChangeStatusRequest("비활성");
+        ChangeStatusRequest request = new ChangeStatusRequest("INACTIVE");
         Item inactiveItem = Item.builder()
                 .itemCode("ITM001")
                 .itemName("Test Product")
-                .itemStatus(ItemStatus.비활성)
+                .itemStatus(ItemStatus.INACTIVE)
                 .build();
-        given(itemService.changeStatus(eq(1), eq(ItemStatus.비활성))).willReturn(inactiveItem);
+        given(itemService.changeStatus(eq(1), eq(ItemStatus.INACTIVE))).willReturn(inactiveItem);
 
         // when & then
         mockMvc.perform(patch("/api/items/1/status")
@@ -198,16 +198,16 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.itemStatus").value("비활성"));
+                .andExpect(jsonPath("$.itemStatus").value("INACTIVE"));
     }
 
     @Test
     @DisplayName("PATCH /api/items/{id}/status - 동일 상태로 변경 시 (409)")
     void changeStatus_conflict() throws Exception {
         // given
-        ChangeStatusRequest request = new ChangeStatusRequest("활성");
-        given(itemService.changeStatus(eq(1), eq(ItemStatus.활성)))
-                .willThrow(new IllegalStateException("이미 활성 상태입니다."));
+        ChangeStatusRequest request = new ChangeStatusRequest("ACTIVE");
+        given(itemService.changeStatus(eq(1), eq(ItemStatus.ACTIVE)))
+                .willThrow(new IllegalStateException("이미 ACTIVE 상태입니다."));
 
         // when & then
         mockMvc.perform(patch("/api/items/1/status")
@@ -215,6 +215,6 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("이미 활성 상태입니다."));
+                .andExpect(jsonPath("$.message").value("이미 ACTIVE 상태입니다."));
     }
 }

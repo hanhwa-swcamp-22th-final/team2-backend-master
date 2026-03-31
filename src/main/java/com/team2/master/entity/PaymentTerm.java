@@ -12,7 +12,7 @@ public class PaymentTerm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_term_id")
-    private Integer id;
+    private Integer paymentTermId;
 
     @Column(name = "payment_term_code", nullable = false, unique = true, length = 20)
     private String paymentTermCode;

@@ -90,7 +90,7 @@ class ClientIntegrationTest {
                 .clientCode("CLI001").clientName("Client A").clientNameKr("거래처A")
                 .departmentId(1).build());
 
-        mockMvc.perform(get("/api/clients/{id}", saved.getId()))
+        mockMvc.perform(get("/api/clients/{id}", saved.getClientId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.clientCode").value("CLI001"))
                 .andExpect(jsonPath("$.clientName").value("Client A"))
@@ -113,14 +113,14 @@ class ClientIntegrationTest {
                 .clientCode("CLI001")
                 .clientName("Test Client")
                 .clientNameKr("테스트거래처")
-                .countryId(country.getId())
+                .countryId(country.getCountryId())
                 .clientCity("New York")
-                .portId(port.getId())
+                .portId(port.getPortId())
                 .clientAddress("123 Main St")
                 .clientTel("010-1234-5678")
                 .clientEmail("test@example.com")
-                .paymentTermId(paymentTerm.getId())
-                .currencyId(currency.getId())
+                .paymentTermId(paymentTerm.getPaymentTermId())
+                .currencyId(currency.getCurrencyId())
                 .clientManager("홍길동")
                 .departmentId(1)
                 .clientRegDate(LocalDate.of(2025, 1, 15))
@@ -140,7 +140,7 @@ class ClientIntegrationTest {
                 .andExpect(jsonPath("$.clientEmail").value("test@example.com"))
                 .andExpect(jsonPath("$.clientManager").value("홍길동"))
                 .andExpect(jsonPath("$.departmentId").value(1))
-                .andExpect(jsonPath("$.clientStatus").value("활성"));
+                .andExpect(jsonPath("$.clientStatus").value("ACTIVE"));
 
         // DB 검증
         List<Client> all = clientRepository.findAll();
@@ -148,14 +148,14 @@ class ClientIntegrationTest {
         Client saved = all.get(0);
         assertThat(saved.getClientCode()).isEqualTo("CLI001");
         assertThat(saved.getCountry()).isNotNull();
-        assertThat(saved.getCountry().getId()).isEqualTo(country.getId());
+        assertThat(saved.getCountry().getCountryId()).isEqualTo(country.getCountryId());
         assertThat(saved.getPort()).isNotNull();
-        assertThat(saved.getPort().getId()).isEqualTo(port.getId());
+        assertThat(saved.getPort().getPortId()).isEqualTo(port.getPortId());
         assertThat(saved.getPaymentTerm()).isNotNull();
-        assertThat(saved.getPaymentTerm().getId()).isEqualTo(paymentTerm.getId());
+        assertThat(saved.getPaymentTerm().getPaymentTermId()).isEqualTo(paymentTerm.getPaymentTermId());
         assertThat(saved.getCurrency()).isNotNull();
-        assertThat(saved.getCurrency().getId()).isEqualTo(currency.getId());
-        assertThat(saved.getClientStatus()).isEqualTo(ClientStatus.활성);
+        assertThat(saved.getCurrency().getCurrencyId()).isEqualTo(currency.getCurrencyId());
+        assertThat(saved.getClientStatus()).isEqualTo(ClientStatus.ACTIVE);
     }
 
     @Test
@@ -281,19 +281,19 @@ class ClientIntegrationTest {
         UpdateClientRequest request = UpdateClientRequest.builder()
                 .clientName("Updated Name")
                 .clientNameKr("수정이름")
-                .countryId(newCountry.getId())
+                .countryId(newCountry.getCountryId())
                 .clientCity("Tokyo")
-                .portId(newPort.getId())
+                .portId(newPort.getPortId())
                 .clientAddress("456 New St")
                 .clientTel("010-9999-9999")
                 .clientEmail("updated@test.com")
-                .paymentTermId(newPt.getId())
-                .currencyId(newCur.getId())
+                .paymentTermId(newPt.getPaymentTermId())
+                .currencyId(newCur.getCurrencyId())
                 .clientManager("새담당자")
                 .departmentId(2)
                 .build();
 
-        mockMvc.perform(put("/api/clients/{id}", saved.getId())
+        mockMvc.perform(put("/api/clients/{id}", saved.getClientId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -307,12 +307,12 @@ class ClientIntegrationTest {
                 .andExpect(jsonPath("$.clientManager").value("새담당자"));
 
         // DB 검증
-        Client updated = clientRepository.findById(saved.getId()).orElseThrow();
+        Client updated = clientRepository.findById(saved.getClientId()).orElseThrow();
         assertThat(updated.getClientName()).isEqualTo("Updated Name");
-        assertThat(updated.getCountry().getId()).isEqualTo(newCountry.getId());
-        assertThat(updated.getPort().getId()).isEqualTo(newPort.getId());
-        assertThat(updated.getPaymentTerm().getId()).isEqualTo(newPt.getId());
-        assertThat(updated.getCurrency().getId()).isEqualTo(newCur.getId());
+        assertThat(updated.getCountry().getCountryId()).isEqualTo(newCountry.getCountryId());
+        assertThat(updated.getPort().getPortId()).isEqualTo(newPort.getPortId());
+        assertThat(updated.getPaymentTerm().getPaymentTermId()).isEqualTo(newPt.getPaymentTermId());
+        assertThat(updated.getCurrency().getCurrencyId()).isEqualTo(newCur.getCurrencyId());
     }
 
     @Test
@@ -340,7 +340,7 @@ class ClientIntegrationTest {
                 .countryId(9999)
                 .build();
 
-        mockMvc.perform(put("/api/clients/{id}", saved.getId())
+        mockMvc.perform(put("/api/clients/{id}", saved.getClientId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -354,20 +354,20 @@ class ClientIntegrationTest {
     void changeStatus_activeToInactive() throws Exception {
         Client saved = clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client").clientNameKr("거래처")
-                .clientStatus(ClientStatus.활성).departmentId(1).build());
+                .clientStatus(ClientStatus.ACTIVE).departmentId(1).build());
 
-        ChangeStatusRequest request = new ChangeStatusRequest("비활성");
+        ChangeStatusRequest request = new ChangeStatusRequest("INACTIVE");
 
-        mockMvc.perform(patch("/api/clients/{id}/status", saved.getId())
+        mockMvc.perform(patch("/api/clients/{id}/status", saved.getClientId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.clientStatus").value("비활성"));
+                .andExpect(jsonPath("$.clientStatus").value("INACTIVE"));
 
         // DB 검증
-        Client updated = clientRepository.findById(saved.getId()).orElseThrow();
-        assertThat(updated.getClientStatus()).isEqualTo(ClientStatus.비활성);
+        Client updated = clientRepository.findById(saved.getClientId()).orElseThrow();
+        assertThat(updated.getClientStatus()).isEqualTo(ClientStatus.INACTIVE);
     }
 
     @Test
@@ -375,26 +375,26 @@ class ClientIntegrationTest {
     void changeStatus_inactiveToActive() throws Exception {
         Client saved = clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client").clientNameKr("거래처")
-                .clientStatus(ClientStatus.비활성).departmentId(1).build());
+                .clientStatus(ClientStatus.INACTIVE).departmentId(1).build());
 
-        ChangeStatusRequest request = new ChangeStatusRequest("활성");
+        ChangeStatusRequest request = new ChangeStatusRequest("ACTIVE");
 
-        mockMvc.perform(patch("/api/clients/{id}/status", saved.getId())
+        mockMvc.perform(patch("/api/clients/{id}/status", saved.getClientId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.clientStatus").value("활성"));
+                .andExpect(jsonPath("$.clientStatus").value("ACTIVE"));
 
         // DB 검증
-        Client updated = clientRepository.findById(saved.getId()).orElseThrow();
-        assertThat(updated.getClientStatus()).isEqualTo(ClientStatus.활성);
+        Client updated = clientRepository.findById(saved.getClientId()).orElseThrow();
+        assertThat(updated.getClientStatus()).isEqualTo(ClientStatus.ACTIVE);
     }
 
     @Test
     @DisplayName("통합테스트: 거래처 상태 변경 - 존재하지 않는 ID")
     void changeStatus_notFound() throws Exception {
-        ChangeStatusRequest request = new ChangeStatusRequest("비활성");
+        ChangeStatusRequest request = new ChangeStatusRequest("INACTIVE");
 
         mockMvc.perform(patch("/api/clients/{id}/status", 9999)
                         .with(csrf())
@@ -408,11 +408,11 @@ class ClientIntegrationTest {
     void changeStatus_invalidStatus() throws Exception {
         Client saved = clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client").clientNameKr("거래처")
-                .clientStatus(ClientStatus.활성).departmentId(1).build());
+                .clientStatus(ClientStatus.ACTIVE).departmentId(1).build());
 
         ChangeStatusRequest request = new ChangeStatusRequest("INVALID");
 
-        mockMvc.perform(patch("/api/clients/{id}/status", saved.getId())
+        mockMvc.perform(patch("/api/clients/{id}/status", saved.getClientId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -424,11 +424,11 @@ class ClientIntegrationTest {
     void changeStatus_sameStatus() throws Exception {
         Client saved = clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client").clientNameKr("거래처")
-                .clientStatus(ClientStatus.활성).departmentId(1).build());
+                .clientStatus(ClientStatus.ACTIVE).departmentId(1).build());
 
-        ChangeStatusRequest request = new ChangeStatusRequest("활성");
+        ChangeStatusRequest request = new ChangeStatusRequest("ACTIVE");
 
-        mockMvc.perform(patch("/api/clients/{id}/status", saved.getId())
+        mockMvc.perform(patch("/api/clients/{id}/status", saved.getClientId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))

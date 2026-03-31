@@ -111,7 +111,7 @@ class IncotermServiceTest {
         // given
         Incoterm incoterm = new Incoterm("FOB", "Free On Board", "본선인도",
                 null, null, null, null);
-        ReflectionTestUtils.setField(incoterm, "id", 1);
+        ReflectionTestUtils.setField(incoterm, "incotermId", 1);
         UpdateIncotermRequest request = new UpdateIncotermRequest("FOB", "FOB Updated", "본선인도수정",
                 "desc", "Any", "F", "Place");
         given(incotermRepository.findById(1)).willReturn(Optional.of(incoterm));
@@ -130,10 +130,10 @@ class IncotermServiceTest {
         // given
         Incoterm incoterm = new Incoterm("FOB", "Free On Board", "본선인도",
                 null, null, null, null);
-        ReflectionTestUtils.setField(incoterm, "id", 1);
+        ReflectionTestUtils.setField(incoterm, "incotermId", 1);
         Incoterm existing = new Incoterm("CIF", "Cost Insurance Freight", "운임보험료포함",
                 null, null, null, null);
-        ReflectionTestUtils.setField(existing, "id", 2);
+        ReflectionTestUtils.setField(existing, "incotermId", 2);
         UpdateIncotermRequest request = new UpdateIncotermRequest("CIF", "CIF Updated", "수정",
                 null, null, null, null);
         given(incotermRepository.findById(1)).willReturn(Optional.of(incoterm));

@@ -16,7 +16,7 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_id")
-    private Integer id;
+    private Integer clientId;
 
     @Column(name = "client_code", nullable = false, unique = true, length = 20)
     private String clientCode;
@@ -88,7 +88,7 @@ public class Client {
         this.clientEmail = clientEmail;
         this.clientManager = clientManager;
         this.departmentId = departmentId;
-        this.clientStatus = clientStatus != null ? clientStatus : ClientStatus.활성;
+        this.clientStatus = clientStatus != null ? clientStatus : ClientStatus.ACTIVE;
         this.clientRegDate = clientRegDate;
     }
 
@@ -129,7 +129,7 @@ public class Client {
     }
 
     public boolean isActive() {
-        return this.clientStatus == ClientStatus.활성;
+        return this.clientStatus == ClientStatus.ACTIVE;
     }
 
     @PrePersist

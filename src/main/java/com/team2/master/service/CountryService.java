@@ -40,7 +40,7 @@ public class CountryService {
     public Country update(Integer id, UpdateCountryRequest request) {
         Country country = getById(id);
         countryRepository.findByCountryCode(request.getCountryCode())
-                .filter(existing -> !existing.getId().equals(id))
+                .filter(existing -> !existing.getCountryId().equals(id))
                 .ifPresent(existing -> {
                     throw new IllegalStateException("이미 존재하는 국가 코드입니다: " + request.getCountryCode());
                 });

@@ -21,8 +21,8 @@ public class BuyerResponse {
 
     public static BuyerResponse from(Buyer buyer) {
         return BuyerResponse.builder()
-                .id(buyer.getId())
-                .clientId(buyer.getClient().getId())
+                .id(buyer.getBuyerId())
+                .clientId(buyer.getClient().getClientId())
                 .clientName(buyer.getClient().getClientName())
                 .buyerName(buyer.getBuyerName())
                 .buyerPosition(buyer.getBuyerPosition())

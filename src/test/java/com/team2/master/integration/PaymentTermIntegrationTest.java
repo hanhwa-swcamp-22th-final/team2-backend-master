@@ -63,7 +63,7 @@ class PaymentTermIntegrationTest {
     void getById_success() throws Exception {
         PaymentTerm saved = paymentTermRepository.save(new PaymentTerm("TT", "Telegraphic Transfer", "전신환송금"));
 
-        mockMvc.perform(get("/api/payment-terms/{id}", saved.getId()))
+        mockMvc.perform(get("/api/payment-terms/{id}", saved.getPaymentTermId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paymentTermCode").value("TT"))
                 .andExpect(jsonPath("$.paymentTermName").value("Telegraphic Transfer"))
@@ -136,7 +136,7 @@ class PaymentTermIntegrationTest {
                 "paymentTermDescription", "전신환송금 수정"
         );
 
-        mockMvc.perform(put("/api/payment-terms/{id}", saved.getId())
+        mockMvc.perform(put("/api/payment-terms/{id}", saved.getPaymentTermId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -145,7 +145,7 @@ class PaymentTermIntegrationTest {
                 .andExpect(jsonPath("$.paymentTermDescription").value("전신환송금 수정"));
 
         // DB 검증
-        PaymentTerm updated = paymentTermRepository.findById(saved.getId()).orElseThrow();
+        PaymentTerm updated = paymentTermRepository.findById(saved.getPaymentTermId()).orElseThrow();
         assertThat(updated.getPaymentTermName()).isEqualTo("T/T Remittance");
         assertThat(updated.getPaymentTermDescription()).isEqualTo("전신환송금 수정");
     }
@@ -173,11 +173,11 @@ class PaymentTermIntegrationTest {
     void delete_success() throws Exception {
         PaymentTerm saved = paymentTermRepository.save(new PaymentTerm("TT", "Telegraphic Transfer", "전신환송금"));
 
-        mockMvc.perform(delete("/api/payment-terms/{id}", saved.getId())
+        mockMvc.perform(delete("/api/payment-terms/{id}", saved.getPaymentTermId())
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
-        Optional<PaymentTerm> deleted = paymentTermRepository.findById(saved.getId());
+        Optional<PaymentTerm> deleted = paymentTermRepository.findById(saved.getPaymentTermId());
         assertThat(deleted).isEmpty();
     }
 

@@ -45,7 +45,7 @@ public class PortService {
     public Port update(Integer id, UpdatePortRequest request) {
         Port port = getById(id);
         portRepository.findByPortCode(request.getPortCode())
-                .filter(existing -> !existing.getId().equals(id))
+                .filter(existing -> !existing.getPortId().equals(id))
                 .ifPresent(existing -> {
                     throw new IllegalStateException("이미 존재하는 항구 코드입니다: " + request.getPortCode());
                 });

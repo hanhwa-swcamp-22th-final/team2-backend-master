@@ -87,7 +87,7 @@ class BuyerIntegrationTest {
                 .client(client).buyerName("Buyer A").buyerPosition("Manager")
                 .buyerEmail("a@test.com").buyerTel("010-1111-1111").build());
 
-        mockMvc.perform(get("/api/buyers/{id}", saved.getId()))
+        mockMvc.perform(get("/api/buyers/{id}", saved.getBuyerId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.buyerName").value("Buyer A"))
                 .andExpect(jsonPath("$.buyerPosition").value("Manager"))
@@ -122,7 +122,7 @@ class BuyerIntegrationTest {
                 .client(otherClient).buyerName("Buyer C").buyerPosition("Staff")
                 .buyerEmail("c@test.com").buyerTel("010-3333-3333").build());
 
-        mockMvc.perform(get("/api/buyers/client/{clientId}", client.getId()))
+        mockMvc.perform(get("/api/buyers/client/{clientId}", client.getClientId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].buyerName").value("Buyer A"))
@@ -144,7 +144,7 @@ class BuyerIntegrationTest {
     @DisplayName("통합테스트: 바이어 생성 - 성공")
     void create_success() throws Exception {
         CreateBuyerRequest request = CreateBuyerRequest.builder()
-                .clientId(client.getId())
+                .clientId(client.getClientId())
                 .buyerName("New Buyer")
                 .buyerPosition("CEO")
                 .buyerEmail("new@test.com")
@@ -166,7 +166,7 @@ class BuyerIntegrationTest {
         assertThat(all).hasSize(1);
         Buyer saved = all.get(0);
         assertThat(saved.getBuyerName()).isEqualTo("New Buyer");
-        assertThat(saved.getClient().getId()).isEqualTo(client.getId());
+        assertThat(saved.getClient().getClientId()).isEqualTo(client.getClientId());
     }
 
     @Test
@@ -205,7 +205,7 @@ class BuyerIntegrationTest {
                 .buyerTel("010-8888-8888")
                 .build();
 
-        mockMvc.perform(put("/api/buyers/{id}", saved.getId())
+        mockMvc.perform(put("/api/buyers/{id}", saved.getBuyerId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -216,7 +216,7 @@ class BuyerIntegrationTest {
                 .andExpect(jsonPath("$.buyerTel").value("010-8888-8888"));
 
         // DB 검증
-        Buyer updated = buyerRepository.findById(saved.getId()).orElseThrow();
+        Buyer updated = buyerRepository.findById(saved.getBuyerId()).orElseThrow();
         assertThat(updated.getBuyerName()).isEqualTo("Updated Name");
         assertThat(updated.getBuyerPosition()).isEqualTo("Director");
         assertThat(updated.getBuyerEmail()).isEqualTo("updated@test.com");
@@ -246,12 +246,12 @@ class BuyerIntegrationTest {
                 .client(client).buyerName("To Delete").buyerPosition("Staff")
                 .buyerEmail("delete@test.com").buyerTel("010-0000-0000").build());
 
-        mockMvc.perform(delete("/api/buyers/{id}", saved.getId())
+        mockMvc.perform(delete("/api/buyers/{id}", saved.getBuyerId())
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
         // DB 검증 - 완전히 삭제되었는지 확인
-        Optional<Buyer> deleted = buyerRepository.findById(saved.getId());
+        Optional<Buyer> deleted = buyerRepository.findById(saved.getBuyerId());
         assertThat(deleted).isEmpty();
     }
 

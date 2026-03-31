@@ -44,7 +44,7 @@ public class IncotermService {
     public Incoterm update(Integer id, UpdateIncotermRequest request) {
         Incoterm incoterm = getById(id);
         incotermRepository.findByIncotermCode(request.getIncotermCode())
-                .filter(existing -> !existing.getId().equals(id))
+                .filter(existing -> !existing.getIncotermId().equals(id))
                 .ifPresent(existing -> {
                     throw new IllegalStateException("이미 존재하는 인코텀 코드입니다: " + request.getIncotermCode());
                 });

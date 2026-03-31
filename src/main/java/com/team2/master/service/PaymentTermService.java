@@ -42,7 +42,7 @@ public class PaymentTermService {
     public PaymentTerm update(Integer id, UpdatePaymentTermRequest request) {
         PaymentTerm paymentTerm = getById(id);
         paymentTermRepository.findByPaymentTermCode(request.getPaymentTermCode())
-                .filter(existing -> !existing.getId().equals(id))
+                .filter(existing -> !existing.getPaymentTermId().equals(id))
                 .ifPresent(existing -> {
                     throw new IllegalStateException("이미 존재하는 결제조건 코드입니다: " + request.getPaymentTermCode());
                 });

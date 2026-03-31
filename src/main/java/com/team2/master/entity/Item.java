@@ -17,7 +17,7 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_id")
-    private Integer id;
+    private Integer itemId;
 
     @Column(name = "item_code", nullable = false, unique = true, length = 50)
     private String itemCode;
@@ -77,7 +77,7 @@ public class Item {
         this.itemWeight = itemWeight;
         this.itemHsCode = itemHsCode;
         this.itemCategory = itemCategory;
-        this.itemStatus = itemStatus != null ? itemStatus : ItemStatus.활성;
+        this.itemStatus = itemStatus != null ? itemStatus : ItemStatus.ACTIVE;
         this.itemRegDate = itemRegDate;
     }
 
@@ -103,7 +103,7 @@ public class Item {
     }
 
     public boolean isActive() {
-        return this.itemStatus == ItemStatus.활성;
+        return this.itemStatus == ItemStatus.ACTIVE;
     }
 
     @PrePersist

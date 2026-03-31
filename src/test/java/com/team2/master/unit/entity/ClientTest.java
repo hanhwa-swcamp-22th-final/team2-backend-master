@@ -26,7 +26,7 @@ class ClientTest {
                 .clientEmail("test@corp.com")
                 .clientManager("홍길동")
                 .departmentId(1)
-                .clientStatus(ClientStatus.활성)
+                .clientStatus(ClientStatus.ACTIVE)
                 .clientRegDate(LocalDate.of(2025, 1, 1))
                 .build();
     }
@@ -49,7 +49,7 @@ class ClientTest {
         assertEquals("test@corp.com", client.getClientEmail());
         assertEquals("홍길동", client.getClientManager());
         assertEquals(1, client.getDepartmentId());
-        assertEquals(ClientStatus.활성, client.getClientStatus());
+        assertEquals(ClientStatus.ACTIVE, client.getClientStatus());
     }
 
     @Test
@@ -62,7 +62,7 @@ class ClientTest {
                 .build();
 
         // then
-        assertEquals(ClientStatus.활성, client.getClientStatus());
+        assertEquals(ClientStatus.ACTIVE, client.getClientStatus());
     }
 
     // === 상태 변경 ===
@@ -74,10 +74,10 @@ class ClientTest {
         Client client = createDefaultClient();
 
         // when
-        client.changeStatus(ClientStatus.비활성);
+        client.changeStatus(ClientStatus.INACTIVE);
 
         // then
-        assertEquals(ClientStatus.비활성, client.getClientStatus());
+        assertEquals(ClientStatus.INACTIVE, client.getClientStatus());
     }
 
     @Test
@@ -87,14 +87,14 @@ class ClientTest {
         Client client = Client.builder()
                 .clientCode("CLI003")
                 .clientName("Inactive Corp")
-                .clientStatus(ClientStatus.비활성)
+                .clientStatus(ClientStatus.INACTIVE)
                 .build();
 
         // when
-        client.changeStatus(ClientStatus.활성);
+        client.changeStatus(ClientStatus.ACTIVE);
 
         // then
-        assertEquals(ClientStatus.활성, client.getClientStatus());
+        assertEquals(ClientStatus.ACTIVE, client.getClientStatus());
     }
 
     @Test
@@ -105,7 +105,7 @@ class ClientTest {
 
         // when & then
         assertThrows(IllegalStateException.class,
-                () -> client.changeStatus(ClientStatus.활성));
+                () -> client.changeStatus(ClientStatus.ACTIVE));
     }
 
     // === 활성 확인 ===
@@ -127,7 +127,7 @@ class ClientTest {
         Client client = Client.builder()
                 .clientCode("CLI004")
                 .clientName("Inactive Corp")
-                .clientStatus(ClientStatus.비활성)
+                .clientStatus(ClientStatus.INACTIVE)
                 .build();
 
         // when & then

@@ -40,7 +40,7 @@ public class CurrencyService {
     public Currency update(Integer id, UpdateCurrencyRequest request) {
         Currency currency = getById(id);
         currencyRepository.findByCurrencyCode(request.getCurrencyCode())
-                .filter(existing -> !existing.getId().equals(id))
+                .filter(existing -> !existing.getCurrencyId().equals(id))
                 .ifPresent(existing -> {
                     throw new IllegalStateException("이미 존재하는 통화 코드입니다: " + request.getCurrencyCode());
                 });
