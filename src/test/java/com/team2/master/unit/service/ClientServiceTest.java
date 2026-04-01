@@ -1,14 +1,14 @@
 package com.team2.master.unit.service;
 
-import com.team2.master.dto.ClientResponse;
-import com.team2.master.dto.CreateClientRequest;
-import com.team2.master.dto.UpdateClientRequest;
-import com.team2.master.entity.*;
-import com.team2.master.entity.enums.ClientStatus;
+import com.team2.master.query.dto.ClientResponse;
+import com.team2.master.command.application.dto.CreateClientRequest;
+import com.team2.master.command.application.dto.UpdateClientRequest;
+import com.team2.master.command.domain.entity.*;
+import com.team2.master.command.domain.entity.enums.ClientStatus;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.query.mapper.ClientQueryMapper;
-import com.team2.master.command.repository.*;
-import com.team2.master.command.service.ClientCommandService;
+import com.team2.master.command.domain.repository.*;
+import com.team2.master.command.application.service.ClientCommandService;
 import com.team2.master.query.service.ClientQueryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

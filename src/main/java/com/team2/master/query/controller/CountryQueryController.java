@@ -1,6 +1,6 @@
 package com.team2.master.query.controller;
 
-import com.team2.master.entity.Country;
+import com.team2.master.command.domain.entity.Country;
 import com.team2.master.query.service.CountryQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

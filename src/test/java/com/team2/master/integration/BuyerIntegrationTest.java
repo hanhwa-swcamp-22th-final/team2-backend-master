@@ -1,14 +1,14 @@
 package com.team2.master.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.master.dto.CreateBuyerRequest;
-import com.team2.master.dto.UpdateBuyerRequest;
-import com.team2.master.entity.Buyer;
-import com.team2.master.entity.Client;
-import com.team2.master.entity.Country;
-import com.team2.master.command.repository.BuyerRepository;
-import com.team2.master.command.repository.ClientRepository;
-import com.team2.master.command.repository.CountryRepository;
+import com.team2.master.command.application.dto.CreateBuyerRequest;
+import com.team2.master.command.application.dto.UpdateBuyerRequest;
+import com.team2.master.command.domain.entity.Buyer;
+import com.team2.master.command.domain.entity.Client;
+import com.team2.master.command.domain.entity.Country;
+import com.team2.master.command.domain.repository.BuyerRepository;
+import com.team2.master.command.domain.repository.ClientRepository;
+import com.team2.master.command.domain.repository.CountryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

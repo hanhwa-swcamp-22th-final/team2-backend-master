@@ -1,6 +1,6 @@
 package com.team2.master.query.mapper;
 
-import com.team2.master.entity.Country;
+import com.team2.master.command.domain.entity.Country;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

@@ -1,7 +1,7 @@
 package com.team2.master.unit.controller.query;
 
-import com.team2.master.entity.Item;
-import com.team2.master.entity.enums.ItemStatus;
+import com.team2.master.command.domain.entity.Item;
+import com.team2.master.command.domain.entity.enums.ItemStatus;
 import com.team2.master.query.controller.ItemQueryController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;

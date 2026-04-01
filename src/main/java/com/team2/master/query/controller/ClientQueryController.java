@@ -1,6 +1,6 @@
 package com.team2.master.query.controller;
 
-import com.team2.master.dto.ClientResponse;
+import com.team2.master.query.dto.ClientResponse;
 import com.team2.master.query.service.ClientQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

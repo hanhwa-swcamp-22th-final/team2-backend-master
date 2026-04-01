@@ -1,9 +1,9 @@
 package com.team2.master.integration.repository;
 
-import com.team2.master.entity.Country;
-import com.team2.master.entity.Port;
-import com.team2.master.command.repository.CountryRepository;
-import com.team2.master.command.repository.PortRepository;
+import com.team2.master.command.domain.entity.Country;
+import com.team2.master.command.domain.entity.Port;
+import com.team2.master.command.domain.repository.CountryRepository;
+import com.team2.master.command.domain.repository.PortRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

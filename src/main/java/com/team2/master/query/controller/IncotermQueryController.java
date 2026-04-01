@@ -1,6 +1,6 @@
 package com.team2.master.query.controller;
 
-import com.team2.master.entity.Incoterm;
+import com.team2.master.command.domain.entity.Incoterm;
 import com.team2.master.query.service.IncotermQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

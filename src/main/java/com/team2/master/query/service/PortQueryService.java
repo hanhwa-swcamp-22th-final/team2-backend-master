@@ -1,6 +1,6 @@
 package com.team2.master.query.service;
 
-import com.team2.master.dto.PortResponse;
+import com.team2.master.query.dto.PortResponse;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.query.mapper.PortQueryMapper;
 import lombok.RequiredArgsConstructor;

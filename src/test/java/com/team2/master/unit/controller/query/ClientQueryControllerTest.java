@@ -1,7 +1,7 @@
 package com.team2.master.unit.controller.query;
 
-import com.team2.master.dto.ClientResponse;
-import com.team2.master.entity.enums.ClientStatus;
+import com.team2.master.query.dto.ClientResponse;
+import com.team2.master.command.domain.entity.enums.ClientStatus;
 import com.team2.master.query.controller.ClientQueryController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;

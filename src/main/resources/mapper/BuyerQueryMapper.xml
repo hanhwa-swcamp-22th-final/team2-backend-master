@@ -4,7 +4,7 @@
 
 <mapper namespace="com.team2.master.query.mapper.BuyerQueryMapper">
 
-    <resultMap id="BuyerResponseMap" type="com.team2.master.dto.BuyerResponse">
+    <resultMap id="BuyerResponseMap" type="com.team2.master.query.dto.BuyerResponse">
         <result property="id"            column="buyer_id"/>
         <result property="clientId"      column="client_id"/>
         <result property="clientName"    column="client_name"/>

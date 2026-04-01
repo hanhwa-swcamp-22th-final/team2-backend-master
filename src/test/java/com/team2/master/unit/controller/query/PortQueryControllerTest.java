@@ -1,6 +1,6 @@
 package com.team2.master.unit.controller.query;
 
-import com.team2.master.dto.PortResponse;
+import com.team2.master.query.dto.PortResponse;
 import com.team2.master.query.controller.PortQueryController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;

@@ -1,8 +1,8 @@
 package com.team2.master.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.master.entity.PaymentTerm;
-import com.team2.master.command.repository.PaymentTermRepository;
+import com.team2.master.command.domain.entity.PaymentTerm;
+import com.team2.master.command.domain.repository.PaymentTermRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;

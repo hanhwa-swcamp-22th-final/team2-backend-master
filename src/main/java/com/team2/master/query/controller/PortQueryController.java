@@ -1,6 +1,6 @@
 package com.team2.master.query.controller;
 
-import com.team2.master.dto.PortResponse;
+import com.team2.master.query.dto.PortResponse;
 import com.team2.master.query.service.PortQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

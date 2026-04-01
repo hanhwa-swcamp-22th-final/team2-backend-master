@@ -1,6 +1,6 @@
 package com.team2.master.unit.controller.query;
 
-import com.team2.master.entity.PaymentTerm;
+import com.team2.master.command.domain.entity.PaymentTerm;
 import com.team2.master.query.controller.PaymentTermQueryController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;

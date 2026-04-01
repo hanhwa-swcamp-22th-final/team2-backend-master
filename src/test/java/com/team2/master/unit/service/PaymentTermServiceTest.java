@@ -1,12 +1,12 @@
 package com.team2.master.unit.service;
 
-import com.team2.master.dto.CreatePaymentTermRequest;
-import com.team2.master.dto.UpdatePaymentTermRequest;
-import com.team2.master.entity.PaymentTerm;
+import com.team2.master.command.application.dto.CreatePaymentTermRequest;
+import com.team2.master.command.application.dto.UpdatePaymentTermRequest;
+import com.team2.master.command.domain.entity.PaymentTerm;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.query.mapper.PaymentTermQueryMapper;
-import com.team2.master.command.repository.PaymentTermRepository;
-import com.team2.master.command.service.PaymentTermCommandService;
+import com.team2.master.command.domain.repository.PaymentTermRepository;
+import com.team2.master.command.application.service.PaymentTermCommandService;
 import com.team2.master.query.service.PaymentTermQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

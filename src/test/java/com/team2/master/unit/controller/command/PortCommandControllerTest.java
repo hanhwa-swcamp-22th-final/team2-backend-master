@@ -1,13 +1,13 @@
 package com.team2.master.unit.controller.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.master.dto.CreatePortRequest;
-import com.team2.master.dto.PortResponse;
-import com.team2.master.dto.UpdatePortRequest;
-import com.team2.master.command.controller.PortCommandController;
+import com.team2.master.command.application.dto.CreatePortRequest;
+import com.team2.master.query.dto.PortResponse;
+import com.team2.master.command.application.dto.UpdatePortRequest;
+import com.team2.master.command.application.controller.PortCommandController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.command.service.PortCommandService;
+import com.team2.master.command.application.service.PortCommandService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

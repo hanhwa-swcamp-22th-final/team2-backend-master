@@ -1,15 +1,15 @@
 package com.team2.master.unit.controller.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.master.dto.ChangeStatusRequest;
-import com.team2.master.dto.CreateItemRequest;
-import com.team2.master.dto.UpdateItemRequest;
-import com.team2.master.entity.Item;
-import com.team2.master.entity.enums.ItemStatus;
-import com.team2.master.command.controller.ItemCommandController;
+import com.team2.master.command.application.dto.ChangeStatusRequest;
+import com.team2.master.command.application.dto.CreateItemRequest;
+import com.team2.master.command.application.dto.UpdateItemRequest;
+import com.team2.master.command.domain.entity.Item;
+import com.team2.master.command.domain.entity.enums.ItemStatus;
+import com.team2.master.command.application.controller.ItemCommandController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.command.service.ItemCommandService;
+import com.team2.master.command.application.service.ItemCommandService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

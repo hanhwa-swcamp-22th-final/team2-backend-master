@@ -1,6 +1,6 @@
 package com.team2.master.exception;
 
-import com.team2.master.dto.ErrorResponse;
+import com.team2.master.query.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

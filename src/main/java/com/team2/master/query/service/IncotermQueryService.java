@@ -1,6 +1,6 @@
 package com.team2.master.query.service;
 
-import com.team2.master.entity.Incoterm;
+import com.team2.master.command.domain.entity.Incoterm;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.query.mapper.IncotermQueryMapper;
 import lombok.RequiredArgsConstructor;

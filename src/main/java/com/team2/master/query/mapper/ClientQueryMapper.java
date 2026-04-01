@@ -1,6 +1,6 @@
 package com.team2.master.query.mapper;
 
-import com.team2.master.dto.ClientResponse;
+import com.team2.master.query.dto.ClientResponse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

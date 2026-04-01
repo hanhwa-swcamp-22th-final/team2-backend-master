@@ -1,13 +1,13 @@
 package com.team2.master.unit.service;
 
-import com.team2.master.dto.CreateItemRequest;
-import com.team2.master.dto.UpdateItemRequest;
-import com.team2.master.entity.Item;
-import com.team2.master.entity.enums.ItemStatus;
+import com.team2.master.command.application.dto.CreateItemRequest;
+import com.team2.master.command.application.dto.UpdateItemRequest;
+import com.team2.master.command.domain.entity.Item;
+import com.team2.master.command.domain.entity.enums.ItemStatus;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.query.mapper.ItemQueryMapper;
-import com.team2.master.command.repository.ItemRepository;
-import com.team2.master.command.service.ItemCommandService;
+import com.team2.master.command.domain.repository.ItemRepository;
+import com.team2.master.command.application.service.ItemCommandService;
 import com.team2.master.query.service.ItemQueryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

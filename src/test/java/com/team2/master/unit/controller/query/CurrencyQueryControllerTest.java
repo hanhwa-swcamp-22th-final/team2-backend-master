@@ -1,6 +1,6 @@
 package com.team2.master.unit.controller.query;
 
-import com.team2.master.entity.Currency;
+import com.team2.master.command.domain.entity.Currency;
 import com.team2.master.query.controller.CurrencyQueryController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;

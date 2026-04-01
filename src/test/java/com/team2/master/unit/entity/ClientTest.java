@@ -1,11 +1,11 @@
 package com.team2.master.unit.entity;
 
-import com.team2.master.entity.Client;
-import com.team2.master.entity.Country;
-import com.team2.master.entity.Currency;
-import com.team2.master.entity.PaymentTerm;
-import com.team2.master.entity.Port;
-import com.team2.master.entity.enums.ClientStatus;
+import com.team2.master.command.domain.entity.Client;
+import com.team2.master.command.domain.entity.Country;
+import com.team2.master.command.domain.entity.Currency;
+import com.team2.master.command.domain.entity.PaymentTerm;
+import com.team2.master.command.domain.entity.Port;
+import com.team2.master.command.domain.entity.enums.ClientStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

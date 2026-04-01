@@ -1,13 +1,13 @@
 package com.team2.master.unit.controller.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.master.dto.CreatePaymentTermRequest;
-import com.team2.master.dto.UpdatePaymentTermRequest;
-import com.team2.master.entity.PaymentTerm;
-import com.team2.master.command.controller.PaymentTermCommandController;
+import com.team2.master.command.application.dto.CreatePaymentTermRequest;
+import com.team2.master.command.application.dto.UpdatePaymentTermRequest;
+import com.team2.master.command.domain.entity.PaymentTerm;
+import com.team2.master.command.application.controller.PaymentTermCommandController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.command.service.PaymentTermCommandService;
+import com.team2.master.command.application.service.PaymentTermCommandService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

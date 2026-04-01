@@ -1,15 +1,15 @@
 package com.team2.master.unit.service;
 
-import com.team2.master.dto.CreatePortRequest;
-import com.team2.master.dto.PortResponse;
-import com.team2.master.dto.UpdatePortRequest;
-import com.team2.master.entity.Country;
-import com.team2.master.entity.Port;
+import com.team2.master.command.application.dto.CreatePortRequest;
+import com.team2.master.query.dto.PortResponse;
+import com.team2.master.command.application.dto.UpdatePortRequest;
+import com.team2.master.command.domain.entity.Country;
+import com.team2.master.command.domain.entity.Port;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.query.mapper.PortQueryMapper;
-import com.team2.master.command.repository.CountryRepository;
-import com.team2.master.command.repository.PortRepository;
-import com.team2.master.command.service.PortCommandService;
+import com.team2.master.command.domain.repository.CountryRepository;
+import com.team2.master.command.domain.repository.PortRepository;
+import com.team2.master.command.application.service.PortCommandService;
 import com.team2.master.query.service.PortQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

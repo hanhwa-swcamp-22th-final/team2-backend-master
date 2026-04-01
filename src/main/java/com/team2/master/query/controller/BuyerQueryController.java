@@ -1,6 +1,6 @@
 package com.team2.master.query.controller;
 
-import com.team2.master.dto.BuyerResponse;
+import com.team2.master.query.dto.BuyerResponse;
 import com.team2.master.query.service.BuyerQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

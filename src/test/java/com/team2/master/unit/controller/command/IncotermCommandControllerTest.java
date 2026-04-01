@@ -1,13 +1,13 @@
 package com.team2.master.unit.controller.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.master.dto.CreateIncotermRequest;
-import com.team2.master.dto.UpdateIncotermRequest;
-import com.team2.master.entity.Incoterm;
-import com.team2.master.command.controller.IncotermCommandController;
+import com.team2.master.command.application.dto.CreateIncotermRequest;
+import com.team2.master.command.application.dto.UpdateIncotermRequest;
+import com.team2.master.command.domain.entity.Incoterm;
+import com.team2.master.command.application.controller.IncotermCommandController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.command.service.IncotermCommandService;
+import com.team2.master.command.application.service.IncotermCommandService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

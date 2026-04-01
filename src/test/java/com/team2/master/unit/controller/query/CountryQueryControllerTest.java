@@ -1,6 +1,6 @@
 package com.team2.master.unit.controller.query;
 
-import com.team2.master.entity.Country;
+import com.team2.master.command.domain.entity.Country;
 import com.team2.master.query.controller.CountryQueryController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;

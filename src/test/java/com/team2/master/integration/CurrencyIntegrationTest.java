@@ -1,8 +1,8 @@
 package com.team2.master.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.master.entity.Currency;
-import com.team2.master.command.repository.CurrencyRepository;
+import com.team2.master.command.domain.entity.Currency;
+import com.team2.master.command.domain.repository.CurrencyRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;

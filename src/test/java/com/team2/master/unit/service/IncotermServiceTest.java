@@ -1,12 +1,12 @@
 package com.team2.master.unit.service;
 
-import com.team2.master.dto.CreateIncotermRequest;
-import com.team2.master.dto.UpdateIncotermRequest;
-import com.team2.master.entity.Incoterm;
+import com.team2.master.command.application.dto.CreateIncotermRequest;
+import com.team2.master.command.application.dto.UpdateIncotermRequest;
+import com.team2.master.command.domain.entity.Incoterm;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.query.mapper.IncotermQueryMapper;
-import com.team2.master.command.repository.IncotermRepository;
-import com.team2.master.command.service.IncotermCommandService;
+import com.team2.master.command.domain.repository.IncotermRepository;
+import com.team2.master.command.application.service.IncotermCommandService;
 import com.team2.master.query.service.IncotermQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

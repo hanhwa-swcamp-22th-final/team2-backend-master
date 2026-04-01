@@ -1,8 +1,8 @@
 package com.team2.master.unit.entity;
 
-import com.team2.master.entity.Buyer;
-import com.team2.master.entity.Client;
-import com.team2.master.entity.enums.ClientStatus;
+import com.team2.master.command.domain.entity.Buyer;
+import com.team2.master.command.domain.entity.Client;
+import com.team2.master.command.domain.entity.enums.ClientStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

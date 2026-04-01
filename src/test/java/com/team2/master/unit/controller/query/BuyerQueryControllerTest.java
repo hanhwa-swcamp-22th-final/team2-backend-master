@@ -1,6 +1,6 @@
 package com.team2.master.unit.controller.query;
 
-import com.team2.master.dto.BuyerResponse;
+import com.team2.master.query.dto.BuyerResponse;
 import com.team2.master.query.controller.BuyerQueryController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;

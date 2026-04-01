@@ -1,13 +1,13 @@
 package com.team2.master.unit.controller.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.master.dto.CreateCountryRequest;
-import com.team2.master.dto.UpdateCountryRequest;
-import com.team2.master.entity.Country;
-import com.team2.master.command.controller.CountryCommandController;
+import com.team2.master.command.application.dto.CreateCountryRequest;
+import com.team2.master.command.application.dto.UpdateCountryRequest;
+import com.team2.master.command.domain.entity.Country;
+import com.team2.master.command.application.controller.CountryCommandController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.command.service.CountryCommandService;
+import com.team2.master.command.application.service.CountryCommandService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

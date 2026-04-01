@@ -1,12 +1,12 @@
 package com.team2.master.unit.service;
 
-import com.team2.master.dto.CreateCountryRequest;
-import com.team2.master.dto.UpdateCountryRequest;
-import com.team2.master.entity.Country;
+import com.team2.master.command.application.dto.CreateCountryRequest;
+import com.team2.master.command.application.dto.UpdateCountryRequest;
+import com.team2.master.command.domain.entity.Country;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.query.mapper.CountryQueryMapper;
-import com.team2.master.command.repository.CountryRepository;
-import com.team2.master.command.service.CountryCommandService;
+import com.team2.master.command.domain.repository.CountryRepository;
+import com.team2.master.command.application.service.CountryCommandService;
 import com.team2.master.query.service.CountryQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

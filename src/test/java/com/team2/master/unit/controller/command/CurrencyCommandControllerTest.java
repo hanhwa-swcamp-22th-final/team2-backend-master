@@ -1,13 +1,13 @@
 package com.team2.master.unit.controller.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.master.dto.CreateCurrencyRequest;
-import com.team2.master.dto.UpdateCurrencyRequest;
-import com.team2.master.entity.Currency;
-import com.team2.master.command.controller.CurrencyCommandController;
+import com.team2.master.command.application.dto.CreateCurrencyRequest;
+import com.team2.master.command.application.dto.UpdateCurrencyRequest;
+import com.team2.master.command.domain.entity.Currency;
+import com.team2.master.command.application.controller.CurrencyCommandController;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
-import com.team2.master.command.service.CurrencyCommandService;
+import com.team2.master.command.application.service.CurrencyCommandService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.team2.master.query.controller;
 
-import com.team2.master.entity.PaymentTerm;
+import com.team2.master.command.domain.entity.PaymentTerm;
 import com.team2.master.query.service.PaymentTermQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

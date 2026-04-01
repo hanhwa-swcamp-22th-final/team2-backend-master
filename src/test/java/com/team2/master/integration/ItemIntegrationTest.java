@@ -1,12 +1,12 @@
 package com.team2.master.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.master.dto.ChangeStatusRequest;
-import com.team2.master.dto.CreateItemRequest;
-import com.team2.master.dto.UpdateItemRequest;
-import com.team2.master.entity.Item;
-import com.team2.master.entity.enums.ItemStatus;
-import com.team2.master.command.repository.ItemRepository;
+import com.team2.master.command.application.dto.ChangeStatusRequest;
+import com.team2.master.command.application.dto.CreateItemRequest;
+import com.team2.master.command.application.dto.UpdateItemRequest;
+import com.team2.master.command.domain.entity.Item;
+import com.team2.master.command.domain.entity.enums.ItemStatus;
+import com.team2.master.command.domain.repository.ItemRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;

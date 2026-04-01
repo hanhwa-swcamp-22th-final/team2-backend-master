@@ -4,7 +4,7 @@
 
 <mapper namespace="com.team2.master.query.mapper.ClientQueryMapper">
 
-    <resultMap id="ClientResponseMap" type="com.team2.master.dto.ClientResponse">
+    <resultMap id="ClientResponseMap" type="com.team2.master.query.dto.ClientResponse">
         <result property="id"              column="client_id"/>
         <result property="clientCode"      column="client_code"/>
         <result property="clientName"      column="client_name"/>
@@ -23,7 +23,7 @@
         <result property="currencyName"    column="currency_name"/>
         <result property="clientManager"   column="client_manager"/>
         <result property="departmentId"    column="department_id"/>
-        <result property="clientStatus"    column="client_status" javaType="com.team2.master.entity.enums.ClientStatus"/>
+        <result property="clientStatus"    column="client_status" javaType="com.team2.master.command.domain.entity.enums.ClientStatus"/>
         <result property="clientRegDate"   column="client_reg_date"/>
         <result property="createdAt"       column="created_at"/>
         <result property="updatedAt"       column="updated_at"/>

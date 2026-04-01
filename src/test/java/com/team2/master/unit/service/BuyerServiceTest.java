@@ -1,16 +1,16 @@
 package com.team2.master.unit.service;
 
-import com.team2.master.dto.BuyerResponse;
-import com.team2.master.dto.CreateBuyerRequest;
-import com.team2.master.dto.UpdateBuyerRequest;
-import com.team2.master.entity.Buyer;
-import com.team2.master.entity.Client;
-import com.team2.master.entity.enums.ClientStatus;
+import com.team2.master.query.dto.BuyerResponse;
+import com.team2.master.command.application.dto.CreateBuyerRequest;
+import com.team2.master.command.application.dto.UpdateBuyerRequest;
+import com.team2.master.command.domain.entity.Buyer;
+import com.team2.master.command.domain.entity.Client;
+import com.team2.master.command.domain.entity.enums.ClientStatus;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.query.mapper.BuyerQueryMapper;
-import com.team2.master.command.repository.BuyerRepository;
-import com.team2.master.command.repository.ClientRepository;
-import com.team2.master.command.service.BuyerCommandService;
+import com.team2.master.command.domain.repository.BuyerRepository;
+import com.team2.master.command.domain.repository.ClientRepository;
+import com.team2.master.command.application.service.BuyerCommandService;
 import com.team2.master.query.service.BuyerQueryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -4,7 +4,7 @@
 
 <mapper namespace="com.team2.master.query.mapper.PortQueryMapper">
 
-    <resultMap id="PortResponseMap" type="com.team2.master.dto.PortResponse">
+    <resultMap id="PortResponseMap" type="com.team2.master.query.dto.PortResponse">
         <result property="id"          column="port_id"/>
         <result property="portCode"    column="port_code"/>
         <result property="portName"    column="port_name"/>

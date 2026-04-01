@@ -1,6 +1,6 @@
 package com.team2.master.query.mapper;
 
-import com.team2.master.entity.Currency;
+import com.team2.master.command.domain.entity.Currency;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

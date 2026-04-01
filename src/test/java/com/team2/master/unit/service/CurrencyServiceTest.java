@@ -1,12 +1,12 @@
 package com.team2.master.unit.service;
 
-import com.team2.master.dto.CreateCurrencyRequest;
-import com.team2.master.dto.UpdateCurrencyRequest;
-import com.team2.master.entity.Currency;
+import com.team2.master.command.application.dto.CreateCurrencyRequest;
+import com.team2.master.command.application.dto.UpdateCurrencyRequest;
+import com.team2.master.command.domain.entity.Currency;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.query.mapper.CurrencyQueryMapper;
-import com.team2.master.command.repository.CurrencyRepository;
-import com.team2.master.command.service.CurrencyCommandService;
+import com.team2.master.command.domain.repository.CurrencyRepository;
+import com.team2.master.command.application.service.CurrencyCommandService;
 import com.team2.master.query.service.CurrencyQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

@@ -1,6 +1,6 @@
 package com.team2.master.unit.entity;
 
-import com.team2.master.entity.PaymentTerm;
+import com.team2.master.command.domain.entity.PaymentTerm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

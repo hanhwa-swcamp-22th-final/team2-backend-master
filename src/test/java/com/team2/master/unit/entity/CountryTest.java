@@ -1,6 +1,6 @@
 package com.team2.master.unit.entity;
 
-import com.team2.master.entity.Country;
+import com.team2.master.command.domain.entity.Country;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

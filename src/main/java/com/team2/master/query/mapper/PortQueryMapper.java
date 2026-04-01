@@ -1,6 +1,6 @@
 package com.team2.master.query.mapper;
 
-import com.team2.master.dto.PortResponse;
+import com.team2.master.query.dto.PortResponse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

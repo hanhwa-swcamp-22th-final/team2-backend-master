@@ -1,6 +1,6 @@
 package com.team2.master.query.controller;
 
-import com.team2.master.entity.Item;
+import com.team2.master.command.domain.entity.Item;
 import com.team2.master.query.service.ItemQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
