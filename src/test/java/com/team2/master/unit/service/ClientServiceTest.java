@@ -91,6 +91,19 @@ class ClientServiceTest {
         }
 
         @Test
+        @DisplayName("상태별 거래처 목록을 조회할 수 있다")
+        void getClientsByStatus() {
+            // given
+            given(clientQueryMapper.findByClientStatus("ACTIVE")).willReturn(List.of(clientResponse));
+
+            // when
+            List<ClientResponse> result = clientQueryService.getClientsByStatus(ClientStatus.ACTIVE);
+
+            // then
+            assertThat(result).hasSize(1);
+        }
+
+        @Test
         @DisplayName("부서 ID로 거래처 목록을 조회할 수 있다 (RBAC)")
         void getClientsByDepartmentId() {
             // given

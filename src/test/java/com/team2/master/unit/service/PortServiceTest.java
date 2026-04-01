@@ -118,7 +118,7 @@ class PortServiceTest {
             given(portRepository.save(any(Port.class))).willReturn(port);
 
             // when
-            Port result = portCommandService.create(request);
+            PortResponse result = portCommandService.create(request);
 
             // then
             assertThat(result.getPortCode()).isEqualTo("KRPUS");
@@ -163,7 +163,7 @@ class PortServiceTest {
             given(countryRepository.findById(2)).willReturn(Optional.of(newCountry));
 
             // when
-            Port result = portCommandService.update(1, request);
+            PortResponse result = portCommandService.update(1, request);
 
             // then
             assertThat(result.getPortCode()).isEqualTo("JPTYO");
