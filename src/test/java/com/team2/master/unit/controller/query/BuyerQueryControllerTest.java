@@ -85,4 +85,15 @@ class BuyerQueryControllerTest {
                 .andExpect(jsonPath("$[0].buyerName").value("John Doe"))
                 .andExpect(jsonPath("$[0].clientName").value("Test Corp"));
     }
+
+    @Test
+    @DisplayName("GET /api/clients/{clientId}/buyers - 거래처 하위 바이어 목록 조회 (중첩 URL)")
+    void getBuyersByClientNested_success() throws Exception {
+        given(buyerQueryService.getBuyersByClientId(1)).willReturn(List.of(createTestBuyerResponse()));
+
+        mockMvc.perform(get("/api/clients/1/buyers"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].buyerName").value("John Doe"))
+                .andExpect(jsonPath("$[0].clientName").value("Test Corp"));
+    }
 }

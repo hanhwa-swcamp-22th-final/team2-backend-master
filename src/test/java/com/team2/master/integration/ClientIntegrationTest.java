@@ -72,8 +72,9 @@ class ClientIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/clients"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(0))
+                .andExpect(jsonPath("$.totalElements").value(0));
     }
 
     @Test
@@ -89,9 +90,10 @@ class ClientIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/clients"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].clientCode").value("CLI001"))
-                .andExpect(jsonPath("$[1].clientCode").value("CLI002"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].clientCode").value("CLI002"))
+                .andExpect(jsonPath("$.content[1].clientCode").value("CLI001"))
+                .andExpect(jsonPath("$.totalElements").value(2));
     }
 
     // ==================== GET /api/clients/{id} ====================

@@ -1,5 +1,7 @@
 package com.team2.master.query.service;
 
+import com.team2.master.common.PagedResponse;
+import com.team2.master.query.dto.ClientListResponse;
 import com.team2.master.query.dto.ClientResponse;
 import com.team2.master.command.domain.entity.enums.ClientStatus;
 import com.team2.master.exception.ResourceNotFoundException;
@@ -34,6 +36,15 @@ public class ClientQueryService {
     }
 
     public List<ClientResponse> getClientsByStatus(ClientStatus status) {
-        return clientQueryMapper.findByClientStatus(status.name());
+        return clientQueryMapper.findByClientStatus(status.getDbValue());
+    }
+
+    public PagedResponse<ClientListResponse> getClients(String clientName, Integer countryId,
+                                                        String clientStatus, Integer departmentId,
+                                                        int page, int size) {
+        int offset = page * size;
+        List<ClientListResponse> content = clientQueryMapper.findByCondition(clientName, countryId, clientStatus, departmentId, size, offset);
+        long totalElements = clientQueryMapper.countByCondition(clientName, countryId, clientStatus, departmentId);
+        return PagedResponse.of(content, totalElements, page, size);
     }
 }

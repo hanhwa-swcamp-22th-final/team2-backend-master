@@ -9,24 +9,28 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/buyers")
 @RequiredArgsConstructor
 public class BuyerQueryController {
 
     private final BuyerQueryService buyerQueryService;
 
-    @GetMapping
+    @GetMapping("/api/buyers")
     public ResponseEntity<List<BuyerResponse>> getAllBuyers() {
         return ResponseEntity.ok(buyerQueryService.getAllBuyers());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/buyers/{id}")
     public ResponseEntity<BuyerResponse> getBuyer(@PathVariable Integer id) {
         return ResponseEntity.ok(buyerQueryService.getBuyer(id));
     }
 
-    @GetMapping("/client/{clientId}")
+    @GetMapping("/api/buyers/client/{clientId}")
     public ResponseEntity<List<BuyerResponse>> getBuyersByClient(@PathVariable Integer clientId) {
+        return ResponseEntity.ok(buyerQueryService.getBuyersByClientId(clientId));
+    }
+
+    @GetMapping("/api/clients/{clientId}/buyers")
+    public ResponseEntity<List<BuyerResponse>> getBuyersByClientNested(@PathVariable Integer clientId) {
         return ResponseEntity.ok(buyerQueryService.getBuyersByClientId(clientId));
     }
 }

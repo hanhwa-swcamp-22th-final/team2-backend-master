@@ -165,4 +165,24 @@ class BuyerCommandControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("바이어를 찾을 수 없습니다: 999"));
     }
+
+    @Test
+    @DisplayName("POST /api/clients/{clientId}/buyers - 거래처 하위 바이어 생성 (중첩 URL)")
+    void createBuyerNested_success() throws Exception {
+        CreateBuyerRequest request = CreateBuyerRequest.builder()
+                .buyerName("John Doe")
+                .buyerPosition("Manager")
+                .buyerEmail("john@test.com")
+                .buyerTel("010-1234-5678")
+                .build();
+        given(buyerCommandService.createBuyer(any(CreateBuyerRequest.class))).willReturn(createTestBuyer());
+
+        mockMvc.perform(post("/api/clients/1/buyers")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.buyerName").value("John Doe"))
+                .andExpect(jsonPath("$.clientName").value("Test Corp"));
+    }
 }

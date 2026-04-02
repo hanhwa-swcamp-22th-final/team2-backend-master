@@ -23,10 +23,23 @@
         <result property="currencyName"    column="currency_name"/>
         <result property="clientManager"   column="client_manager"/>
         <result property="departmentId"    column="department_id"/>
-        <result property="clientStatus"    column="client_status" javaType="com.team2.master.command.domain.entity.enums.ClientStatus"/>
+        <result property="clientStatus"    column="client_status"
+                typeHandler="com.team2.master.config.ClientStatusTypeHandler"/>
         <result property="clientRegDate"   column="client_reg_date"/>
         <result property="createdAt"       column="created_at"/>
         <result property="updatedAt"       column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="ClientListResponseMap" type="com.team2.master.query.dto.ClientListResponse">
+        <result property="clientId"      column="client_id"/>
+        <result property="clientCode"    column="client_code"/>
+        <result property="clientName"    column="client_name"/>
+        <result property="clientNameKr"  column="client_name_kr"/>
+        <result property="countryName"   column="country_name"/>
+        <result property="clientCity"    column="client_city"/>
+        <result property="departmentId"  column="department_id"/>
+        <result property="clientStatus"  column="client_status"/>
+        <result property="clientRegDate" column="client_reg_date"/>
     </resultMap>
 
     <sql id="selectClientBase">
@@ -59,6 +72,52 @@
         LEFT JOIN payment_terms pt ON cl.payment_term_id = pt.payment_term_id
         LEFT JOIN currencies cu    ON cl.currency_id  = cu.currency_id
     </sql>
+
+    <sql id="clientListColumns">
+        SELECT
+            cl.client_id,
+            cl.client_code,
+            cl.client_name,
+            cl.client_name_kr,
+            c.country_name,
+            cl.client_city,
+            cl.department_id,
+            cl.client_status,
+            cl.client_reg_date
+        FROM clients cl
+        LEFT JOIN countries c ON cl.country_id = c.country_id
+    </sql>
+
+    <sql id="clientFilterConditions">
+        <where>
+            <if test="clientName != null and clientName != ''">
+                AND cl.client_name LIKE CONCAT('%', #{clientName}, '%')
+            </if>
+            <if test="countryId != null">
+                AND cl.country_id = #{countryId}
+            </if>
+            <if test="clientStatus != null and clientStatus != ''">
+                AND cl.client_status = #{clientStatus}
+            </if>
+            <if test="departmentId != null">
+                AND cl.department_id = #{departmentId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findByCondition" resultMap="ClientListResponseMap">
+        <include refid="clientListColumns"/>
+        <include refid="clientFilterConditions"/>
+        ORDER BY cl.client_id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countByCondition" resultType="long">
+        SELECT COUNT(*)
+        FROM clients cl
+        LEFT JOIN countries c ON cl.country_id = c.country_id
+        <include refid="clientFilterConditions"/>
+    </select>
 
     <select id="findById" resultMap="ClientResponseMap">
         <include refid="selectClientBase"/>

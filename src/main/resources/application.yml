@@ -32,6 +32,7 @@ server:
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml
   type-aliases-package: com.team2.master.command.domain.entity,com.team2.master.command.application.dto,com.team2.master.query.dto
+  type-handlers-package: com.team2.master.config
   configuration:
     map-underscore-to-camel-case: true
 

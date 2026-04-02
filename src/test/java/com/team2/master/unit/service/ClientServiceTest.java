@@ -94,7 +94,7 @@ class ClientServiceTest {
         @DisplayName("상태별 거래처 목록을 조회할 수 있다")
         void getClientsByStatus() {
             // given
-            given(clientQueryMapper.findByClientStatus("ACTIVE")).willReturn(List.of(clientResponse));
+            given(clientQueryMapper.findByClientStatus("active")).willReturn(List.of(clientResponse));
 
             // when
             List<ClientResponse> result = clientQueryService.getClientsByStatus(ClientStatus.ACTIVE);

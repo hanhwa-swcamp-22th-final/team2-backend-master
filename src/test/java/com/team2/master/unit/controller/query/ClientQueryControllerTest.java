@@ -1,5 +1,7 @@
 package com.team2.master.unit.controller.query;
 
+import com.team2.master.common.PagedResponse;
+import com.team2.master.query.dto.ClientListResponse;
 import com.team2.master.query.dto.ClientResponse;
 import com.team2.master.command.domain.entity.enums.ClientStatus;
 import com.team2.master.query.controller.ClientQueryController;
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -48,16 +51,34 @@ class ClientQueryControllerTest {
                 .build();
     }
 
+    private ClientListResponse createTestClientListResponse() {
+        ClientListResponse response = new ClientListResponse();
+        response.setClientCode("CLI001");
+        response.setClientName("Test Corp");
+        response.setClientNameKr("테스트 주식회사");
+        response.setClientCity("Seoul");
+        response.setDepartmentId(1);
+        response.setClientStatus("ACTIVE");
+        response.setClientRegDate(LocalDate.of(2025, 1, 1));
+        return response;
+    }
+
     @Test
-    @DisplayName("GET /api/clients - 전체 거래처 목록 조회")
-    void getAllClients_success() throws Exception {
-        given(clientQueryService.getAllClients()).willReturn(List.of(createTestClientResponse()));
+    @DisplayName("GET /api/clients - 거래처 목록 페이징 조회")
+    void getClients_success() throws Exception {
+        ClientListResponse listResponse = createTestClientListResponse();
+        PagedResponse<ClientListResponse> pagedResponse = PagedResponse.of(List.of(listResponse), 1L, 0, 10);
+        given(clientQueryService.getClients(isNull(), isNull(), isNull(), isNull(), eq(0), eq(10)))
+                .willReturn(pagedResponse);
 
         mockMvc.perform(get("/api/clients"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].clientName").value("Test Corp"))
-                .andExpect(jsonPath("$[0].clientCode").value("CLI001"))
-                .andExpect(jsonPath("$[0].clientStatus").value("ACTIVE"));
+                .andExpect(jsonPath("$.content[0].clientName").value("Test Corp"))
+                .andExpect(jsonPath("$.content[0].clientCode").value("CLI001"))
+                .andExpect(jsonPath("$.content[0].clientStatus").value("ACTIVE"))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.currentPage").value(0));
     }
 
     @Test

@@ -12,26 +12,33 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/buyers")
 @RequiredArgsConstructor
 public class BuyerCommandController {
 
     private final BuyerCommandService buyerCommandService;
 
-    @PostMapping
+    @PostMapping("/api/buyers")
     public ResponseEntity<BuyerResponse> createBuyer(@Valid @RequestBody CreateBuyerRequest request) {
         Buyer buyer = buyerCommandService.createBuyer(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(BuyerResponse.from(buyer));
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/api/clients/{clientId}/buyers")
+    public ResponseEntity<BuyerResponse> createBuyerNested(@PathVariable Integer clientId,
+                                                           @Valid @RequestBody CreateBuyerRequest request) {
+        request.setClientId(clientId);
+        Buyer buyer = buyerCommandService.createBuyer(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BuyerResponse.from(buyer));
+    }
+
+    @PutMapping("/api/buyers/{id}")
     public ResponseEntity<BuyerResponse> updateBuyer(@PathVariable Integer id,
                                                      @Valid @RequestBody UpdateBuyerRequest request) {
         Buyer buyer = buyerCommandService.updateBuyer(id, request);
         return ResponseEntity.ok(BuyerResponse.from(buyer));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/buyers/{id}")
     public ResponseEntity<Void> deleteBuyer(@PathVariable Integer id) {
         buyerCommandService.deleteBuyer(id);
         return ResponseEntity.noContent().build();

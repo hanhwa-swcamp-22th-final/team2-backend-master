@@ -86,7 +86,7 @@ class ItemServiceTest {
         @DisplayName("상태별 품목 목록을 조회할 수 있다")
         void getItemsByStatus() {
             // given
-            given(itemQueryMapper.findByItemStatus("ACTIVE")).willReturn(List.of(item));
+            given(itemQueryMapper.findByItemStatus("active")).willReturn(List.of(item));
 
             // when
             List<Item> result = itemQueryService.getItemsByStatus(ItemStatus.ACTIVE);

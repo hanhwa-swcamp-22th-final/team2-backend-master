@@ -2,7 +2,9 @@ package com.team2.master.unit.controller.query;
 
 import com.team2.master.command.domain.entity.Item;
 import com.team2.master.command.domain.entity.enums.ItemStatus;
+import com.team2.master.common.PagedResponse;
 import com.team2.master.query.controller.ItemQueryController;
+import com.team2.master.query.dto.ItemListResponse;
 import com.team2.master.exception.GlobalExceptionHandler;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.query.service.ItemQueryService;
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,14 +43,33 @@ class ItemQueryControllerTest {
                 .build();
     }
 
+    private ItemListResponse createTestItemListResponse() {
+        ItemListResponse response = new ItemListResponse();
+        response.setItemCode("ITM001");
+        response.setItemName("Test Product");
+        response.setItemNameKr("테스트 제품");
+        response.setItemSpec("100x200mm");
+        response.setItemUnit("EA");
+        response.setItemUnitPrice(new BigDecimal("1500.00"));
+        response.setItemCategory("전자부품");
+        response.setItemStatus("ACTIVE");
+        return response;
+    }
+
     @Test
-    @DisplayName("GET /api/items - 전체 품목 목록 조회")
-    void getAllItems_success() throws Exception {
-        given(itemQueryService.getAllItems()).willReturn(List.of(createTestItem()));
+    @DisplayName("GET /api/items - 품목 목록 페이징 조회")
+    void getItems_success() throws Exception {
+        ItemListResponse listResponse = createTestItemListResponse();
+        PagedResponse<ItemListResponse> pagedResponse = PagedResponse.of(List.of(listResponse), 1L, 0, 10);
+        given(itemQueryService.getItems(isNull(), isNull(), isNull(), eq(0), eq(10)))
+                .willReturn(pagedResponse);
 
         mockMvc.perform(get("/api/items"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].itemName").value("Test Product"));
+                .andExpect(jsonPath("$.content[0].itemName").value("Test Product"))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.currentPage").value(0));
     }
 
     @Test

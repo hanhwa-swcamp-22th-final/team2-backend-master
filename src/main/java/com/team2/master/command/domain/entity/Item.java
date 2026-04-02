@@ -1,5 +1,6 @@
 package com.team2.master.command.domain.entity;
 
+import com.team2.master.command.domain.entity.converter.ItemStatusConverter;
 import com.team2.master.command.domain.entity.enums.ItemStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -49,7 +50,7 @@ public class Item {
     @Column(name = "item_category", length = 100)
     private String itemCategory;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ItemStatusConverter.class)
     @Column(name = "item_status", nullable = false)
     private ItemStatus itemStatus;
 

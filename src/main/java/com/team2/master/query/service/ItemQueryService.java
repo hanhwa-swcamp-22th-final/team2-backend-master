@@ -2,7 +2,9 @@ package com.team2.master.query.service;
 
 import com.team2.master.command.domain.entity.Item;
 import com.team2.master.command.domain.entity.enums.ItemStatus;
+import com.team2.master.common.PagedResponse;
 import com.team2.master.exception.ResourceNotFoundException;
+import com.team2.master.query.dto.ItemListResponse;
 import com.team2.master.query.mapper.ItemQueryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,14 @@ public class ItemQueryService {
     }
 
     public List<Item> getItemsByStatus(ItemStatus status) {
-        return itemQueryMapper.findByItemStatus(status.name());
+        return itemQueryMapper.findByItemStatus(status.getDbValue());
+    }
+
+    public PagedResponse<ItemListResponse> getItems(String itemName, String itemCategory,
+                                                    String itemStatus, int page, int size) {
+        int offset = page * size;
+        List<ItemListResponse> content = itemQueryMapper.findByCondition(itemName, itemCategory, itemStatus, size, offset);
+        long totalElements = itemQueryMapper.countByCondition(itemName, itemCategory, itemStatus);
+        return PagedResponse.of(content, totalElements, page, size);
     }
 }

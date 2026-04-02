@@ -1,5 +1,7 @@
 package com.team2.master.query.controller;
 
+import com.team2.master.common.PagedResponse;
+import com.team2.master.query.dto.ClientListResponse;
 import com.team2.master.query.dto.ClientResponse;
 import com.team2.master.query.service.ClientQueryService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +18,14 @@ public class ClientQueryController {
     private final ClientQueryService clientQueryService;
 
     @GetMapping
-    public ResponseEntity<List<ClientResponse>> getAllClients() {
-        return ResponseEntity.ok(clientQueryService.getAllClients());
+    public ResponseEntity<PagedResponse<ClientListResponse>> getClients(
+            @RequestParam(required = false) String clientName,
+            @RequestParam(required = false) Integer countryId,
+            @RequestParam(required = false) String clientStatus,
+            @RequestParam(required = false) Integer departmentId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(clientQueryService.getClients(clientName, countryId, clientStatus, departmentId, page, size));
     }
 
     @GetMapping("/{id}")

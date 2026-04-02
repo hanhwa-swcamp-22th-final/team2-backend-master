@@ -1,5 +1,6 @@
 package com.team2.master.command.domain.entity;
 
+import com.team2.master.command.domain.entity.converter.ClientStatusConverter;
 import com.team2.master.command.domain.entity.enums.ClientStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -61,7 +62,7 @@ public class Client {
     @Column(name = "department_id")
     private Integer departmentId;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ClientStatusConverter.class)
     @Column(name = "client_status", nullable = false)
     private ClientStatus clientStatus;
 

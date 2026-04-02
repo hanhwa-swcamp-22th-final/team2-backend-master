@@ -16,11 +16,65 @@
         <result property="itemWeight"    column="item_weight"/>
         <result property="itemHsCode"    column="item_hs_code"/>
         <result property="itemCategory"  column="item_category"/>
-        <result property="itemStatus"    column="item_status"/>
+        <result property="itemStatus"    column="item_status"
+                typeHandler="com.team2.master.config.ItemStatusTypeHandler"/>
         <result property="itemRegDate"   column="item_reg_date"/>
         <result property="createdAt"     column="created_at"/>
         <result property="updatedAt"     column="updated_at"/>
     </resultMap>
+
+    <resultMap id="ItemListResponseMap" type="com.team2.master.query.dto.ItemListResponse">
+        <result property="itemId"        column="item_id"/>
+        <result property="itemCode"      column="item_code"/>
+        <result property="itemName"      column="item_name"/>
+        <result property="itemNameKr"    column="item_name_kr"/>
+        <result property="itemSpec"      column="item_spec"/>
+        <result property="itemUnit"      column="item_unit"/>
+        <result property="itemUnitPrice" column="item_unit_price"/>
+        <result property="itemCategory"  column="item_category"/>
+        <result property="itemStatus"    column="item_status"/>
+    </resultMap>
+
+    <sql id="itemListColumns">
+        SELECT
+            i.item_id,
+            i.item_code,
+            i.item_name,
+            i.item_name_kr,
+            i.item_spec,
+            i.item_unit,
+            i.item_unit_price,
+            i.item_category,
+            i.item_status
+        FROM items i
+    </sql>
+
+    <sql id="itemFilterConditions">
+        <where>
+            <if test="itemName != null and itemName != ''">
+                AND i.item_name LIKE CONCAT('%', #{itemName}, '%')
+            </if>
+            <if test="itemCategory != null and itemCategory != ''">
+                AND i.item_category = #{itemCategory}
+            </if>
+            <if test="itemStatus != null and itemStatus != ''">
+                AND i.item_status = #{itemStatus}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findByCondition" resultMap="ItemListResponseMap">
+        <include refid="itemListColumns"/>
+        <include refid="itemFilterConditions"/>
+        ORDER BY i.item_id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countByCondition" resultType="long">
+        SELECT COUNT(*)
+        FROM items i
+        <include refid="itemFilterConditions"/>
+    </select>
 
     <select id="findById" resultMap="ItemMap">
         SELECT item_id, item_code, item_name, item_name_kr, item_spec, item_unit,
