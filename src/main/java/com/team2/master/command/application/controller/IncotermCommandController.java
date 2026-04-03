@@ -4,11 +4,16 @@ import com.team2.master.command.application.dto.CreateIncotermRequest;
 import com.team2.master.command.application.dto.UpdateIncotermRequest;
 import com.team2.master.command.domain.entity.Incoterm;
 import com.team2.master.command.application.service.IncotermCommandService;
+import com.team2.master.query.controller.IncotermQueryController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/api/incoterms")
@@ -18,13 +23,21 @@ public class IncotermCommandController {
     private final IncotermCommandService incotermCommandService;
 
     @PostMapping
-    public ResponseEntity<Incoterm> create(@Valid @RequestBody CreateIncotermRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(incotermCommandService.create(request));
+    public ResponseEntity<EntityModel<Incoterm>> create(@Valid @RequestBody CreateIncotermRequest request) {
+        Incoterm incoterm = incotermCommandService.create(request);
+        EntityModel<Incoterm> model = EntityModel.of(incoterm,
+                linkTo(methodOn(IncotermQueryController.class).getById(incoterm.getIncotermId())).withSelfRel(),
+                linkTo(methodOn(IncotermQueryController.class).getAll()).withRel("incoterms"));
+        URI location = linkTo(methodOn(IncotermQueryController.class).getById(incoterm.getIncotermId())).toUri();
+        return ResponseEntity.created(location).body(model);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Incoterm> update(@PathVariable Integer id, @Valid @RequestBody UpdateIncotermRequest request) {
-        return ResponseEntity.ok(incotermCommandService.update(id, request));
+    public ResponseEntity<EntityModel<Incoterm>> update(@PathVariable Integer id, @Valid @RequestBody UpdateIncotermRequest request) {
+        Incoterm incoterm = incotermCommandService.update(id, request);
+        return ResponseEntity.ok(EntityModel.of(incoterm,
+                linkTo(methodOn(IncotermQueryController.class).getById(id)).withSelfRel(),
+                linkTo(methodOn(IncotermQueryController.class).getAll()).withRel("incoterms")));
     }
 
     @DeleteMapping("/{id}")

@@ -5,10 +5,14 @@ import com.team2.master.query.dto.ClientListResponse;
 import com.team2.master.query.dto.ClientResponse;
 import com.team2.master.query.service.ClientQueryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -29,12 +33,20 @@ public class ClientQueryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClientResponse> getClient(@PathVariable Integer id) {
-        return ResponseEntity.ok(clientQueryService.getClient(id));
+    public ResponseEntity<EntityModel<ClientResponse>> getClient(@PathVariable Integer id) {
+        ClientResponse response = clientQueryService.getClient(id);
+        return ResponseEntity.ok(EntityModel.of(response,
+                linkTo(methodOn(ClientQueryController.class).getClient(id)).withSelfRel(),
+                linkTo(methodOn(ClientQueryController.class).getClients(null, null, null, null, 0, 10)).withRel("clients")));
     }
 
     @GetMapping("/department/{departmentId}")
-    public ResponseEntity<List<ClientResponse>> getClientsByDepartment(@PathVariable Integer departmentId) {
-        return ResponseEntity.ok(clientQueryService.getClientsByDepartmentId(departmentId));
+    public ResponseEntity<CollectionModel<EntityModel<ClientResponse>>> getClientsByDepartment(@PathVariable Integer departmentId) {
+        List<EntityModel<ClientResponse>> models = clientQueryService.getClientsByDepartmentId(departmentId).stream()
+                .map(c -> EntityModel.of(c,
+                        linkTo(methodOn(ClientQueryController.class).getClient(c.getId())).withSelfRel()))
+                .toList();
+        return ResponseEntity.ok(CollectionModel.of(models,
+                linkTo(methodOn(ClientQueryController.class).getClientsByDepartment(departmentId)).withSelfRel()));
     }
 }
