@@ -4,7 +4,6 @@ import com.team2.master.command.application.dto.CreatePaymentTermRequest;
 import com.team2.master.command.application.dto.UpdatePaymentTermRequest;
 import com.team2.master.command.domain.entity.PaymentTerm;
 import com.team2.master.command.application.service.PaymentTermCommandService;
-import com.team2.master.query.controller.PaymentTermQueryController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,13 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Tag(name = "결제조건 Command", description = "결제조건 등록/수정/삭제 API")
 @RestController
@@ -34,13 +29,9 @@ public class PaymentTermCommandController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     })
     @PostMapping
-    public ResponseEntity<EntityModel<PaymentTerm>> create(@Valid @RequestBody CreatePaymentTermRequest request) {
+    public ResponseEntity<PaymentTerm> create(@Valid @RequestBody CreatePaymentTermRequest request) {
         PaymentTerm paymentTerm = paymentTermCommandService.create(request);
-        EntityModel<PaymentTerm> model = EntityModel.of(paymentTerm,
-                linkTo(methodOn(PaymentTermQueryController.class).getById(paymentTerm.getPaymentTermId())).withSelfRel(),
-                linkTo(methodOn(PaymentTermQueryController.class).getAll()).withRel("payment-terms"));
-        URI location = linkTo(methodOn(PaymentTermQueryController.class).getById(paymentTerm.getPaymentTermId())).toUri();
-        return ResponseEntity.created(location).body(model);
+        return ResponseEntity.status(HttpStatus.CREATED).body(paymentTerm);
     }
 
     @Operation(summary = "결제조건 수정", description = "기존 결제조건 정보를 수정합니다.")
@@ -50,11 +41,9 @@ public class PaymentTermCommandController {
             @ApiResponse(responseCode = "404", description = "결제조건을 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<PaymentTerm>> update(@Parameter(description = "결제조건 ID") @PathVariable Integer id, @Valid @RequestBody UpdatePaymentTermRequest request) {
+    public ResponseEntity<PaymentTerm> update(@Parameter(description = "결제조건 ID") @PathVariable Integer id, @Valid @RequestBody UpdatePaymentTermRequest request) {
         PaymentTerm paymentTerm = paymentTermCommandService.update(id, request);
-        return ResponseEntity.ok(EntityModel.of(paymentTerm,
-                linkTo(methodOn(PaymentTermQueryController.class).getById(id)).withSelfRel(),
-                linkTo(methodOn(PaymentTermQueryController.class).getAll()).withRel("payment-terms")));
+        return ResponseEntity.ok(paymentTerm);
     }
 
     @Operation(summary = "결제조건 삭제", description = "결제조건을 삭제합니다.")
