@@ -69,8 +69,8 @@ class BuyerIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/buyers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._embedded").doesNotExist());
     }
 
     @Test
@@ -86,9 +86,9 @@ class BuyerIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/buyers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].buyerName").value("Buyer A"))
-                .andExpect(jsonPath("$[1].buyerName").value("Buyer B"));
+                .andExpect(jsonPath("$._embedded.buyerResponseList.length()").value(2))
+                .andExpect(jsonPath("$._embedded.buyerResponseList[0].buyerName").value("Buyer A"))
+                .andExpect(jsonPath("$._embedded.buyerResponseList[1].buyerName").value("Buyer B"));
     }
 
     // ==================== GET /api/buyers/{id} ====================
@@ -140,9 +140,9 @@ class BuyerIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/buyers/client/{clientId}", client.getClientId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].buyerName").value("Buyer A"))
-                .andExpect(jsonPath("$[1].buyerName").value("Buyer B"));
+                .andExpect(jsonPath("$._embedded.buyerResponseList.length()").value(2))
+                .andExpect(jsonPath("$._embedded.buyerResponseList[0].buyerName").value("Buyer A"))
+                .andExpect(jsonPath("$._embedded.buyerResponseList[1].buyerName").value("Buyer B"));
     }
 
     @Test
@@ -151,8 +151,8 @@ class BuyerIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/buyers/client/{clientId}", 9999))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._embedded").doesNotExist());
     }
 
     // ==================== POST /api/buyers ====================

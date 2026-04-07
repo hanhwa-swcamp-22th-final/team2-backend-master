@@ -55,8 +55,8 @@ class PortIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/ports"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._embedded").doesNotExist());
     }
 
     @Test
@@ -69,7 +69,7 @@ class PortIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/ports"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+                .andExpect(jsonPath("$._embedded.portResponseList.length()").value(2));
     }
 
     // ==================== GET /api/ports/{id} ====================

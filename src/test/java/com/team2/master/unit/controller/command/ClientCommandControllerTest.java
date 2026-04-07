@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -46,7 +47,7 @@ class ClientCommandControllerTest {
     private ClientCommandService clientCommandService;
 
     private Client createTestClient() {
-        return Client.builder()
+        Client client = Client.builder()
                 .clientCode("CLI001")
                 .clientName("Test Corp")
                 .clientNameKr("테스트 주식회사")
@@ -57,6 +58,8 @@ class ClientCommandControllerTest {
                 .clientStatus(ClientStatus.ACTIVE)
                 .clientRegDate(LocalDate.of(2025, 1, 1))
                 .build();
+        ReflectionTestUtils.setField(client, "clientId", 1);
+        return client;
     }
 
     @Test

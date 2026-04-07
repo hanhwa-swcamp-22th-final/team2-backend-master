@@ -36,8 +36,8 @@ class CurrencyQueryControllerTest {
 
         mockMvc.perform(get("/api/currencies"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].currencyCode").value("USD"))
-                .andExpect(jsonPath("$[0].currencyName").value("US Dollar"));
+                .andExpect(jsonPath("$._embedded.currencyList[0].currencyCode").value("USD"))
+                .andExpect(jsonPath("$._embedded.currencyList[0].currencyName").value("US Dollar"));
     }
 
     @Test

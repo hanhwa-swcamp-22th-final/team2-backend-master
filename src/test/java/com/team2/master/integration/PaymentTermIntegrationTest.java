@@ -51,8 +51,8 @@ class PaymentTermIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/payment-terms"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._embedded").doesNotExist());
     }
 
     @Test
@@ -64,9 +64,9 @@ class PaymentTermIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/payment-terms"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].paymentTermCode").value("TT"))
-                .andExpect(jsonPath("$[1].paymentTermCode").value("LC"));
+                .andExpect(jsonPath("$._embedded.paymentTermList.length()").value(2))
+                .andExpect(jsonPath("$._embedded.paymentTermList[0].paymentTermCode").value("TT"))
+                .andExpect(jsonPath("$._embedded.paymentTermList[1].paymentTermCode").value("LC"));
     }
 
     // ==================== GET /api/payment-terms/{id} ====================

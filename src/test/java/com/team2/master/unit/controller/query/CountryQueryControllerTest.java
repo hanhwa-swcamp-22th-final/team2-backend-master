@@ -36,8 +36,8 @@ class CountryQueryControllerTest {
 
         mockMvc.perform(get("/api/countries"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].countryCode").value("KR"))
-                .andExpect(jsonPath("$[0].countryName").value("South Korea"));
+                .andExpect(jsonPath("$._embedded.countryList[0].countryCode").value("KR"))
+                .andExpect(jsonPath("$._embedded.countryList[0].countryName").value("South Korea"));
     }
 
     @Test

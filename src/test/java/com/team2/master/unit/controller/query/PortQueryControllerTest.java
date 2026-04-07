@@ -41,9 +41,9 @@ class PortQueryControllerTest {
 
         mockMvc.perform(get("/api/ports"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].portCode").value("KRPUS"))
-                .andExpect(jsonPath("$[0].portName").value("Busan Port"))
-                .andExpect(jsonPath("$[0].countryName").value("South Korea"));
+                .andExpect(jsonPath("$._embedded.portResponseList[0].portCode").value("KRPUS"))
+                .andExpect(jsonPath("$._embedded.portResponseList[0].portName").value("Busan Port"))
+                .andExpect(jsonPath("$._embedded.portResponseList[0].countryName").value("South Korea"));
     }
 
     @Test

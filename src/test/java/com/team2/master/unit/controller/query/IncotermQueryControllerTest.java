@@ -36,8 +36,8 @@ class IncotermQueryControllerTest {
 
         mockMvc.perform(get("/api/incoterms"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].incotermCode").value("FOB"))
-                .andExpect(jsonPath("$[0].incotermName").value("Free On Board"));
+                .andExpect(jsonPath("$._embedded.incotermList[0].incotermCode").value("FOB"))
+                .andExpect(jsonPath("$._embedded.incotermList[0].incotermName").value("Free On Board"));
     }
 
     @Test

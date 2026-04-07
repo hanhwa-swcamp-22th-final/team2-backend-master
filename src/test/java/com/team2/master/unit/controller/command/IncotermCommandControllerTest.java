@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +43,7 @@ class IncotermCommandControllerTest {
         CreateIncotermRequest request = new CreateIncotermRequest("FOB", "Free On Board", "본선인도",
                 "desc", "Sea", "E", "Port");
         Incoterm incoterm = new Incoterm("FOB", "Free On Board", "본선인도", "desc", "Sea", "E", "Port");
+        ReflectionTestUtils.setField(incoterm, "incotermId", 1);
         given(incotermCommandService.create(any(CreateIncotermRequest.class))).willReturn(incoterm);
 
         mockMvc.perform(post("/api/incoterms").with(csrf())

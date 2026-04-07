@@ -110,7 +110,7 @@ class ClientQueryControllerTest {
 
         mockMvc.perform(get("/api/clients/department/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].clientName").value("Test Corp"))
-                .andExpect(jsonPath("$[0].departmentId").value(1));
+                .andExpect(jsonPath("$._embedded.clientResponseList[0].clientName").value("Test Corp"))
+                .andExpect(jsonPath("$._embedded.clientResponseList[0].departmentId").value(1));
     }
 }

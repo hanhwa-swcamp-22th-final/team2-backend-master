@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +42,7 @@ class PaymentTermCommandControllerTest {
     void create() throws Exception {
         CreatePaymentTermRequest request = new CreatePaymentTermRequest("TT", "Telegraphic Transfer", "전신환 송금");
         PaymentTerm paymentTerm = new PaymentTerm("TT", "Telegraphic Transfer", "전신환 송금");
+        ReflectionTestUtils.setField(paymentTerm, "paymentTermId", 1);
         given(paymentTermCommandService.create(any(CreatePaymentTermRequest.class))).willReturn(paymentTerm);
 
         mockMvc.perform(post("/api/payment-terms").with(csrf())

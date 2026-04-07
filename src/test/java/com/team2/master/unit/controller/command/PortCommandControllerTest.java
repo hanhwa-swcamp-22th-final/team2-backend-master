@@ -38,6 +38,7 @@ class PortCommandControllerTest {
 
     private PortResponse createTestPortResponse() {
         return PortResponse.builder()
+                .id(1)
                 .portCode("KRPUS").portName("Busan Port").portCity("Busan")
                 .countryName("South Korea").build();
     }

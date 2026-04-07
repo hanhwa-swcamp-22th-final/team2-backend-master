@@ -470,9 +470,9 @@ class ClientIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/clients/department/{departmentId}", 1))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].clientCode").value("CLI001"))
-                .andExpect(jsonPath("$[1].clientCode").value("CLI002"));
+                .andExpect(jsonPath("$._embedded.clientResponseList.length()").value(2))
+                .andExpect(jsonPath("$._embedded.clientResponseList[0].clientCode").value("CLI001"))
+                .andExpect(jsonPath("$._embedded.clientResponseList[1].clientCode").value("CLI002"));
     }
 
     @Test
@@ -481,7 +481,7 @@ class ClientIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/clients/department/{departmentId}", 9999))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._embedded").doesNotExist());
     }
 }

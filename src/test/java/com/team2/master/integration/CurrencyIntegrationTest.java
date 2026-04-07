@@ -51,8 +51,8 @@ class CurrencyIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/currencies"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._embedded").doesNotExist());
     }
 
     @Test
@@ -64,9 +64,9 @@ class CurrencyIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/currencies"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].currencyCode").value("USD"))
-                .andExpect(jsonPath("$[1].currencyCode").value("KRW"));
+                .andExpect(jsonPath("$._embedded.currencyList.length()").value(2))
+                .andExpect(jsonPath("$._embedded.currencyList[0].currencyCode").value("USD"))
+                .andExpect(jsonPath("$._embedded.currencyList[1].currencyCode").value("KRW"));
     }
 
     // ==================== GET /api/currencies/{id} ====================

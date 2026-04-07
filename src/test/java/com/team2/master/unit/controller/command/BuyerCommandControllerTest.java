@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -54,13 +55,15 @@ class BuyerCommandControllerTest {
     }
 
     private Buyer createTestBuyer() {
-        return Buyer.builder()
+        Buyer buyer = Buyer.builder()
                 .client(createTestClient())
                 .buyerName("John Doe")
                 .buyerPosition("Manager")
                 .buyerEmail("john@test.com")
                 .buyerTel("010-1234-5678")
                 .build();
+        ReflectionTestUtils.setField(buyer, "buyerId", 1);
+        return buyer;
     }
 
     @Test

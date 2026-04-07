@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +42,7 @@ class CountryCommandControllerTest {
     void create() throws Exception {
         CreateCountryRequest request = new CreateCountryRequest("KR", "South Korea", "대한민국");
         Country country = new Country("KR", "South Korea", "대한민국");
+        ReflectionTestUtils.setField(country, "countryId", 1);
         given(countryCommandService.create(any(CreateCountryRequest.class))).willReturn(country);
 
         mockMvc.perform(post("/api/countries").with(csrf())

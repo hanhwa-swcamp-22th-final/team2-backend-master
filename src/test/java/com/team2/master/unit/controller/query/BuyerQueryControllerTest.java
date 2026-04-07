@@ -49,8 +49,8 @@ class BuyerQueryControllerTest {
 
         mockMvc.perform(get("/api/buyers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].buyerName").value("John Doe"))
-                .andExpect(jsonPath("$[0].clientName").value("Test Corp"));
+                .andExpect(jsonPath("$._embedded.buyerResponseList[0].buyerName").value("John Doe"))
+                .andExpect(jsonPath("$._embedded.buyerResponseList[0].clientName").value("Test Corp"));
     }
 
     @Test
@@ -82,8 +82,8 @@ class BuyerQueryControllerTest {
 
         mockMvc.perform(get("/api/buyers/client/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].buyerName").value("John Doe"))
-                .andExpect(jsonPath("$[0].clientName").value("Test Corp"));
+                .andExpect(jsonPath("$._embedded.buyerResponseList[0].buyerName").value("John Doe"))
+                .andExpect(jsonPath("$._embedded.buyerResponseList[0].clientName").value("Test Corp"));
     }
 
     @Test
@@ -93,7 +93,7 @@ class BuyerQueryControllerTest {
 
         mockMvc.perform(get("/api/clients/1/buyers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].buyerName").value("John Doe"))
-                .andExpect(jsonPath("$[0].clientName").value("Test Corp"));
+                .andExpect(jsonPath("$._embedded.buyerResponseList[0].buyerName").value("John Doe"))
+                .andExpect(jsonPath("$._embedded.buyerResponseList[0].clientName").value("Test Corp"));
     }
 }

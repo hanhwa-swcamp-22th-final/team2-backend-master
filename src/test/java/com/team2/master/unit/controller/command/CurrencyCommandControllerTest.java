@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +42,7 @@ class CurrencyCommandControllerTest {
     void create() throws Exception {
         CreateCurrencyRequest request = new CreateCurrencyRequest("USD", "US Dollar", "$");
         Currency currency = new Currency("USD", "US Dollar", "$");
+        ReflectionTestUtils.setField(currency, "currencyId", 1);
         given(currencyCommandService.create(any(CreateCurrencyRequest.class))).willReturn(currency);
 
         mockMvc.perform(post("/api/currencies").with(csrf())

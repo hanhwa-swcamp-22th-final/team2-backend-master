@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -40,12 +41,14 @@ class ItemCommandControllerTest {
     @MockitoBean private ItemCommandService itemCommandService;
 
     private Item createTestItem() {
-        return Item.builder()
+        Item item = Item.builder()
                 .itemCode("ITM001").itemName("Test Product").itemNameKr("테스트 제품")
                 .itemSpec("100x200mm").itemUnit("EA")
                 .itemUnitPrice(new BigDecimal("1500.00"))
                 .itemCategory("전자부품").itemStatus(ItemStatus.ACTIVE)
                 .build();
+        ReflectionTestUtils.setField(item, "itemId", 1);
+        return item;
     }
 
     @Test

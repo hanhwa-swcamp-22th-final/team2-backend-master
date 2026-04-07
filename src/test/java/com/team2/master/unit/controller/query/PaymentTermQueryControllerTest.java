@@ -36,8 +36,8 @@ class PaymentTermQueryControllerTest {
 
         mockMvc.perform(get("/api/payment-terms"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].paymentTermCode").value("TT"))
-                .andExpect(jsonPath("$[0].paymentTermName").value("Telegraphic Transfer"));
+                .andExpect(jsonPath("$._embedded.paymentTermList[0].paymentTermCode").value("TT"))
+                .andExpect(jsonPath("$._embedded.paymentTermList[0].paymentTermName").value("Telegraphic Transfer"));
     }
 
     @Test
