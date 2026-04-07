@@ -18,6 +18,10 @@ public class ClientListResponse {
     private String clientName;
     @Schema(description = "거래처명 (한글)", example = "ABC 무역")
     private String clientNameKr;
+
+    public Integer getId() { return clientId; }
+    public String getName() { return clientName; }
+    public String getNameKr() { return clientNameKr; }
     @Schema(description = "국가명", example = "South Korea")
     private String countryName;
     @Schema(description = "도시명", example = "Seoul")
@@ -28,4 +32,12 @@ public class ClientListResponse {
     private String clientStatus;
     @Schema(description = "등록일", example = "2026-01-01")
     private LocalDate clientRegDate;
+    @Schema(description = "항구명", example = "Busan Port")
+    private String portName;
+    @Schema(description = "담당자명", example = "홍길동")
+    private String clientManager;
+    @Schema(description = "결제조건 ID", example = "1")
+    private Integer paymentTermsId;
+    @Schema(description = "통화 ID", example = "1")
+    private Integer currencyId;
 }

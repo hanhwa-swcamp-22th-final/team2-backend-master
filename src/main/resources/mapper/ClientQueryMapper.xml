@@ -40,6 +40,10 @@
         <result property="departmentId"  column="department_id"/>
         <result property="clientStatus"  column="client_status"/>
         <result property="clientRegDate" column="client_reg_date"/>
+        <result property="portName"       column="port_name"/>
+        <result property="clientManager"  column="client_manager"/>
+        <result property="paymentTermsId" column="payment_term_id"/>
+        <result property="currencyId"     column="currency_id"/>
     </resultMap>
 
     <sql id="selectClientBase">
@@ -83,9 +87,14 @@
             cl.client_city,
             cl.department_id,
             cl.client_status,
-            cl.client_reg_date
+            cl.client_reg_date,
+            p.port_name,
+            cl.client_manager,
+            cl.payment_term_id,
+            cl.currency_id
         FROM clients cl
         LEFT JOIN countries c ON cl.country_id = c.country_id
+        LEFT JOIN ports p ON cl.port_id = p.port_id
     </sql>
 
     <sql id="clientFilterConditions">

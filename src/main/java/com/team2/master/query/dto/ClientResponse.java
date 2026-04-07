@@ -62,6 +62,11 @@ public class ClientResponse {
     @Schema(description = "수정일시")
     private LocalDateTime updatedAt;
 
+    public String getName() { return clientName; }
+    public String getNameKr() { return clientNameKr; }
+    public Integer getPaymentTermsId() { return paymentTermId; }
+    public LocalDate getRegDate() { return clientRegDate; }
+
     public static ClientResponse from(Client client) {
         return ClientResponse.builder()
                 .id(client.getClientId())

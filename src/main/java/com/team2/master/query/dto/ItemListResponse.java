@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 public class ItemListResponse {
     @Schema(description = "품목 ID", example = "1")
     private Integer itemId;
+
+    public Integer getId() { return itemId; }
     @Schema(description = "품목 코드", example = "ITM-001")
     private String itemCode;
     @Schema(description = "품목명 (영문)", example = "Steel Plate")
@@ -28,4 +30,8 @@ public class ItemListResponse {
     private String itemCategory;
     @Schema(description = "품목 상태", example = "ACTIVE")
     private String itemStatus;
+    @Schema(description = "품목 중량", example = "1.5")
+    private Double itemWeight;
+    @Schema(description = "HS 코드", example = "7208.51")
+    private String itemHsCode;
 }

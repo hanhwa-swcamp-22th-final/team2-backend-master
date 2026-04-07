@@ -103,6 +103,8 @@ public class Item {
         if (itemCategory != null) this.itemCategory = itemCategory;
     }
 
+    public Integer getId() { return itemId; }
+
     public boolean isActive() {
         return this.itemStatus == ItemStatus.ACTIVE;
     }

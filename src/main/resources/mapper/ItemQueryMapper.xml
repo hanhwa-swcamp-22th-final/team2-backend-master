@@ -33,6 +33,8 @@
         <result property="itemUnitPrice" column="item_unit_price"/>
         <result property="itemCategory"  column="item_category"/>
         <result property="itemStatus"    column="item_status"/>
+        <result property="itemWeight"    column="item_weight"/>
+        <result property="itemHsCode"    column="item_hs_code"/>
     </resultMap>
 
     <sql id="itemListColumns">
@@ -45,7 +47,9 @@
             i.item_unit,
             i.item_unit_price,
             i.item_category,
-            i.item_status
+            i.item_status,
+            i.item_weight,
+            i.item_hs_code
         FROM items i
     </sql>
 
