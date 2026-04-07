@@ -8,10 +8,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Tag(name = "국가 Query", description = "국가 조회 API")
 @RestController
@@ -24,8 +28,13 @@ public class CountryQueryController {
     @Operation(summary = "국가 전체 조회", description = "등록된 모든 국가 목록을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping
-    public ResponseEntity<List<Country>> getAll() {
-        return ResponseEntity.ok(countryQueryService.getAll());
+    public ResponseEntity<CollectionModel<EntityModel<Country>>> getAll() {
+        List<EntityModel<Country>> models = countryQueryService.getAll().stream()
+                .map(c -> EntityModel.of(c,
+                        linkTo(methodOn(CountryQueryController.class).getById(c.getCountryId())).withSelfRel()))
+                .toList();
+        return ResponseEntity.ok(CollectionModel.of(models,
+                linkTo(methodOn(CountryQueryController.class).getAll()).withSelfRel()));
     }
 
     @Operation(summary = "국가 단건 조회", description = "ID로 특정 국가를 조회합니다.")
@@ -34,7 +43,10 @@ public class CountryQueryController {
             @ApiResponse(responseCode = "404", description = "국가를 찾을 수 없음")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Country> getById(@Parameter(description = "국가 ID") @PathVariable Integer id) {
-        return ResponseEntity.ok(countryQueryService.getById(id));
+    public ResponseEntity<EntityModel<Country>> getById(@Parameter(description = "국가 ID") @PathVariable Integer id) {
+        Country country = countryQueryService.getById(id);
+        return ResponseEntity.ok(EntityModel.of(country,
+                linkTo(methodOn(CountryQueryController.class).getById(id)).withSelfRel(),
+                linkTo(methodOn(CountryQueryController.class).getAll()).withRel("countries")));
     }
 }

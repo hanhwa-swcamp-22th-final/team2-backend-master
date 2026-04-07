@@ -10,8 +10,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Tag(name = "품목 Query", description = "품목 조회 API")
 @RestController
@@ -39,7 +42,10 @@ public class ItemQueryController {
             @ApiResponse(responseCode = "404", description = "품목을 찾을 수 없음")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Item> getItem(@Parameter(description = "품목 ID") @PathVariable Integer id) {
-        return ResponseEntity.ok(itemQueryService.getItem(id));
+    public ResponseEntity<EntityModel<Item>> getItem(@Parameter(description = "품목 ID") @PathVariable Integer id) {
+        Item item = itemQueryService.getItem(id);
+        return ResponseEntity.ok(EntityModel.of(item,
+                linkTo(methodOn(ItemQueryController.class).getItem(id)).withSelfRel(),
+                linkTo(methodOn(ItemQueryController.class).getItems(null, null, null, 0, 10)).withRel("items")));
     }
 }
