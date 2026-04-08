@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(PortCommandController.class)
 @Import(GlobalExceptionHandler.class)
-@WithMockUser
+@WithMockUser(roles = "ADMIN")
 class PortCommandControllerTest {
 
     @Autowired private MockMvc mockMvc;

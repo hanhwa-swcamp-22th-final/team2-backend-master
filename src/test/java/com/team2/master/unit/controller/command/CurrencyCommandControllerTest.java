@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CurrencyCommandController.class)
 @Import(GlobalExceptionHandler.class)
-@WithMockUser
+@WithMockUser(roles = "ADMIN")
 class CurrencyCommandControllerTest {
 
     @Autowired private MockMvc mockMvc;

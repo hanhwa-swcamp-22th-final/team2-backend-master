@@ -2,6 +2,12 @@ spring:
   application:
     name: team2-backend-master
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${JWKS_URI:http://backend-auth:8011/.well-known/jwks.json}
+
   datasource:
     url: ${DB_URL:jdbc:h2:mem:team2_master;MODE=MariaDB}
     username: ${DB_USERNAME:sa}

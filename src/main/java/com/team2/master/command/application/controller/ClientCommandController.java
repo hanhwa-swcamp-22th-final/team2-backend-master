@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -36,6 +37,7 @@ public class ClientCommandController {
             @ApiResponse(responseCode = "201", description = "거래처 등록 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
     })
+    @PreAuthorize("hasAnyRole('ADMIN','SALES')")
     @PostMapping
     public ResponseEntity<EntityModel<ClientResponse>> createClient(@Valid @RequestBody CreateClientRequest request) {
         Client client = clientCommandService.createClient(request);
@@ -53,6 +55,7 @@ public class ClientCommandController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터"),
             @ApiResponse(responseCode = "404", description = "거래처를 찾을 수 없음")
     })
+    @PreAuthorize("hasAnyRole('ADMIN','SALES')")
     @PutMapping("/{id}")
     public ResponseEntity<EntityModel<ClientResponse>> updateClient(
             @Parameter(description = "거래처 ID") @PathVariable Integer id,
@@ -69,6 +72,7 @@ public class ClientCommandController {
             @ApiResponse(responseCode = "400", description = "잘못된 상태값"),
             @ApiResponse(responseCode = "404", description = "거래처를 찾을 수 없음")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<EntityModel<ClientResponse>> changeStatus(
             @Parameter(description = "거래처 ID") @PathVariable Integer id,
