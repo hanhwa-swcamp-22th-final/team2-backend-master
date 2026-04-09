@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @Tag(name = "바이어 Query", description = "바이어 조회 API")
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class BuyerQueryController {
 
     private final BuyerQueryService buyerQueryService;
