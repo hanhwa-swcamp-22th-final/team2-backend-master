@@ -45,7 +45,7 @@ public class CountryQueryController {
             @ApiResponse(responseCode = "404", description = "국가를 찾을 수 없음")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<Country>> getById(@Parameter(description = "국가 ID") @PathVariable Integer id) {
+    public ResponseEntity<EntityModel<Country>> getById(@Parameter(description = "국가 ID") @PathVariable("id") Integer id) {
         Country country = countryQueryService.getById(id);
         return ResponseEntity.ok(EntityModel.of(country,
                 linkTo(methodOn(CountryQueryController.class).getById(id)).withSelfRel(),

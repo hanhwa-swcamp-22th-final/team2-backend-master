@@ -52,7 +52,7 @@ public class PaymentTermCommandController {
             @ApiResponse(responseCode = "404", description = "결제조건을 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<PaymentTerm>> update(@Parameter(description = "결제조건 ID") @PathVariable Integer id, @Valid @RequestBody UpdatePaymentTermRequest request) {
+    public ResponseEntity<EntityModel<PaymentTerm>> update(@Parameter(description = "결제조건 ID") @PathVariable("id") Integer id, @Valid @RequestBody UpdatePaymentTermRequest request) {
         PaymentTerm paymentTerm = paymentTermCommandService.update(id, request);
         return ResponseEntity.ok(EntityModel.of(paymentTerm,
                 linkTo(methodOn(PaymentTermQueryController.class).getById(id)).withSelfRel(),
@@ -65,7 +65,7 @@ public class PaymentTermCommandController {
             @ApiResponse(responseCode = "404", description = "결제조건을 찾을 수 없음")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Parameter(description = "결제조건 ID") @PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@Parameter(description = "결제조건 ID") @PathVariable("id") Integer id) {
         paymentTermCommandService.delete(id);
         return ResponseEntity.noContent().build();
     }

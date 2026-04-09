@@ -52,7 +52,7 @@ public class PortCommandController {
             @ApiResponse(responseCode = "404", description = "항구를 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<PortResponse>> update(@Parameter(description = "항구 ID") @PathVariable Integer id, @Valid @RequestBody UpdatePortRequest request) {
+    public ResponseEntity<EntityModel<PortResponse>> update(@Parameter(description = "항구 ID") @PathVariable("id") Integer id, @Valid @RequestBody UpdatePortRequest request) {
         PortResponse port = portCommandService.update(id, request);
         return ResponseEntity.ok(EntityModel.of(port,
                 linkTo(methodOn(PortQueryController.class).getById(id)).withSelfRel(),
@@ -65,7 +65,7 @@ public class PortCommandController {
             @ApiResponse(responseCode = "404", description = "항구를 찾을 수 없음")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Parameter(description = "항구 ID") @PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@Parameter(description = "항구 ID") @PathVariable("id") Integer id) {
         portCommandService.delete(id);
         return ResponseEntity.noContent().build();
     }

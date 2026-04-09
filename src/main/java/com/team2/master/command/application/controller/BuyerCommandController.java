@@ -53,7 +53,7 @@ public class BuyerCommandController {
     })
     @PostMapping("/api/clients/{clientId}/buyers")
     public ResponseEntity<EntityModel<BuyerResponse>> createBuyerNested(
-            @Parameter(description = "거래처 ID") @PathVariable Integer clientId,
+            @Parameter(description = "거래처 ID") @PathVariable("clientId") Integer clientId,
             @Valid @RequestBody CreateBuyerRequest request) {
         request.setClientId(clientId);
         Buyer buyer = buyerCommandService.createBuyer(request);
@@ -73,7 +73,7 @@ public class BuyerCommandController {
     })
     @PutMapping("/api/buyers/{id}")
     public ResponseEntity<EntityModel<BuyerResponse>> updateBuyer(
-            @Parameter(description = "바이어 ID") @PathVariable Integer id,
+            @Parameter(description = "바이어 ID") @PathVariable("id") Integer id,
             @Valid @RequestBody UpdateBuyerRequest request) {
         Buyer buyer = buyerCommandService.updateBuyer(id, request);
         BuyerResponse response = BuyerResponse.from(buyer);
@@ -88,7 +88,7 @@ public class BuyerCommandController {
             @ApiResponse(responseCode = "404", description = "바이어를 찾을 수 없음")
     })
     @DeleteMapping("/api/buyers/{id}")
-    public ResponseEntity<Void> deleteBuyer(@Parameter(description = "바이어 ID") @PathVariable Integer id) {
+    public ResponseEntity<Void> deleteBuyer(@Parameter(description = "바이어 ID") @PathVariable("id") Integer id) {
         buyerCommandService.deleteBuyer(id);
         return ResponseEntity.noContent().build();
     }

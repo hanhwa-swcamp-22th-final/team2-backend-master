@@ -30,11 +30,11 @@ public class ItemQueryController {
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping
     public ResponseEntity<PagedResponse<ItemListResponse>> getItems(
-            @Parameter(description = "품목명 검색") @RequestParam(required = false) String itemName,
-            @Parameter(description = "품목 카테고리 필터") @RequestParam(required = false) String itemCategory,
-            @Parameter(description = "품목 상태 필터") @RequestParam(required = false) String itemStatus,
-            @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기") @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "품목명 검색") @RequestParam(name = "itemName", required = false) String itemName,
+            @Parameter(description = "품목 카테고리 필터") @RequestParam(name = "itemCategory", required = false) String itemCategory,
+            @Parameter(description = "품목 상태 필터") @RequestParam(name = "itemStatus", required = false) String itemStatus,
+            @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(name = "page", defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기") @RequestParam(name = "size", defaultValue = "10") int size) {
         return ResponseEntity.ok(itemQueryService.getItems(itemName, itemCategory, itemStatus, page, size));
     }
 
@@ -44,7 +44,7 @@ public class ItemQueryController {
             @ApiResponse(responseCode = "404", description = "품목을 찾을 수 없음")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<Item>> getItem(@Parameter(description = "품목 ID") @PathVariable Integer id) {
+    public ResponseEntity<EntityModel<Item>> getItem(@Parameter(description = "품목 ID") @PathVariable("id") Integer id) {
         Item item = itemQueryService.getItem(id);
         return ResponseEntity.ok(EntityModel.of(item,
                 linkTo(methodOn(ItemQueryController.class).getItem(id)).withSelfRel(),

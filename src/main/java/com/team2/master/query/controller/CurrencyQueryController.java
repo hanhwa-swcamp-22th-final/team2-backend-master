@@ -45,7 +45,7 @@ public class CurrencyQueryController {
             @ApiResponse(responseCode = "404", description = "통화를 찾을 수 없음")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<Currency>> getById(@Parameter(description = "통화 ID") @PathVariable Integer id) {
+    public ResponseEntity<EntityModel<Currency>> getById(@Parameter(description = "통화 ID") @PathVariable("id") Integer id) {
         Currency currency = currencyQueryService.getById(id);
         return ResponseEntity.ok(EntityModel.of(currency,
                 linkTo(methodOn(CurrencyQueryController.class).getById(id)).withSelfRel(),

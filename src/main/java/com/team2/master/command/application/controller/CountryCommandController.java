@@ -52,7 +52,7 @@ public class CountryCommandController {
             @ApiResponse(responseCode = "404", description = "국가를 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<Country>> update(@Parameter(description = "국가 ID") @PathVariable Integer id, @Valid @RequestBody UpdateCountryRequest request) {
+    public ResponseEntity<EntityModel<Country>> update(@Parameter(description = "국가 ID") @PathVariable("id") Integer id, @Valid @RequestBody UpdateCountryRequest request) {
         Country country = countryCommandService.update(id, request);
         return ResponseEntity.ok(EntityModel.of(country,
                 linkTo(methodOn(CountryQueryController.class).getById(id)).withSelfRel(),
@@ -65,7 +65,7 @@ public class CountryCommandController {
             @ApiResponse(responseCode = "404", description = "국가를 찾을 수 없음")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Parameter(description = "국가 ID") @PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@Parameter(description = "국가 ID") @PathVariable("id") Integer id) {
         countryCommandService.delete(id);
         return ResponseEntity.noContent().build();
     }

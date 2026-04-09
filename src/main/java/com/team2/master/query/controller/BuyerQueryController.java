@@ -44,7 +44,7 @@ public class BuyerQueryController {
             @ApiResponse(responseCode = "404", description = "바이어를 찾을 수 없음")
     })
     @GetMapping("/api/buyers/{id}")
-    public ResponseEntity<EntityModel<BuyerResponse>> getBuyer(@Parameter(description = "바이어 ID") @PathVariable Integer id) {
+    public ResponseEntity<EntityModel<BuyerResponse>> getBuyer(@Parameter(description = "바이어 ID") @PathVariable("id") Integer id) {
         BuyerResponse response = buyerQueryService.getBuyer(id);
         return ResponseEntity.ok(EntityModel.of(response,
                 linkTo(methodOn(BuyerQueryController.class).getBuyer(id)).withSelfRel(),
@@ -54,7 +54,7 @@ public class BuyerQueryController {
     @Operation(summary = "거래처별 바이어 조회", description = "특정 거래처에 소속된 바이어 목록을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping("/api/buyers/client/{clientId}")
-    public ResponseEntity<CollectionModel<EntityModel<BuyerResponse>>> getBuyersByClient(@Parameter(description = "거래처 ID") @PathVariable Integer clientId) {
+    public ResponseEntity<CollectionModel<EntityModel<BuyerResponse>>> getBuyersByClient(@Parameter(description = "거래처 ID") @PathVariable("clientId") Integer clientId) {
         List<EntityModel<BuyerResponse>> models = buyerQueryService.getBuyersByClientId(clientId).stream()
                 .map(b -> EntityModel.of(b,
                         linkTo(methodOn(BuyerQueryController.class).getBuyer(b.getId())).withSelfRel()))
@@ -66,7 +66,7 @@ public class BuyerQueryController {
     @Operation(summary = "거래처 하위 바이어 조회", description = "거래처 리소스 하위 경로로 바이어 목록을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping("/api/clients/{clientId}/buyers")
-    public ResponseEntity<CollectionModel<EntityModel<BuyerResponse>>> getBuyersByClientNested(@Parameter(description = "거래처 ID") @PathVariable Integer clientId) {
+    public ResponseEntity<CollectionModel<EntityModel<BuyerResponse>>> getBuyersByClientNested(@Parameter(description = "거래처 ID") @PathVariable("clientId") Integer clientId) {
         List<EntityModel<BuyerResponse>> models = buyerQueryService.getBuyersByClientId(clientId).stream()
                 .map(b -> EntityModel.of(b,
                         linkTo(methodOn(BuyerQueryController.class).getBuyer(b.getId())).withSelfRel()))

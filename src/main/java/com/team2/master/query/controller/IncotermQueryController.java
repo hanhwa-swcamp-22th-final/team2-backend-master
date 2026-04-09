@@ -45,7 +45,7 @@ public class IncotermQueryController {
             @ApiResponse(responseCode = "404", description = "인코텀을 찾을 수 없음")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<Incoterm>> getById(@Parameter(description = "인코텀 ID") @PathVariable Integer id) {
+    public ResponseEntity<EntityModel<Incoterm>> getById(@Parameter(description = "인코텀 ID") @PathVariable("id") Integer id) {
         Incoterm incoterm = incotermQueryService.getById(id);
         return ResponseEntity.ok(EntityModel.of(incoterm,
                 linkTo(methodOn(IncotermQueryController.class).getById(id)).withSelfRel(),

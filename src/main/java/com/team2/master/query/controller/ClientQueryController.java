@@ -33,12 +33,12 @@ public class ClientQueryController {
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping
     public ResponseEntity<PagedResponse<ClientListResponse>> getClients(
-            @Parameter(description = "거래처명 검색") @RequestParam(required = false) String clientName,
-            @Parameter(description = "국가 ID 필터") @RequestParam(required = false) Integer countryId,
-            @Parameter(description = "거래처 상태 필터") @RequestParam(required = false) String clientStatus,
-            @Parameter(description = "부서 ID 필터") @RequestParam(required = false) Integer departmentId,
-            @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기") @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "거래처명 검색") @RequestParam(name = "clientName", required = false) String clientName,
+            @Parameter(description = "국가 ID 필터") @RequestParam(name = "countryId", required = false) Integer countryId,
+            @Parameter(description = "거래처 상태 필터") @RequestParam(name = "clientStatus", required = false) String clientStatus,
+            @Parameter(description = "부서 ID 필터") @RequestParam(name = "departmentId", required = false) Integer departmentId,
+            @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(name = "page", defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기") @RequestParam(name = "size", defaultValue = "10") int size) {
         return ResponseEntity.ok(clientQueryService.getClients(clientName, countryId, clientStatus, departmentId, page, size));
     }
 
@@ -48,7 +48,7 @@ public class ClientQueryController {
             @ApiResponse(responseCode = "404", description = "거래처를 찾을 수 없음")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<ClientResponse>> getClient(@Parameter(description = "거래처 ID") @PathVariable Integer id) {
+    public ResponseEntity<EntityModel<ClientResponse>> getClient(@Parameter(description = "거래처 ID") @PathVariable("id") Integer id) {
         ClientResponse response = clientQueryService.getClient(id);
         return ResponseEntity.ok(EntityModel.of(response,
                 linkTo(methodOn(ClientQueryController.class).getClient(id)).withSelfRel(),
@@ -65,7 +65,7 @@ public class ClientQueryController {
     @Operation(summary = "부서별 거래처 조회", description = "특정 부서에 배정된 거래처 목록을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping("/department/{departmentId}")
-    public ResponseEntity<CollectionModel<EntityModel<ClientResponse>>> getClientsByDepartment(@Parameter(description = "부서 ID") @PathVariable Integer departmentId) {
+    public ResponseEntity<CollectionModel<EntityModel<ClientResponse>>> getClientsByDepartment(@Parameter(description = "부서 ID") @PathVariable("departmentId") Integer departmentId) {
         List<EntityModel<ClientResponse>> models = clientQueryService.getClientsByDepartmentId(departmentId).stream()
                 .map(c -> EntityModel.of(c,
                         linkTo(methodOn(ClientQueryController.class).getClient(c.getId())).withSelfRel()))

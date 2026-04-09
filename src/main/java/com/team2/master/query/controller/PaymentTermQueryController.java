@@ -45,7 +45,7 @@ public class PaymentTermQueryController {
             @ApiResponse(responseCode = "404", description = "결제조건을 찾을 수 없음")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<PaymentTerm>> getById(@Parameter(description = "결제조건 ID") @PathVariable Integer id) {
+    public ResponseEntity<EntityModel<PaymentTerm>> getById(@Parameter(description = "결제조건 ID") @PathVariable("id") Integer id) {
         PaymentTerm paymentTerm = paymentTermQueryService.getById(id);
         return ResponseEntity.ok(EntityModel.of(paymentTerm,
                 linkTo(methodOn(PaymentTermQueryController.class).getById(id)).withSelfRel(),

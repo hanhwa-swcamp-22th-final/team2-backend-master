@@ -55,7 +55,7 @@ public class ItemCommandController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<EntityModel<Item>> updateItem(
-            @Parameter(description = "품목 ID") @PathVariable Integer id,
+            @Parameter(description = "품목 ID") @PathVariable("id") Integer id,
             @Valid @RequestBody UpdateItemRequest request) {
         Item item = itemCommandService.updateItem(id, request);
         return ResponseEntity.ok(EntityModel.of(item,
@@ -71,7 +71,7 @@ public class ItemCommandController {
     })
     @PatchMapping("/{id}/status")
     public ResponseEntity<EntityModel<Item>> changeStatus(
-            @Parameter(description = "품목 ID") @PathVariable Integer id,
+            @Parameter(description = "품목 ID") @PathVariable("id") Integer id,
             @Valid @RequestBody ChangeStatusRequest request) {
         ItemStatus status = ItemStatus.valueOf(request.getStatus());
         Item item = itemCommandService.changeStatus(id, status);

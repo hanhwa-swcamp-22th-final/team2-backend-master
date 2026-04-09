@@ -45,7 +45,7 @@ public class PortQueryController {
             @ApiResponse(responseCode = "404", description = "항구를 찾을 수 없음")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<PortResponse>> getById(@Parameter(description = "항구 ID") @PathVariable Integer id) {
+    public ResponseEntity<EntityModel<PortResponse>> getById(@Parameter(description = "항구 ID") @PathVariable("id") Integer id) {
         PortResponse port = portQueryService.getById(id);
         return ResponseEntity.ok(EntityModel.of(port,
                 linkTo(methodOn(PortQueryController.class).getById(id)).withSelfRel(),

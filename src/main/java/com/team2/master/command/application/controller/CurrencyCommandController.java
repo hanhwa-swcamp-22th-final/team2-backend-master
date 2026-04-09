@@ -52,7 +52,7 @@ public class CurrencyCommandController {
             @ApiResponse(responseCode = "404", description = "통화를 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<Currency>> update(@Parameter(description = "통화 ID") @PathVariable Integer id, @Valid @RequestBody UpdateCurrencyRequest request) {
+    public ResponseEntity<EntityModel<Currency>> update(@Parameter(description = "통화 ID") @PathVariable("id") Integer id, @Valid @RequestBody UpdateCurrencyRequest request) {
         Currency currency = currencyCommandService.update(id, request);
         return ResponseEntity.ok(EntityModel.of(currency,
                 linkTo(methodOn(CurrencyQueryController.class).getById(id)).withSelfRel(),
@@ -65,7 +65,7 @@ public class CurrencyCommandController {
             @ApiResponse(responseCode = "404", description = "통화를 찾을 수 없음")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Parameter(description = "통화 ID") @PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@Parameter(description = "통화 ID") @PathVariable("id") Integer id) {
         currencyCommandService.delete(id);
         return ResponseEntity.noContent().build();
     }

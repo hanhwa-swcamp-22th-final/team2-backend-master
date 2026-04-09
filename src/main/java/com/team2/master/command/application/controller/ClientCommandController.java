@@ -58,7 +58,7 @@ public class ClientCommandController {
     @PreAuthorize("hasAnyRole('ADMIN','SALES')")
     @PutMapping("/{id}")
     public ResponseEntity<EntityModel<ClientResponse>> updateClient(
-            @Parameter(description = "거래처 ID") @PathVariable Integer id,
+            @Parameter(description = "거래처 ID") @PathVariable("id") Integer id,
             @Valid @RequestBody UpdateClientRequest request) {
         Client client = clientCommandService.updateClient(id, request);
         return ResponseEntity.ok(EntityModel.of(ClientResponse.from(client),
@@ -75,7 +75,7 @@ public class ClientCommandController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<EntityModel<ClientResponse>> changeStatus(
-            @Parameter(description = "거래처 ID") @PathVariable Integer id,
+            @Parameter(description = "거래처 ID") @PathVariable("id") Integer id,
             @Valid @RequestBody ChangeStatusRequest request) {
         ClientStatus status = ClientStatus.valueOf(request.getStatus());
         Client client = clientCommandService.changeStatus(id, status);

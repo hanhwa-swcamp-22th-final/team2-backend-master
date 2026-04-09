@@ -52,7 +52,7 @@ public class IncotermCommandController {
             @ApiResponse(responseCode = "404", description = "인코텀을 찾을 수 없음")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<Incoterm>> update(@Parameter(description = "인코텀 ID") @PathVariable Integer id, @Valid @RequestBody UpdateIncotermRequest request) {
+    public ResponseEntity<EntityModel<Incoterm>> update(@Parameter(description = "인코텀 ID") @PathVariable("id") Integer id, @Valid @RequestBody UpdateIncotermRequest request) {
         Incoterm incoterm = incotermCommandService.update(id, request);
         return ResponseEntity.ok(EntityModel.of(incoterm,
                 linkTo(methodOn(IncotermQueryController.class).getById(id)).withSelfRel(),
@@ -65,7 +65,7 @@ public class IncotermCommandController {
             @ApiResponse(responseCode = "404", description = "인코텀을 찾을 수 없음")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Parameter(description = "인코텀 ID") @PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@Parameter(description = "인코텀 ID") @PathVariable("id") Integer id) {
         incotermCommandService.delete(id);
         return ResponseEntity.noContent().build();
     }
