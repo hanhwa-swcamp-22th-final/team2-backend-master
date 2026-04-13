@@ -39,7 +39,8 @@ public class ItemQueryController {
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(name = "page", defaultValue = "0") int page,
             @Parameter(description = "페이지 크기") @RequestParam(name = "size", defaultValue = "10") int size) {
         PagedResponse<ItemListResponse> result = itemQueryService.getItems(itemName, itemCategory, itemStatus, page, size);
-        List<EntityModel<ItemListResponse>> models = result.content().stream()
+        List<ItemListResponse> content = result.content() != null ? result.content() : List.of();
+        List<EntityModel<ItemListResponse>> models = content.stream()
                 .map(EntityModel::of).toList();
         PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, result.totalElements());
         return ResponseEntity.ok(PagedModel.of(models, metadata));
