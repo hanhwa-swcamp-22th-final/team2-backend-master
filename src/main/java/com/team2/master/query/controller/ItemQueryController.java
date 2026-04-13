@@ -11,9 +11,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -29,13 +32,17 @@ public class ItemQueryController {
     @Operation(summary = "품목 목록 조회", description = "검색 조건과 페이징을 적용하여 품목 목록을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping
-    public ResponseEntity<PagedResponse<ItemListResponse>> getItems(
+    public ResponseEntity<PagedModel<EntityModel<ItemListResponse>>> getItems(
             @Parameter(description = "품목명 검색") @RequestParam(name = "itemName", required = false) String itemName,
             @Parameter(description = "품목 카테고리 필터") @RequestParam(name = "itemCategory", required = false) String itemCategory,
             @Parameter(description = "품목 상태 필터") @RequestParam(name = "itemStatus", required = false) String itemStatus,
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(name = "page", defaultValue = "0") int page,
             @Parameter(description = "페이지 크기") @RequestParam(name = "size", defaultValue = "10") int size) {
-        return ResponseEntity.ok(itemQueryService.getItems(itemName, itemCategory, itemStatus, page, size));
+        PagedResponse<ItemListResponse> result = itemQueryService.getItems(itemName, itemCategory, itemStatus, page, size);
+        List<EntityModel<ItemListResponse>> models = result.content().stream()
+                .map(EntityModel::of).toList();
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, result.totalElements());
+        return ResponseEntity.ok(PagedModel.of(models, metadata));
     }
 
     @Operation(summary = "품목 단건 조회", description = "ID로 특정 품목을 조회합니다.")
