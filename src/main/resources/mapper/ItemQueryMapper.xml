@@ -30,6 +30,7 @@
         <result property="itemNameKr"    column="item_name_kr"/>
         <result property="itemSpec"      column="item_spec"/>
         <result property="itemUnit"      column="item_unit"/>
+        <result property="itemPackUnit"  column="item_pack_unit"/>
         <result property="itemUnitPrice" column="item_unit_price"/>
         <result property="itemCategory"  column="item_category"/>
         <result property="itemStatus"    column="item_status"/>
@@ -45,6 +46,7 @@
             i.item_name_kr,
             i.item_spec,
             i.item_unit,
+            i.item_pack_unit,
             i.item_unit_price,
             i.item_category,
             i.item_status,

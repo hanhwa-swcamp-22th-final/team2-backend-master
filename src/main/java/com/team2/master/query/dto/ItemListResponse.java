@@ -24,6 +24,8 @@ public class ItemListResponse {
     private String itemSpec;
     @Schema(description = "단위", example = "EA")
     private String itemUnit;
+    @Schema(description = "포장단위", example = "BUNDLE")
+    private String itemPackUnit;
     @Schema(description = "단가", example = "150.00")
     private BigDecimal itemUnitPrice;
     @Schema(description = "품목 카테고리", example = "원자재")
