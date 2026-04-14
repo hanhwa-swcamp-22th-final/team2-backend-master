@@ -22,11 +22,17 @@ public class ItemCommandService {
             throw new IllegalStateException("이미 사용 중인 품목 코드입니다.");
         }
 
+        String assembledSpec = assembleSpec(request.getItemWidth(), request.getItemDepth(),
+                request.getItemHeight(), request.getItemSpec());
+
         Item item = Item.builder()
                 .itemCode(request.getItemCode())
                 .itemName(request.getItemName())
                 .itemNameKr(request.getItemNameKr())
-                .itemSpec(request.getItemSpec())
+                .itemSpec(assembledSpec)
+                .itemWidth(request.getItemWidth())
+                .itemDepth(request.getItemDepth())
+                .itemHeight(request.getItemHeight())
                 .itemUnit(request.getItemUnit())
                 .itemPackUnit(request.getItemPackUnit())
                 .itemUnitPrice(request.getItemUnitPrice())
@@ -44,14 +50,29 @@ public class ItemCommandService {
     public Item updateItem(Integer id, UpdateItemRequest request) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("품목을 찾을 수 없습니다."));
+        String assembledSpec = assembleSpec(request.getItemWidth(), request.getItemDepth(),
+                request.getItemHeight(), request.getItemSpec());
         item.updateInfo(
                 request.getItemName(), request.getItemNameKr(),
-                request.getItemSpec(), request.getItemUnit(),
+                assembledSpec,
+                request.getItemWidth(), request.getItemDepth(), request.getItemHeight(),
+                request.getItemUnit(),
                 request.getItemPackUnit(), request.getItemUnitPrice(),
                 request.getItemWeight(), request.getItemHsCode(),
                 request.getItemCategory()
         );
         return item;
+    }
+
+    /**
+     * W/D/H → "100 × 200 × 300 mm" 형식 조립.
+     * 세 값 모두 없으면 클라이언트가 보낸 itemSpec 원본 유지.
+     */
+    private String assembleSpec(Integer w, Integer d, Integer h, String fallback) {
+        if (w != null && d != null && h != null) {
+            return w + " × " + d + " × " + h + " mm";
+        }
+        return fallback;
     }
 
     @Transactional

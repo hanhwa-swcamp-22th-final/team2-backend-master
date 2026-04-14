@@ -18,8 +18,14 @@ public class UpdateItemRequest {
     private String itemName;
     @Schema(description = "품목명 (한글)", example = "철판")
     private String itemNameKr;
-    @Schema(description = "품목 규격", example = "10mm x 1000mm x 2000mm")
+    @Schema(description = "품목 규격 (표시용 조립 문자열, 선택)", example = "100 × 200 × 300 mm")
     private String itemSpec;
+    @Schema(description = "규격 — 너비(mm)", example = "100")
+    private Integer itemWidth;
+    @Schema(description = "규격 — 깊이(mm)", example = "200")
+    private Integer itemDepth;
+    @Schema(description = "규격 — 높이(mm)", example = "300")
+    private Integer itemHeight;
     @Schema(description = "단위", example = "EA")
     private String itemUnit;
     @Schema(description = "포장 단위", example = "BOX")

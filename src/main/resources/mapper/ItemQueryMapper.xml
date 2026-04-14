@@ -10,6 +10,9 @@
         <result property="itemName"      column="item_name"/>
         <result property="itemNameKr"    column="item_name_kr"/>
         <result property="itemSpec"      column="item_spec"/>
+        <result property="itemWidth"     column="item_width"/>
+        <result property="itemDepth"     column="item_depth"/>
+        <result property="itemHeight"    column="item_height"/>
         <result property="itemUnit"      column="item_unit"/>
         <result property="itemPackUnit"  column="item_pack_unit"/>
         <result property="itemUnitPrice" column="item_unit_price"/>
@@ -29,6 +32,9 @@
         <result property="itemName"      column="item_name"/>
         <result property="itemNameKr"    column="item_name_kr"/>
         <result property="itemSpec"      column="item_spec"/>
+        <result property="itemWidth"     column="item_width"/>
+        <result property="itemDepth"     column="item_depth"/>
+        <result property="itemHeight"    column="item_height"/>
         <result property="itemUnit"      column="item_unit"/>
         <result property="itemPackUnit"  column="item_pack_unit"/>
         <result property="itemUnitPrice" column="item_unit_price"/>
@@ -45,6 +51,9 @@
             i.item_name,
             i.item_name_kr,
             i.item_spec,
+            i.item_width,
+            i.item_depth,
+            i.item_height,
             i.item_unit,
             i.item_pack_unit,
             i.item_unit_price,
@@ -83,23 +92,26 @@
     </select>
 
     <select id="findById" resultMap="ItemMap">
-        SELECT item_id, item_code, item_name, item_name_kr, item_spec, item_unit,
-               item_pack_unit, item_unit_price, item_weight, item_hs_code,
+        SELECT item_id, item_code, item_name, item_name_kr, item_spec,
+               item_width, item_depth, item_height,
+               item_unit, item_pack_unit, item_unit_price, item_weight, item_hs_code,
                item_category, item_status, item_reg_date, created_at, updated_at
         FROM items
         WHERE item_id = #{itemId}
     </select>
 
     <select id="findAll" resultMap="ItemMap">
-        SELECT item_id, item_code, item_name, item_name_kr, item_spec, item_unit,
-               item_pack_unit, item_unit_price, item_weight, item_hs_code,
+        SELECT item_id, item_code, item_name, item_name_kr, item_spec,
+               item_width, item_depth, item_height,
+               item_unit, item_pack_unit, item_unit_price, item_weight, item_hs_code,
                item_category, item_status, item_reg_date, created_at, updated_at
         FROM items
     </select>
 
     <select id="findByItemStatus" resultMap="ItemMap">
-        SELECT item_id, item_code, item_name, item_name_kr, item_spec, item_unit,
-               item_pack_unit, item_unit_price, item_weight, item_hs_code,
+        SELECT item_id, item_code, item_name, item_name_kr, item_spec,
+               item_width, item_depth, item_height,
+               item_unit, item_pack_unit, item_unit_price, item_weight, item_hs_code,
                item_category, item_status, item_reg_date, created_at, updated_at
         FROM items
         WHERE item_status = #{itemStatus}

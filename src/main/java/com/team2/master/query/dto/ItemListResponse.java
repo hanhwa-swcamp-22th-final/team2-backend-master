@@ -20,8 +20,11 @@ public class ItemListResponse {
     private String itemName;
     @Schema(description = "품목명 (한글)", example = "철판")
     private String itemNameKr;
-    @Schema(description = "품목 규격", example = "10mm x 1000mm x 2000mm")
+    @Schema(description = "품목 규격 (조립 문자열)", example = "100 × 200 × 300 mm")
     private String itemSpec;
+    @Schema(description = "너비(mm)") private Integer itemWidth;
+    @Schema(description = "깊이(mm)") private Integer itemDepth;
+    @Schema(description = "높이(mm)") private Integer itemHeight;
     @Schema(description = "단위", example = "EA")
     private String itemUnit;
     @Schema(description = "포장단위", example = "BUNDLE")

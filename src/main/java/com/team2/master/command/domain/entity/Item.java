@@ -32,6 +32,15 @@ public class Item {
     @Column(name = "item_spec", length = 200)
     private String itemSpec;
 
+    @Column(name = "item_width")
+    private Integer itemWidth;
+
+    @Column(name = "item_depth")
+    private Integer itemDepth;
+
+    @Column(name = "item_height")
+    private Integer itemHeight;
+
     @Column(name = "item_unit", length = 50)
     private String itemUnit;
 
@@ -65,6 +74,7 @@ public class Item {
 
     @Builder
     public Item(String itemCode, String itemName, String itemNameKr, String itemSpec,
+                Integer itemWidth, Integer itemDepth, Integer itemHeight,
                 String itemUnit, String itemPackUnit, BigDecimal itemUnitPrice,
                 BigDecimal itemWeight, String itemHsCode, String itemCategory,
                 ItemStatus itemStatus, LocalDate itemRegDate) {
@@ -72,6 +82,9 @@ public class Item {
         this.itemName = itemName;
         this.itemNameKr = itemNameKr;
         this.itemSpec = itemSpec;
+        this.itemWidth = itemWidth;
+        this.itemDepth = itemDepth;
+        this.itemHeight = itemHeight;
         this.itemUnit = itemUnit;
         this.itemPackUnit = itemPackUnit;
         this.itemUnitPrice = itemUnitPrice;
@@ -90,11 +103,15 @@ public class Item {
     }
 
     public void updateInfo(String itemName, String itemNameKr, String itemSpec,
+                           Integer itemWidth, Integer itemDepth, Integer itemHeight,
                            String itemUnit, String itemPackUnit, BigDecimal itemUnitPrice,
                            BigDecimal itemWeight, String itemHsCode, String itemCategory) {
         if (itemName != null) this.itemName = itemName;
         if (itemNameKr != null) this.itemNameKr = itemNameKr;
         if (itemSpec != null) this.itemSpec = itemSpec;
+        if (itemWidth != null) this.itemWidth = itemWidth;
+        if (itemDepth != null) this.itemDepth = itemDepth;
+        if (itemHeight != null) this.itemHeight = itemHeight;
         if (itemUnit != null) this.itemUnit = itemUnit;
         if (itemPackUnit != null) this.itemPackUnit = itemPackUnit;
         if (itemUnitPrice != null) this.itemUnitPrice = itemUnitPrice;
