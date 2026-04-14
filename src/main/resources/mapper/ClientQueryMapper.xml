@@ -84,8 +84,8 @@
         LEFT JOIN ports p          ON cl.port_id         = p.port_id
         LEFT JOIN payment_terms pt ON cl.payment_term_id = pt.payment_term_id
         LEFT JOIN currencies cu    ON cl.currency_id     = cu.currency_id
-        LEFT JOIN teams t          ON cl.team_id         = t.team_id
-        LEFT JOIN departments d    ON t.department_id    = d.department_id
+        LEFT JOIN ${authSchema}teams t          ON cl.team_id      = t.team_id
+        LEFT JOIN ${authSchema}departments d    ON t.department_id = d.department_id
     </sql>
 
     <sql id="clientListColumns">
@@ -109,8 +109,8 @@
         FROM clients cl
         LEFT JOIN countries c   ON cl.country_id = c.country_id
         LEFT JOIN ports p       ON cl.port_id    = p.port_id
-        LEFT JOIN teams t       ON cl.team_id    = t.team_id
-        LEFT JOIN departments d ON t.department_id = d.department_id
+        LEFT JOIN ${authSchema}teams t       ON cl.team_id      = t.team_id
+        LEFT JOIN ${authSchema}departments d ON t.department_id = d.department_id
     </sql>
 
     <sql id="clientFilterConditions">
@@ -144,7 +144,7 @@
         SELECT COUNT(*)
         FROM clients cl
         LEFT JOIN countries c   ON cl.country_id = c.country_id
-        LEFT JOIN teams t       ON cl.team_id    = t.team_id
+        LEFT JOIN ${authSchema}teams t       ON cl.team_id    = t.team_id
         <include refid="clientFilterConditions"/>
     </select>
 
