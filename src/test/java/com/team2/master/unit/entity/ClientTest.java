@@ -25,7 +25,7 @@ class ClientTest {
                 .clientTel("02-1234-5678")
                 .clientEmail("test@corp.com")
                 .clientManager("홍길동")
-                .departmentId(1)
+                .teamId(1)
                 .clientStatus(ClientStatus.ACTIVE)
                 .clientRegDate(LocalDate.of(2025, 1, 1))
                 .build();
@@ -48,7 +48,7 @@ class ClientTest {
         assertEquals("02-1234-5678", client.getClientTel());
         assertEquals("test@corp.com", client.getClientEmail());
         assertEquals("홍길동", client.getClientManager());
-        assertEquals(1, client.getDepartmentId());
+        assertEquals(1, client.getTeamId());
         assertEquals(ClientStatus.ACTIVE, client.getClientStatus());
     }
 
@@ -154,7 +154,7 @@ class ClientTest {
         assertEquals("051-9876-5432", client.getClientTel());
         assertEquals("updated@corp.com", client.getClientEmail());
         assertEquals("김철수", client.getClientManager());
-        assertEquals(2, client.getDepartmentId());
+        assertEquals(2, client.getTeamId());
     }
 
     @Test

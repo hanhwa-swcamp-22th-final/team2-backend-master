@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Master → Auth 내부 호출 Feign Client.
- * Buyer 생성 시 거래처 소속 부서의 영업 사용자 조회 용도.
+ * Buyer 생성 시 거래처 소속 팀의 영업 사용자 조회 용도.
  */
 @FeignClient(
         name = "auth-users",
@@ -23,6 +23,7 @@ public interface AuthFeignClient {
             @RequestHeader("X-Internal-Token") String internalToken,
             @RequestParam("role") String role,
             @RequestParam(value = "userStatus", required = false, defaultValue = "active") String userStatus,
+            @RequestParam(value = "teamId", required = false) Integer teamId,
             @RequestParam(value = "departmentId", required = false) Integer departmentId
     );
 
@@ -32,6 +33,9 @@ public interface AuthFeignClient {
             String userName,
             String userEmail,
             String userRole,
+            Integer teamId,
+            String teamName,
+            Integer departmentId,
             String departmentName,
             String positionName,
             String userStatus

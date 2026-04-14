@@ -38,7 +38,7 @@ class ClientRepositoryTest {
                 .clientTel("02-1234-5678")
                 .clientEmail("test@corp.com")
                 .clientManager("홍길동")
-                .departmentId(1)
+                .teamId(1)
                 .clientStatus(ClientStatus.ACTIVE)
                 .clientRegDate(LocalDate.of(2025, 1, 1))
                 .build();
@@ -104,7 +104,7 @@ class ClientRepositoryTest {
         Client client2 = Client.builder()
                 .clientCode("CLI003")
                 .clientName("Same Dept Corp")
-                .departmentId(1)
+                .teamId(1)
                 .clientStatus(ClientStatus.ACTIVE)
                 .build();
         clientRepository.save(client2);
@@ -112,7 +112,7 @@ class ClientRepositoryTest {
         Client client3 = Client.builder()
                 .clientCode("CLI004")
                 .clientName("Other Dept Corp")
-                .departmentId(2)
+                .teamId(2)
                 .clientStatus(ClientStatus.ACTIVE)
                 .build();
         clientRepository.save(client3);

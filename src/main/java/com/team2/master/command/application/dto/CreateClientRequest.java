@@ -72,8 +72,8 @@ public class CreateClientRequest {
     @Schema(description = "거래처 담당자(바이어)", example = "Mr. Ahmad Razak")
     private String clientManager;
 
-    @Schema(description = "부서 ID", example = "1")
-    private Integer departmentId;
+    @Schema(description = "팀 ID (팀 → 부서 역참조)", example = "1")
+    private Integer teamId;
 
     @Schema(description = "등록일", example = "2026-01-01")
     private LocalDate clientRegDate;

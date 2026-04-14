@@ -7,12 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Schema(description = "거래처 상세 응답")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -51,8 +53,14 @@ public class ClientResponse {
     private String currencyName;
     @Schema(description = "담당자명", example = "홍길동")
     private String clientManager;
-    @Schema(description = "부서 ID", example = "1")
+    @Schema(description = "팀 ID", example = "1")
+    private Integer teamId;
+    @Schema(description = "팀 이름", example = "영업1팀")
+    private String teamName;
+    @Schema(description = "부서 ID (팀 경유 조회)", example = "1")
     private Integer departmentId;
+    @Schema(description = "부서 이름", example = "영업부")
+    private String departmentName;
     @Schema(description = "거래처 상태", example = "ACTIVE")
     private ClientStatus clientStatus;
     @Schema(description = "등록일", example = "2026-01-01")
@@ -86,7 +94,7 @@ public class ClientResponse {
                 .currencyId(client.getCurrency() != null ? client.getCurrency().getCurrencyId() : null)
                 .currencyName(client.getCurrency() != null ? client.getCurrency().getCurrencyName() : null)
                 .clientManager(client.getClientManager())
-                .departmentId(client.getDepartmentId())
+                .teamId(client.getTeamId())
                 .clientStatus(client.getClientStatus())
                 .clientRegDate(client.getClientRegDate())
                 .createdAt(client.getCreatedAt())

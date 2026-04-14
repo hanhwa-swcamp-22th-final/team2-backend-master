@@ -82,10 +82,10 @@ class ClientIntegrationTest {
     void getAll_withData() throws Exception {
         clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client A").clientNameKr("거래처A")
-                .departmentId(1).build());
+                .teamId(1).build());
         clientRepository.save(Client.builder()
                 .clientCode("CLI002").clientName("Client B").clientNameKr("거래처B")
-                .departmentId(2).build());
+                .teamId(2).build());
 
         entityManager.flush();
         mockMvc.perform(get("/api/clients"))
@@ -103,7 +103,7 @@ class ClientIntegrationTest {
     void getById_success() throws Exception {
         Client saved = clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client A").clientNameKr("거래처A")
-                .departmentId(1).build());
+                .teamId(1).build());
 
         entityManager.flush();
         mockMvc.perform(get("/api/clients/{id}", saved.getClientId()))
@@ -139,7 +139,7 @@ class ClientIntegrationTest {
                 .paymentTermId(paymentTerm.getPaymentTermId())
                 .currencyId(currency.getCurrencyId())
                 .clientManager("홍길동")
-                .departmentId(1)
+                .teamId(1)
                 .clientRegDate(LocalDate.of(2025, 1, 15))
                 .build();
 
@@ -180,13 +180,13 @@ class ClientIntegrationTest {
     void create_duplicateCode() throws Exception {
         clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Existing").clientNameKr("기존")
-                .departmentId(1).build());
+                .teamId(1).build());
 
         CreateClientRequest request = CreateClientRequest.builder()
                 .clientCode("CLI001")
                 .clientName("New Client")
                 .clientNameKr("새거래처")
-                .departmentId(2)
+                .teamId(2)
                 .build();
 
         mockMvc.perform(post("/api/clients")
@@ -207,7 +207,7 @@ class ClientIntegrationTest {
                 .clientName("Test Client")
                 .clientNameKr("테스트거래처")
                 .countryId(9999)
-                .departmentId(1)
+                .teamId(1)
                 .build();
 
         mockMvc.perform(post("/api/clients")
@@ -227,7 +227,7 @@ class ClientIntegrationTest {
                 .clientName("Test Client")
                 .clientNameKr("테스트거래처")
                 .portId(9999)
-                .departmentId(1)
+                .teamId(1)
                 .build();
 
         mockMvc.perform(post("/api/clients")
@@ -247,7 +247,7 @@ class ClientIntegrationTest {
                 .clientName("Test Client")
                 .clientNameKr("테스트거래처")
                 .paymentTermId(9999)
-                .departmentId(1)
+                .teamId(1)
                 .build();
 
         mockMvc.perform(post("/api/clients")
@@ -267,7 +267,7 @@ class ClientIntegrationTest {
                 .clientName("Test Client")
                 .clientNameKr("테스트거래처")
                 .currencyId(9999)
-                .departmentId(1)
+                .teamId(1)
                 .build();
 
         mockMvc.perform(post("/api/clients")
@@ -288,7 +288,7 @@ class ClientIntegrationTest {
                 .clientCode("CLI001").clientName("Old Name").clientNameKr("이전이름")
                 .clientCity("Old City").clientAddress("Old Addr").clientTel("000-0000")
                 .clientEmail("old@test.com").clientManager("이전담당자")
-                .departmentId(1).build());
+                .teamId(1).build());
 
         Country newCountry = countryRepository.save(new Country("JP", "Japan", "일본"));
         Port newPort = portRepository.save(new Port("JPTYO", "Port of Tokyo", "Tokyo", newCountry));
@@ -307,7 +307,7 @@ class ClientIntegrationTest {
                 .paymentTermId(newPt.getPaymentTermId())
                 .currencyId(newCur.getCurrencyId())
                 .clientManager("새담당자")
-                .departmentId(2)
+                .teamId(2)
                 .build();
 
         mockMvc.perform(put("/api/clients/{id}", saved.getClientId())
@@ -351,7 +351,7 @@ class ClientIntegrationTest {
     void update_nonExistentFkIds() throws Exception {
         Client saved = clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client").clientNameKr("거래처")
-                .departmentId(1).build());
+                .teamId(1).build());
 
         UpdateClientRequest request = UpdateClientRequest.builder()
                 .countryId(9999)
@@ -371,7 +371,7 @@ class ClientIntegrationTest {
     void changeStatus_activeToInactive() throws Exception {
         Client saved = clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client").clientNameKr("거래처")
-                .clientStatus(ClientStatus.ACTIVE).departmentId(1).build());
+                .clientStatus(ClientStatus.ACTIVE).teamId(1).build());
 
         ChangeStatusRequest request = new ChangeStatusRequest("INACTIVE");
 
@@ -392,7 +392,7 @@ class ClientIntegrationTest {
     void changeStatus_inactiveToActive() throws Exception {
         Client saved = clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client").clientNameKr("거래처")
-                .clientStatus(ClientStatus.INACTIVE).departmentId(1).build());
+                .clientStatus(ClientStatus.INACTIVE).teamId(1).build());
 
         ChangeStatusRequest request = new ChangeStatusRequest("ACTIVE");
 
@@ -425,7 +425,7 @@ class ClientIntegrationTest {
     void changeStatus_invalidStatus() throws Exception {
         Client saved = clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client").clientNameKr("거래처")
-                .clientStatus(ClientStatus.ACTIVE).departmentId(1).build());
+                .clientStatus(ClientStatus.ACTIVE).teamId(1).build());
 
         ChangeStatusRequest request = new ChangeStatusRequest("INVALID");
 
@@ -441,7 +441,7 @@ class ClientIntegrationTest {
     void changeStatus_sameStatus() throws Exception {
         Client saved = clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client").clientNameKr("거래처")
-                .clientStatus(ClientStatus.ACTIVE).departmentId(1).build());
+                .clientStatus(ClientStatus.ACTIVE).teamId(1).build());
 
         ChangeStatusRequest request = new ChangeStatusRequest("ACTIVE");
 
@@ -459,13 +459,13 @@ class ClientIntegrationTest {
     void getByDepartment_success() throws Exception {
         clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Client A").clientNameKr("거래처A")
-                .departmentId(1).build());
+                .teamId(1).build());
         clientRepository.save(Client.builder()
                 .clientCode("CLI002").clientName("Client B").clientNameKr("거래처B")
-                .departmentId(1).build());
+                .teamId(1).build());
         clientRepository.save(Client.builder()
                 .clientCode("CLI003").clientName("Client C").clientNameKr("거래처C")
-                .departmentId(2).build());
+                .teamId(2).build());
 
         entityManager.flush();
         mockMvc.perform(get("/api/clients/department/{departmentId}", 1))

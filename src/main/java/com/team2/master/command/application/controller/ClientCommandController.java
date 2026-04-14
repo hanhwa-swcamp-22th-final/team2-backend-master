@@ -44,7 +44,7 @@ public class ClientCommandController {
         ClientResponse response = ClientResponse.from(client);
         EntityModel<ClientResponse> model = EntityModel.of(response,
                 linkTo(methodOn(ClientQueryController.class).getClient(client.getClientId())).withSelfRel(),
-                linkTo(methodOn(ClientQueryController.class).getClients(null, null, null, null, 0, 10)).withRel("clients"));
+                linkTo(methodOn(ClientQueryController.class).getClients(null, null, null, null, null, 0, 10)).withRel("clients"));
         URI location = linkTo(methodOn(ClientQueryController.class).getClient(client.getClientId())).toUri();
         return ResponseEntity.created(location).body(model);
     }
@@ -63,7 +63,7 @@ public class ClientCommandController {
         Client client = clientCommandService.updateClient(id, request);
         return ResponseEntity.ok(EntityModel.of(ClientResponse.from(client),
                 linkTo(methodOn(ClientQueryController.class).getClient(id)).withSelfRel(),
-                linkTo(methodOn(ClientQueryController.class).getClients(null, null, null, null, 0, 10)).withRel("clients")));
+                linkTo(methodOn(ClientQueryController.class).getClients(null, null, null, null, null, 0, 10)).withRel("clients")));
     }
 
     @Operation(summary = "거래처 상태 변경", description = "거래처의 활성/비활성 상태를 변경합니다.")

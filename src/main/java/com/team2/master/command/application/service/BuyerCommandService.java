@@ -71,7 +71,7 @@ public class BuyerCommandService {
 
     /**
      * Buyer 생성을 Activity Contact 에 동기화.
-     * 거래처에 할당된 부서의 영업 담당자(sales) 전원에게 Contact 생성.
+     * 거래처에 할당된 팀의 영업 담당자(sales) 전원에게 Contact 생성.
      * Activity/Auth 호출 실패 시 Buyer 저장은 유지 (best-effort). 수정/삭제는 sync 안 함.
      */
     private void syncToActivityContacts(Buyer buyer) {
@@ -80,16 +80,16 @@ public class BuyerCommandService {
             return;
         }
 
-        Integer departmentId = buyer.getClient().getDepartmentId();
-        if (departmentId == null) {
-            log.info("거래처 부서 미지정 — contact 동기화 skip [buyerId={}]", buyer.getBuyerId());
+        Integer teamId = buyer.getClient().getTeamId();
+        if (teamId == null) {
+            log.info("거래처 팀 미지정 — contact 동기화 skip [buyerId={}]", buyer.getBuyerId());
             return;
         }
 
         List<AuthFeignClient.UserRef> salesUsers;
         try {
             salesUsers = authFeignClient.getUsersByRole(
-                    internalApiToken, "sales", "active", departmentId);
+                    internalApiToken, "sales", "active", teamId, null);
         } catch (Exception e) {
             log.warn("Auth 사용자 조회 실패 — contact 동기화 skip [buyerId={}, reason={}]",
                     buyer.getBuyerId(), e.getMessage());
@@ -97,8 +97,8 @@ public class BuyerCommandService {
         }
 
         if (salesUsers == null || salesUsers.isEmpty()) {
-            log.info("거래처 부서({})에 영업 담당자 없음 — contact 동기화 skip [buyerId={}]",
-                    departmentId, buyer.getBuyerId());
+            log.info("거래처 팀({})에 영업 담당자 없음 — contact 동기화 skip [buyerId={}]",
+                    teamId, buyer.getBuyerId());
             return;
         }
 

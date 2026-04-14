@@ -150,7 +150,7 @@ class ClientServiceTest {
                     .clientCity("Seoul")
                     .clientEmail("test@corp.com")
                     .clientManager("홍길동")
-                    .departmentId(1)
+                    .teamId(1)
                     .clientStatus(ClientStatus.ACTIVE)
                     .clientRegDate(LocalDate.of(2025, 1, 1))
                     .build();
@@ -167,7 +167,7 @@ class ClientServiceTest {
                     .clientCity("Seoul")
                     .clientEmail("test@corp.com")
                     .clientManager("홍길동")
-                    .departmentId(1)
+                    .teamId(1)
                     .clientRegDate(LocalDate.of(2025, 1, 1))
                     .build();
             given(clientRepository.existsByClientCode("CLI001")).willReturn(false);

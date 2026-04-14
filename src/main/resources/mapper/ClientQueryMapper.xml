@@ -22,7 +22,10 @@
         <result property="currencyId"      column="currency_id"/>
         <result property="currencyName"    column="currency_name"/>
         <result property="clientManager"   column="client_manager"/>
+        <result property="teamId"          column="team_id"/>
+        <result property="teamName"        column="team_name"/>
         <result property="departmentId"    column="department_id"/>
+        <result property="departmentName"  column="department_name"/>
         <result property="clientStatus"    column="client_status"
                 typeHandler="com.team2.master.config.ClientStatusTypeHandler"/>
         <result property="clientRegDate"   column="client_reg_date"/>
@@ -31,15 +34,18 @@
     </resultMap>
 
     <resultMap id="ClientListResponseMap" type="com.team2.master.query.dto.ClientListResponse">
-        <result property="clientId"      column="client_id"/>
-        <result property="clientCode"    column="client_code"/>
-        <result property="clientName"    column="client_name"/>
-        <result property="clientNameKr"  column="client_name_kr"/>
-        <result property="countryName"   column="country_name"/>
-        <result property="clientCity"    column="client_city"/>
-        <result property="departmentId"  column="department_id"/>
-        <result property="clientStatus"  column="client_status"/>
-        <result property="clientRegDate" column="client_reg_date"/>
+        <result property="clientId"       column="client_id"/>
+        <result property="clientCode"     column="client_code"/>
+        <result property="clientName"     column="client_name"/>
+        <result property="clientNameKr"   column="client_name_kr"/>
+        <result property="countryName"    column="country_name"/>
+        <result property="clientCity"     column="client_city"/>
+        <result property="teamId"         column="team_id"/>
+        <result property="teamName"       column="team_name"/>
+        <result property="departmentId"   column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="clientStatus"   column="client_status"/>
+        <result property="clientRegDate"  column="client_reg_date"/>
         <result property="portName"       column="port_name"/>
         <result property="clientManager"  column="client_manager"/>
         <result property="paymentTermsId" column="payment_term_id"/>
@@ -65,16 +71,21 @@
             cl.currency_id,
             cu.currency_name,
             cl.client_manager,
-            cl.department_id,
+            cl.team_id,
+            t.team_name,
+            t.department_id,
+            d.department_name,
             cl.client_status,
             cl.client_reg_date,
             cl.created_at,
             cl.updated_at
         FROM clients cl
-        LEFT JOIN countries c  ON cl.country_id      = c.country_id
-        LEFT JOIN ports p      ON cl.port_id          = p.port_id
+        LEFT JOIN countries c      ON cl.country_id      = c.country_id
+        LEFT JOIN ports p          ON cl.port_id         = p.port_id
         LEFT JOIN payment_terms pt ON cl.payment_term_id = pt.payment_term_id
-        LEFT JOIN currencies cu    ON cl.currency_id  = cu.currency_id
+        LEFT JOIN currencies cu    ON cl.currency_id     = cu.currency_id
+        LEFT JOIN teams t          ON cl.team_id         = t.team_id
+        LEFT JOIN departments d    ON t.department_id    = d.department_id
     </sql>
 
     <sql id="clientListColumns">
@@ -85,7 +96,10 @@
             cl.client_name_kr,
             c.country_name,
             cl.client_city,
-            cl.department_id,
+            cl.team_id,
+            t.team_name,
+            t.department_id,
+            d.department_name,
             cl.client_status,
             cl.client_reg_date,
             p.port_name,
@@ -93,8 +107,10 @@
             cl.payment_term_id,
             cl.currency_id
         FROM clients cl
-        LEFT JOIN countries c ON cl.country_id = c.country_id
-        LEFT JOIN ports p ON cl.port_id = p.port_id
+        LEFT JOIN countries c   ON cl.country_id = c.country_id
+        LEFT JOIN ports p       ON cl.port_id    = p.port_id
+        LEFT JOIN teams t       ON cl.team_id    = t.team_id
+        LEFT JOIN departments d ON t.department_id = d.department_id
     </sql>
 
     <sql id="clientFilterConditions">
@@ -108,8 +124,11 @@
             <if test="clientStatus != null and clientStatus != ''">
                 AND cl.client_status = #{clientStatus}
             </if>
+            <if test="teamId != null">
+                AND cl.team_id = #{teamId}
+            </if>
             <if test="departmentId != null">
-                AND cl.department_id = #{departmentId}
+                AND t.department_id = #{departmentId}
             </if>
         </where>
     </sql>
@@ -124,7 +143,8 @@
     <select id="countByCondition" resultType="long">
         SELECT COUNT(*)
         FROM clients cl
-        LEFT JOIN countries c ON cl.country_id = c.country_id
+        LEFT JOIN countries c   ON cl.country_id = c.country_id
+        LEFT JOIN teams t       ON cl.team_id    = t.team_id
         <include refid="clientFilterConditions"/>
     </select>
 
@@ -137,9 +157,14 @@
         <include refid="selectClientBase"/>
     </select>
 
+    <select id="findByTeamId" resultMap="ClientResponseMap">
+        <include refid="selectClientBase"/>
+        WHERE cl.team_id = #{teamId}
+    </select>
+
     <select id="findByDepartmentId" resultMap="ClientResponseMap">
         <include refid="selectClientBase"/>
-        WHERE cl.department_id = #{departmentId}
+        WHERE t.department_id = #{departmentId}
     </select>
 
     <select id="findByClientStatus" resultMap="ClientResponseMap">

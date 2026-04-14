@@ -58,7 +58,7 @@ class BuyerIntegrationTest {
         countryRepository.save(new Country("US", "United States", "미국"));
         client = clientRepository.save(Client.builder()
                 .clientCode("CLI001").clientName("Test Client").clientNameKr("테스트거래처")
-                .departmentId(1).build());
+                .teamId(1).build());
     }
 
     // ==================== GET /api/buyers ====================
@@ -132,7 +132,7 @@ class BuyerIntegrationTest {
         // 다른 거래처의 바이어
         Client otherClient = clientRepository.save(Client.builder()
                 .clientCode("CLI002").clientName("Other Client").clientNameKr("다른거래처")
-                .departmentId(2).build());
+                .teamId(2).build());
         buyerRepository.save(Buyer.builder()
                 .client(otherClient).buyerName("Buyer C").buyerPosition("Staff")
                 .buyerEmail("c@test.com").buyerTel("010-3333-3333").build());

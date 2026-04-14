@@ -37,10 +37,11 @@ public class ClientQueryController {
             @Parameter(description = "거래처명 검색") @RequestParam(name = "clientName", required = false) String clientName,
             @Parameter(description = "국가 ID 필터") @RequestParam(name = "countryId", required = false) Integer countryId,
             @Parameter(description = "거래처 상태 필터") @RequestParam(name = "clientStatus", required = false) String clientStatus,
-            @Parameter(description = "부서 ID 필터") @RequestParam(name = "departmentId", required = false) Integer departmentId,
+            @Parameter(description = "팀 ID 필터") @RequestParam(name = "teamId", required = false) Integer teamId,
+            @Parameter(description = "부서 ID 필터 (팀 경유)") @RequestParam(name = "departmentId", required = false) Integer departmentId,
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(name = "page", defaultValue = "0") int page,
             @Parameter(description = "페이지 크기") @RequestParam(name = "size", defaultValue = "10") int size) {
-        PagedResponse<ClientListResponse> result = clientQueryService.getClients(clientName, countryId, clientStatus, departmentId, page, size);
+        PagedResponse<ClientListResponse> result = clientQueryService.getClients(clientName, countryId, clientStatus, teamId, departmentId, page, size);
         List<ClientListResponse> content = result.content() != null ? result.content() : List.of();
         List<EntityModel<ClientListResponse>> models = content.stream()
                 .map(EntityModel::of).toList();
@@ -58,17 +59,29 @@ public class ClientQueryController {
         ClientResponse response = clientQueryService.getClient(id);
         return ResponseEntity.ok(EntityModel.of(response,
                 linkTo(methodOn(ClientQueryController.class).getClient(id)).withSelfRel(),
-                linkTo(methodOn(ClientQueryController.class).getClients(null, null, null, null, 0, 10)).withRel("clients")));
+                linkTo(methodOn(ClientQueryController.class).getClients(null, null, null, null, null, 0, 10)).withRel("clients")));
     }
 
-    @Operation(summary = "��체 거래처 목록 조회 (내부용)", description = "페이징 없이 전체 거래처 목록을 반환합니다. 서비스 간 ���신용.")
+    @Operation(summary = "전체 거래처 목록 조회 (내부용)", description = "페이징 없이 전체 거래처 목록을 반환합니다. 서비스 간 통신용.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping("/all")
     public ResponseEntity<List<ClientResponse>> getAllClients() {
         return ResponseEntity.ok(clientQueryService.getAllClients());
     }
 
-    @Operation(summary = "부서별 거래처 조회", description = "특정 부서에 배정된 거래처 목록을 조회합니다.")
+    @Operation(summary = "팀별 거래처 조회", description = "특정 팀에 배정된 거래처 목록을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공")
+    @GetMapping("/team/{teamId}")
+    public ResponseEntity<CollectionModel<EntityModel<ClientResponse>>> getClientsByTeam(@Parameter(description = "팀 ID") @PathVariable("teamId") Integer teamId) {
+        List<EntityModel<ClientResponse>> models = clientQueryService.getClientsByTeamId(teamId).stream()
+                .map(c -> EntityModel.of(c,
+                        linkTo(methodOn(ClientQueryController.class).getClient(c.getId())).withSelfRel()))
+                .toList();
+        return ResponseEntity.ok(CollectionModel.of(models,
+                linkTo(methodOn(ClientQueryController.class).getClientsByTeam(teamId)).withSelfRel()));
+    }
+
+    @Operation(summary = "부서별 거래처 조회", description = "특정 부서에 소속된 팀들이 담당하는 거래처 목록을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping("/department/{departmentId}")
     public ResponseEntity<CollectionModel<EntityModel<ClientResponse>>> getClientsByDepartment(@Parameter(description = "부서 ID") @PathVariable("departmentId") Integer departmentId) {

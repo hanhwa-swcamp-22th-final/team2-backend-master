@@ -40,7 +40,7 @@ public class ClientCommandService {
                 .clientTel(request.getClientTel())
                 .clientEmail(request.getClientEmail())
                 .clientManager(request.getClientManager())
-                .departmentId(request.getDepartmentId())
+                .teamId(request.getTeamId())
                 .clientStatus(ClientStatus.ACTIVE)
                 .clientRegDate(request.getClientRegDate())
                 .build();
@@ -80,7 +80,7 @@ public class ClientCommandService {
                 request.getClientName(), request.getClientNameKr(),
                 request.getClientCity(), request.getClientAddress(),
                 request.getClientTel(), request.getClientEmail(),
-                request.getClientManager(), request.getDepartmentId()
+                request.getClientManager(), request.getTeamId()
         );
 
         if (request.getCountryId() != null) {

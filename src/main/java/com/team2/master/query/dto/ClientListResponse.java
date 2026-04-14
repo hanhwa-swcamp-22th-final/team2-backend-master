@@ -26,8 +26,14 @@ public class ClientListResponse {
     private String countryName;
     @Schema(description = "도시명", example = "Seoul")
     private String clientCity;
+    @Schema(description = "팀 ID", example = "1")
+    private Integer teamId;
+    @Schema(description = "팀 이름", example = "영업1팀")
+    private String teamName;
     @Schema(description = "부서 ID", example = "1")
     private Integer departmentId;
+    @Schema(description = "부서 이름", example = "영업부")
+    private String departmentName;
     @Schema(description = "거래처 상태", example = "ACTIVE")
     private String clientStatus;
     @Schema(description = "등록일", example = "2026-01-01")

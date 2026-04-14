@@ -31,6 +31,10 @@ public class ClientQueryService {
         return clientQueryMapper.findAll();
     }
 
+    public List<ClientResponse> getClientsByTeamId(Integer teamId) {
+        return clientQueryMapper.findByTeamId(teamId);
+    }
+
     public List<ClientResponse> getClientsByDepartmentId(Integer departmentId) {
         return clientQueryMapper.findByDepartmentId(departmentId);
     }
@@ -40,11 +44,11 @@ public class ClientQueryService {
     }
 
     public PagedResponse<ClientListResponse> getClients(String clientName, Integer countryId,
-                                                        String clientStatus, Integer departmentId,
+                                                        String clientStatus, Integer teamId, Integer departmentId,
                                                         int page, int size) {
         int offset = page * size;
-        List<ClientListResponse> content = clientQueryMapper.findByCondition(clientName, countryId, clientStatus, departmentId, size, offset);
-        long totalElements = clientQueryMapper.countByCondition(clientName, countryId, clientStatus, departmentId);
+        List<ClientListResponse> content = clientQueryMapper.findByCondition(clientName, countryId, clientStatus, teamId, departmentId, size, offset);
+        long totalElements = clientQueryMapper.countByCondition(clientName, countryId, clientStatus, teamId, departmentId);
         return PagedResponse.of(content, totalElements, page, size);
     }
 }

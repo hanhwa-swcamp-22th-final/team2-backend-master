@@ -16,7 +16,7 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
 
     List<Client> findByClientStatus(ClientStatus clientStatus);
 
-    List<Client> findByDepartmentId(Integer departmentId);
+    List<Client> findByTeamId(Integer teamId);
 
     @Query("SELECT c FROM Client c LEFT JOIN FETCH c.country LEFT JOIN FETCH c.port LEFT JOIN FETCH c.paymentTerm LEFT JOIN FETCH c.currency")
     List<Client> findAllWithRelations();
@@ -24,8 +24,8 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
     @Query("SELECT c FROM Client c LEFT JOIN FETCH c.country LEFT JOIN FETCH c.port LEFT JOIN FETCH c.paymentTerm LEFT JOIN FETCH c.currency WHERE c.clientId = :id")
     Optional<Client> findByIdWithRelations(Integer id);
 
-    @Query("SELECT c FROM Client c LEFT JOIN FETCH c.country LEFT JOIN FETCH c.port LEFT JOIN FETCH c.paymentTerm LEFT JOIN FETCH c.currency WHERE c.departmentId = :departmentId")
-    List<Client> findByDepartmentIdWithRelations(Integer departmentId);
+    @Query("SELECT c FROM Client c LEFT JOIN FETCH c.country LEFT JOIN FETCH c.port LEFT JOIN FETCH c.paymentTerm LEFT JOIN FETCH c.currency WHERE c.teamId = :teamId")
+    List<Client> findByTeamIdWithRelations(Integer teamId);
 
     @Query(value = "SELECT COALESCE(MAX(CAST(SUBSTRING(client_code, 4) AS UNSIGNED)), 0) " +
             "FROM clients WHERE client_code LIKE 'CLI%'", nativeQuery = true)

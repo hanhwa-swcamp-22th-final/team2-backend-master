@@ -59,8 +59,8 @@ public class Client {
     @Column(name = "client_manager", length = 100)
     private String clientManager;
 
-    @Column(name = "department_id")
-    private Integer departmentId;
+    @Column(name = "team_id")
+    private Integer teamId;
 
     @Convert(converter = ClientStatusConverter.class)
     @Column(name = "client_status", nullable = false)
@@ -78,7 +78,7 @@ public class Client {
     @Builder
     public Client(String clientCode, String clientName, String clientNameKr,
                   String clientCity, String clientAddress, String clientTel,
-                  String clientEmail, String clientManager, Integer departmentId,
+                  String clientEmail, String clientManager, Integer teamId,
                   ClientStatus clientStatus, LocalDate clientRegDate) {
         this.clientCode = clientCode;
         this.clientName = clientName;
@@ -88,7 +88,7 @@ public class Client {
         this.clientTel = clientTel;
         this.clientEmail = clientEmail;
         this.clientManager = clientManager;
-        this.departmentId = departmentId;
+        this.teamId = teamId;
         this.clientStatus = clientStatus != null ? clientStatus : ClientStatus.ACTIVE;
         this.clientRegDate = clientRegDate;
     }
@@ -102,7 +102,7 @@ public class Client {
 
     public void updateInfo(String clientName, String clientNameKr, String clientCity,
                            String clientAddress, String clientTel, String clientEmail,
-                           String clientManager, Integer departmentId) {
+                           String clientManager, Integer teamId) {
         if (clientName != null) this.clientName = clientName;
         if (clientNameKr != null) this.clientNameKr = clientNameKr;
         if (clientCity != null) this.clientCity = clientCity;
@@ -110,7 +110,7 @@ public class Client {
         if (clientTel != null) this.clientTel = clientTel;
         if (clientEmail != null) this.clientEmail = clientEmail;
         if (clientManager != null) this.clientManager = clientManager;
-        if (departmentId != null) this.departmentId = departmentId;
+        if (teamId != null) this.teamId = teamId;
     }
 
     public void assignCountry(Country country) {
