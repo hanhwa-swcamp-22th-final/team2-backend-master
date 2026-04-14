@@ -9,10 +9,10 @@ import java.util.List;
 
 /**
  * Master → Auth 내부 호출 Feign Client.
- * Buyer 생성 시 거래처 소속 팀의 영업 사용자 조회 용도.
+ * 거래처 enrich + 바이어 sync 용도로 사용자/팀 정보 조회.
  */
 @FeignClient(
-        name = "auth-users",
+        name = "auth-internal",
         url = "${auth.service.url:http://backend-auth:8011}",
         configuration = FeignInternalConfig.class
 )
@@ -27,6 +27,18 @@ public interface AuthFeignClient {
             @RequestParam(value = "departmentId", required = false) Integer departmentId
     );
 
+    @GetMapping("/api/teams/internal/by-ids")
+    List<TeamBrief> getTeamsByIds(
+            @RequestHeader("X-Internal-Token") String internalToken,
+            @RequestParam("ids") List<Integer> ids
+    );
+
+    @GetMapping("/api/teams/internal/by-department")
+    List<TeamBrief> getTeamsByDepartment(
+            @RequestHeader("X-Internal-Token") String internalToken,
+            @RequestParam("departmentId") Integer departmentId
+    );
+
     record UserRef(
             Integer userId,
             String employeeNo,
@@ -39,5 +51,12 @@ public interface AuthFeignClient {
             String departmentName,
             String positionName,
             String userStatus
+    ) {}
+
+    record TeamBrief(
+            Integer teamId,
+            String teamName,
+            Integer departmentId,
+            String departmentName
     ) {}
 }

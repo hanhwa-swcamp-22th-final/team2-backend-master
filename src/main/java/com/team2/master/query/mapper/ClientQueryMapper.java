@@ -12,14 +12,14 @@ public interface ClientQueryMapper {
     ClientResponse findById(@Param("clientId") Integer clientId);
     List<ClientResponse> findAll();
     List<ClientResponse> findByTeamId(@Param("teamId") Integer teamId);
-    List<ClientResponse> findByDepartmentId(@Param("departmentId") Integer departmentId);
+    List<ClientResponse> findByTeamIds(@Param("teamIds") List<Integer> teamIds);
     List<ClientResponse> findByClientStatus(@Param("clientStatus") String clientStatus);
 
     List<ClientListResponse> findByCondition(@Param("clientName") String clientName,
                                              @Param("countryId") Integer countryId,
                                              @Param("clientStatus") String clientStatus,
                                              @Param("teamId") Integer teamId,
-                                             @Param("departmentId") Integer departmentId,
+                                             @Param("teamIds") List<Integer> teamIds,
                                              @Param("size") int size,
                                              @Param("offset") int offset);
 
@@ -27,5 +27,5 @@ public interface ClientQueryMapper {
                           @Param("countryId") Integer countryId,
                           @Param("clientStatus") String clientStatus,
                           @Param("teamId") Integer teamId,
-                          @Param("departmentId") Integer departmentId);
+                          @Param("teamIds") List<Integer> teamIds);
 }

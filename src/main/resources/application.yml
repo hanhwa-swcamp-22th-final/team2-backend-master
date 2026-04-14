@@ -41,8 +41,6 @@ mybatis:
   type-handlers-package: com.team2.master.config
   configuration:
     map-underscore-to-camel-case: true
-  configuration-properties:
-    authSchema: ${MASTER_AUTH_SCHEMA:}
 
 jwt:
   fallback-public-key-path: ${JWT_FALLBACK_PUBLIC_KEY_PATH:}

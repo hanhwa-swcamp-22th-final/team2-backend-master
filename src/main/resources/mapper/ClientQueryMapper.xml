@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!--
+  MSA 경계: master 는 auth 의 teams/departments 테이블을 직접 조인하지 않는다.
+  team_id 만 조회하고 team_name/department_id/department_name 은 ClientQueryService 에서
+  AuthFeignClient.getTeamsByIds 로 enrich.
+-->
 <mapper namespace="com.team2.master.query.mapper.ClientQueryMapper">
 
     <resultMap id="ClientResponseMap" type="com.team2.master.query.dto.ClientResponse">
@@ -23,9 +28,6 @@
         <result property="currencyName"    column="currency_name"/>
         <result property="clientManager"   column="client_manager"/>
         <result property="teamId"          column="team_id"/>
-        <result property="teamName"        column="team_name"/>
-        <result property="departmentId"    column="department_id"/>
-        <result property="departmentName"  column="department_name"/>
         <result property="clientStatus"    column="client_status"
                 typeHandler="com.team2.master.config.ClientStatusTypeHandler"/>
         <result property="clientRegDate"   column="client_reg_date"/>
@@ -41,9 +43,6 @@
         <result property="countryName"    column="country_name"/>
         <result property="clientCity"     column="client_city"/>
         <result property="teamId"         column="team_id"/>
-        <result property="teamName"       column="team_name"/>
-        <result property="departmentId"   column="department_id"/>
-        <result property="departmentName" column="department_name"/>
         <result property="clientStatus"   column="client_status"/>
         <result property="clientRegDate"  column="client_reg_date"/>
         <result property="portName"       column="port_name"/>
@@ -72,9 +71,6 @@
             cu.currency_name,
             cl.client_manager,
             cl.team_id,
-            t.team_name,
-            t.department_id,
-            d.department_name,
             cl.client_status,
             cl.client_reg_date,
             cl.created_at,
@@ -84,8 +80,6 @@
         LEFT JOIN ports p          ON cl.port_id         = p.port_id
         LEFT JOIN payment_terms pt ON cl.payment_term_id = pt.payment_term_id
         LEFT JOIN currencies cu    ON cl.currency_id     = cu.currency_id
-        LEFT JOIN ${authSchema}teams t          ON cl.team_id      = t.team_id
-        LEFT JOIN ${authSchema}departments d    ON t.department_id = d.department_id
     </sql>
 
     <sql id="clientListColumns">
@@ -97,9 +91,6 @@
             c.country_name,
             cl.client_city,
             cl.team_id,
-            t.team_name,
-            t.department_id,
-            d.department_name,
             cl.client_status,
             cl.client_reg_date,
             p.port_name,
@@ -109,10 +100,12 @@
         FROM clients cl
         LEFT JOIN countries c   ON cl.country_id = c.country_id
         LEFT JOIN ports p       ON cl.port_id    = p.port_id
-        LEFT JOIN ${authSchema}teams t       ON cl.team_id      = t.team_id
-        LEFT JOIN ${authSchema}departments d ON t.department_id = d.department_id
     </sql>
 
+    <!--
+      departmentId 필터는 서비스 레이어에서 auth 에 문의해 teamIds 로 변환한 뒤 teamIds IN (...) 으로 전달.
+      teamIds 파라미터가 있으면 그걸로 필터, 없으면 teamId 단건.
+    -->
     <sql id="clientFilterConditions">
         <where>
             <if test="clientName != null and clientName != ''">
@@ -127,8 +120,11 @@
             <if test="teamId != null">
                 AND cl.team_id = #{teamId}
             </if>
-            <if test="departmentId != null">
-                AND t.department_id = #{departmentId}
+            <if test="teamIds != null and teamIds.size() > 0">
+                AND cl.team_id IN
+                <foreach collection="teamIds" item="tid" open="(" separator="," close=")">
+                    #{tid}
+                </foreach>
             </if>
         </where>
     </sql>
@@ -143,8 +139,6 @@
     <select id="countByCondition" resultType="long">
         SELECT COUNT(*)
         FROM clients cl
-        LEFT JOIN countries c   ON cl.country_id = c.country_id
-        LEFT JOIN ${authSchema}teams t       ON cl.team_id    = t.team_id
         <include refid="clientFilterConditions"/>
     </select>
 
@@ -162,9 +156,12 @@
         WHERE cl.team_id = #{teamId}
     </select>
 
-    <select id="findByDepartmentId" resultMap="ClientResponseMap">
+    <select id="findByTeamIds" resultMap="ClientResponseMap">
         <include refid="selectClientBase"/>
-        WHERE t.department_id = #{departmentId}
+        WHERE cl.team_id IN
+        <foreach collection="teamIds" item="tid" open="(" separator="," close=")">
+            #{tid}
+        </foreach>
     </select>
 
     <select id="findByClientStatus" resultMap="ClientResponseMap">
