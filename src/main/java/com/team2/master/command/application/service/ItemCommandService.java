@@ -18,7 +18,12 @@ public class ItemCommandService {
 
     @Transactional
     public Item createItem(CreateItemRequest request) {
-        if (itemRepository.existsByItemCode(request.getItemCode())) {
+        // code 미제공 시 서버에서 자동 생성 (동시성 이슈 방지)
+        String itemCode = (request.getItemCode() == null || request.getItemCode().isBlank())
+                ? generateNextItemCode()
+                : request.getItemCode();
+
+        if (itemRepository.existsByItemCode(itemCode)) {
             throw new IllegalStateException("이미 사용 중인 품목 코드입니다.");
         }
 
@@ -26,7 +31,7 @@ public class ItemCommandService {
                 request.getItemHeight(), request.getItemSpec());
 
         Item item = Item.builder()
-                .itemCode(request.getItemCode())
+                .itemCode(itemCode)
                 .itemName(request.getItemName())
                 .itemNameKr(request.getItemNameKr())
                 .itemSpec(assembledSpec)
@@ -62,6 +67,12 @@ public class ItemCommandService {
                 request.getItemCategory()
         );
         return item;
+    }
+
+    private String generateNextItemCode() {
+        Integer max = itemRepository.findMaxItemCodeNumber();
+        int next = (max == null ? 0 : max) + 1;
+        return String.format("ITM%03d", next);
     }
 
     /**

@@ -22,12 +22,17 @@ public class ClientCommandService {
 
     @Transactional
     public Client createClient(CreateClientRequest request) {
-        if (clientRepository.existsByClientCode(request.getClientCode())) {
+        // code 미제공 시 서버에서 자동 생성 (동시성 이슈 방지)
+        String clientCode = (request.getClientCode() == null || request.getClientCode().isBlank())
+                ? generateNextClientCode()
+                : request.getClientCode();
+
+        if (clientRepository.existsByClientCode(clientCode)) {
             throw new IllegalStateException("이미 사용 중인 거래처 코드입니다.");
         }
 
         Client client = Client.builder()
-                .clientCode(request.getClientCode())
+                .clientCode(clientCode)
                 .clientName(request.getClientName())
                 .clientNameKr(request.getClientNameKr())
                 .clientCity(request.getClientCity())
@@ -113,4 +118,9 @@ public class ClientCommandService {
         return client;
     }
 
+    private String generateNextClientCode() {
+        Integer max = clientRepository.findMaxClientCodeNumber();
+        int next = (max == null ? 0 : max) + 1;
+        return String.format("CLI%03d", next);
+    }
 }

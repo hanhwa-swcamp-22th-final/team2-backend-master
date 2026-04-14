@@ -26,4 +26,8 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
 
     @Query("SELECT c FROM Client c LEFT JOIN FETCH c.country LEFT JOIN FETCH c.port LEFT JOIN FETCH c.paymentTerm LEFT JOIN FETCH c.currency WHERE c.departmentId = :departmentId")
     List<Client> findByDepartmentIdWithRelations(Integer departmentId);
+
+    @Query(value = "SELECT COALESCE(MAX(CAST(SUBSTRING(client_code, 4) AS UNSIGNED)), 0) " +
+            "FROM clients WHERE client_code LIKE 'CLI%'", nativeQuery = true)
+    Integer findMaxClientCodeNumber();
 }
