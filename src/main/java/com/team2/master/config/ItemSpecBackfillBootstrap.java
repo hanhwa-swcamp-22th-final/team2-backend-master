@@ -9,33 +9,34 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * 운영 DB 의 자유 텍스트 item_spec 값을 파싱해 item_width/depth/height 컬럼을 idempotent 채움.
+ * 운영 DB item_spec 자유 텍스트가 일관 포맷이 아니어서 PDF/주문서 표시 품질 저하.
+ * 물리 치수가 의미있는 품목(솔라모듈/유리 등)에 대해 W/D/H + 정돈된 itemSpec 으로 1회 upsert.
  *
- * 배경: ItemFormModal 은 W/D/H 를 분리 입력 + " [W × D × H] mm" 텍스트로 합성해 itemSpec 에도
- * 저장하나, 이전 시드 데이터(예: "1722×1134mm", "Mono/400W/1722x1134mm") 는 자유 텍스트만
- * 채워져 있어 W/D/H 컬럼이 NULL. PDF/주문서가 구조화된 치수 필드를 사용할 때 누락 방지.
- *
- * 매칭 규칙:
- *   - 3-part: 첫 매칭 NxNxN  → W, D, H
- *   - 2-part: 첫 매칭 NxN    → W, H (D 는 NULL 유지) — 패널/시트 류 관행
- *   - 매칭 없음               → 변경 없음 (예: "0.38mm/Clear", "IP68/3 Diodes/MC4")
- *
- * 사용자 커스텀 값(특정 W/D/H 가 이미 채워진 row)은 fillDimensionsIfMissing 로 보존.
+ * 정책:
+ * - 매핑된 item_code 의 W/D/H 와 itemSpec 을 canonical 값으로 강제 설정 (idempotent)
+ * - 매핑되지 않은 item_code 는 무시 (cable, sealant 등 W×D×H 가 의미 없는 품목)
+ * - 사용자가 admin 화면에서 수정한 값도 매번 재시작마다 canonical 로 되돌아감 — 운영팀이
+ *   admin 화면에서 자유롭게 편집하려면 매핑 제거 또는 ENV flag 도입 필요 (현재 시드 정합성 우선)
  */
 @Component
 public class ItemSpecBackfillBootstrap {
 
     private static final Logger log = LoggerFactory.getLogger(ItemSpecBackfillBootstrap.class);
 
-    /** 3-part W×D×H */
-    private static final Pattern THREE_PART = Pattern.compile("(\\d+)\\s*[×xX]\\s*(\\d+)\\s*[×xX]\\s*(\\d+)");
-    /** 2-part W×H (3-part 가 매칭 안 될 때만 사용) */
-    private static final Pattern TWO_PART = Pattern.compile("(\\d+)\\s*[×xX]\\s*(\\d+)");
+    /** 물리 치수가 의미있는 품목의 canonical W/D/H + 정돈된 spec. INT 컬럼이라 mm 단위 정수. */
+    private static final Map<String, ItemDimensions> CANONICAL = new LinkedHashMap<>();
+    static {
+        // 솔라모듈 — 시중 표준 두께 35mm 가정
+        CANONICAL.put("ITM010", new ItemDimensions(1722, 1134, 35, "Mono PERC 400W"));
+        CANONICAL.put("ITM011", new ItemDimensions(2094, 1134, 35, "Mono PERC 500W"));
+        CANONICAL.put("ITM012", new ItemDimensions(2384, 1303, 35, "Mono PERC 600W"));
+        // 강화유리 — 두께 3.2mm 는 INT 이라 3mm 로 절사
+        CANONICAL.put("ITM006", new ItemDimensions(1722, 1134, 3, "Tempered AR Coated Low Iron"));
+    }
 
     private final ItemRepository itemRepository;
 
@@ -45,49 +46,33 @@ public class ItemSpecBackfillBootstrap {
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
-    public void backfillOnReady() {
-        List<Item> items = itemRepository.findAll();
+    public void normalizeOnReady() {
         int updated = 0;
-        for (Item item : items) {
-            if (allDimensionsPresent(item)) continue;
-            String spec = item.getItemSpec();
-            if (spec == null || spec.isBlank()) continue;
-
-            Integer[] dims = parseDimensions(spec);
-            if (dims == null) continue;
-
-            item.fillDimensionsIfMissing(dims[0], dims[1], dims[2]);
+        for (Map.Entry<String, ItemDimensions> entry : CANONICAL.entrySet()) {
+            Item item = itemRepository.findByItemCode(entry.getKey()).orElse(null);
+            if (item == null) continue;
+            ItemDimensions d = entry.getValue();
+            if (matchesCanonical(item, d)) continue;
+            item.updateInfo(
+                    null, null, d.spec(),
+                    d.width(), d.depth(), d.height(),
+                    null, null, null, null, null, null
+            );
             itemRepository.save(item);
             updated++;
         }
         if (updated > 0) {
             itemRepository.flush();
-            log.info("ItemSpecBackfillBootstrap: filled W/D/H for {} items", updated);
+            log.info("ItemSpecBackfillBootstrap: normalized W/D/H + spec for {} items", updated);
         }
     }
 
-    private boolean allDimensionsPresent(Item item) {
-        return item.getItemWidth() != null && item.getItemDepth() != null && item.getItemHeight() != null;
+    private boolean matchesCanonical(Item it, ItemDimensions d) {
+        return d.width().equals(it.getItemWidth())
+                && d.depth().equals(it.getItemDepth())
+                && d.height().equals(it.getItemHeight())
+                && d.spec().equals(it.getItemSpec());
     }
 
-    /** @return [W, D, H] (2-part 매칭일 때 D=null) 또는 null (매칭 없음) */
-    private Integer[] parseDimensions(String spec) {
-        Matcher m3 = THREE_PART.matcher(spec);
-        if (m3.find()) {
-            return new Integer[]{
-                    Integer.parseInt(m3.group(1)),
-                    Integer.parseInt(m3.group(2)),
-                    Integer.parseInt(m3.group(3))
-            };
-        }
-        Matcher m2 = TWO_PART.matcher(spec);
-        if (m2.find()) {
-            return new Integer[]{
-                    Integer.parseInt(m2.group(1)),
-                    null, // 2-part 는 D 미상
-                    Integer.parseInt(m2.group(2))
-            };
-        }
-        return null;
-    }
+    private record ItemDimensions(Integer width, Integer depth, Integer height, String spec) {}
 }
