@@ -95,6 +95,13 @@ public class Item {
         this.itemRegDate = itemRegDate;
     }
 
+    /** Bootstrap 등 backfill 용 — null 인 W/D/H 만 채움. 사용자 수정 값은 보존. */
+    public void fillDimensionsIfMissing(Integer width, Integer depth, Integer height) {
+        if (this.itemWidth == null && width != null) this.itemWidth = width;
+        if (this.itemDepth == null && depth != null) this.itemDepth = depth;
+        if (this.itemHeight == null && height != null) this.itemHeight = height;
+    }
+
     public void changeStatus(ItemStatus newStatus) {
         if (this.itemStatus == newStatus) {
             throw new IllegalStateException("이미 " + newStatus + " 상태입니다.");
