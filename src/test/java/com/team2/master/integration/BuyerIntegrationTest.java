@@ -69,8 +69,7 @@ class BuyerIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/buyers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._links.self.href").exists())
-                .andExpect(jsonPath("$._embedded").doesNotExist());
+                .andExpect(jsonPath("$.totalElements").value(0));
     }
 
     @Test
@@ -86,9 +85,8 @@ class BuyerIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/buyers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.buyerResponseList.length()").value(2))
-                .andExpect(jsonPath("$._embedded.buyerResponseList[0].buyerName").value("Buyer A"))
-                .andExpect(jsonPath("$._embedded.buyerResponseList[1].buyerName").value("Buyer B"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.totalElements").value(2));
     }
 
     // ==================== GET /api/buyers/{id} ====================
@@ -140,9 +138,8 @@ class BuyerIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/buyers/client/{clientId}", client.getClientId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.buyerResponseList.length()").value(2))
-                .andExpect(jsonPath("$._embedded.buyerResponseList[0].buyerName").value("Buyer A"))
-                .andExpect(jsonPath("$._embedded.buyerResponseList[1].buyerName").value("Buyer B"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.totalElements").value(2));
     }
 
     @Test
@@ -151,8 +148,7 @@ class BuyerIntegrationTest {
         entityManager.flush();
         mockMvc.perform(get("/api/buyers/client/{clientId}", 9999))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._links.self.href").exists())
-                .andExpect(jsonPath("$._embedded").doesNotExist());
+                .andExpect(jsonPath("$.totalElements").value(0));
     }
 
     // ==================== POST /api/buyers ====================

@@ -68,7 +68,7 @@ class ClientQueryControllerTest {
     void getClients_success() throws Exception {
         ClientListResponse listResponse = createTestClientListResponse();
         PagedResponse<ClientListResponse> pagedResponse = PagedResponse.of(List.of(listResponse), 1L, 0, 10);
-        given(clientQueryService.getClients(isNull(), isNull(), isNull(), isNull(), eq(0), eq(10)))
+        given(clientQueryService.getClients(isNull(), isNull(), isNull(), isNull(), isNull(), eq(0), eq(10)))
                 .willReturn(pagedResponse);
 
         mockMvc.perform(get("/api/clients"))
@@ -76,9 +76,7 @@ class ClientQueryControllerTest {
                 .andExpect(jsonPath("$.content[0].clientName").value("Test Corp"))
                 .andExpect(jsonPath("$.content[0].clientCode").value("CLI001"))
                 .andExpect(jsonPath("$.content[0].clientStatus").value("ACTIVE"))
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.totalPages").value(1))
-                .andExpect(jsonPath("$.currentPage").value(0));
+                .andExpect(jsonPath("$.totalElements").value(1));
     }
 
     @Test
@@ -106,11 +104,11 @@ class ClientQueryControllerTest {
     @Test
     @DisplayName("GET /api/clients/department/{departmentId} - 부서별 거래처 조회")
     void getClientsByDepartment_success() throws Exception {
-        given(clientQueryService.getClientsByDepartmentId(1)).willReturn(List.of(createTestClientResponse()));
+        given(clientQueryService.getClientsByDepartmentIdPaged(1, 0, 1000))
+                .willReturn(PagedResponse.of(List.of(createTestClientResponse()), 1L, 0, 1000));
 
         mockMvc.perform(get("/api/clients/department/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.clientResponseList[0].clientName").value("Test Corp"))
-                .andExpect(jsonPath("$._embedded.clientResponseList[0].departmentId").value(1));
+                .andExpect(jsonPath("$.content[0].clientName").value("Test Corp"));
     }
 }

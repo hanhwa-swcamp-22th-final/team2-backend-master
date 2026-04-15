@@ -1,5 +1,6 @@
 package com.team2.master.unit.controller.query;
 
+import com.team2.master.common.PagedResponse;
 import com.team2.master.query.dto.BuyerResponse;
 import com.team2.master.query.controller.BuyerQueryController;
 import com.team2.master.exception.GlobalExceptionHandler;
@@ -45,12 +46,13 @@ class BuyerQueryControllerTest {
     @Test
     @DisplayName("GET /api/buyers - 전체 바이어 목록 조회")
     void getAllBuyers_success() throws Exception {
-        given(buyerQueryService.getAllBuyers()).willReturn(List.of(createTestBuyerResponse()));
+        given(buyerQueryService.getAllBuyersPaged(0, 1000))
+                .willReturn(PagedResponse.of(List.of(createTestBuyerResponse()), 1L, 0, 1000));
 
         mockMvc.perform(get("/api/buyers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.buyerResponseList[0].buyerName").value("John Doe"))
-                .andExpect(jsonPath("$._embedded.buyerResponseList[0].clientName").value("Test Corp"));
+                .andExpect(jsonPath("$.content[0].buyerName").value("John Doe"))
+                .andExpect(jsonPath("$.content[0].clientName").value("Test Corp"));
     }
 
     @Test
@@ -78,12 +80,13 @@ class BuyerQueryControllerTest {
     @Test
     @DisplayName("GET /api/buyers/client/{clientId} - 거래처별 바이어 목록 조회")
     void getBuyersByClient_success() throws Exception {
-        given(buyerQueryService.getBuyersByClientId(1)).willReturn(List.of(createTestBuyerResponse()));
+        given(buyerQueryService.getBuyersByClientIdPaged(1, 0, 1000))
+                .willReturn(PagedResponse.of(List.of(createTestBuyerResponse()), 1L, 0, 1000));
 
         mockMvc.perform(get("/api/buyers/client/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.buyerResponseList[0].buyerName").value("John Doe"))
-                .andExpect(jsonPath("$._embedded.buyerResponseList[0].clientName").value("Test Corp"));
+                .andExpect(jsonPath("$.content[0].buyerName").value("John Doe"))
+                .andExpect(jsonPath("$.content[0].clientName").value("Test Corp"));
     }
 
     @Test

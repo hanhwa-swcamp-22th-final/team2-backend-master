@@ -169,4 +169,47 @@
         WHERE cl.client_status = #{clientStatus}
     </select>
 
+    <select id="findAllPage" resultMap="ClientResponseMap">
+        <include refid="selectClientBase"/>
+        ORDER BY cl.client_id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM clients cl
+    </select>
+
+    <select id="findByTeamIdPage" resultMap="ClientResponseMap">
+        <include refid="selectClientBase"/>
+        WHERE cl.team_id = #{teamId}
+        ORDER BY cl.client_id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countByTeamId" resultType="long">
+        SELECT COUNT(*)
+        FROM clients cl
+        WHERE cl.team_id = #{teamId}
+    </select>
+
+    <select id="findByTeamIdsPage" resultMap="ClientResponseMap">
+        <include refid="selectClientBase"/>
+        WHERE cl.team_id IN
+        <foreach collection="teamIds" item="tid" open="(" separator="," close=")">
+            #{tid}
+        </foreach>
+        ORDER BY cl.client_id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countByTeamIds" resultType="long">
+        SELECT COUNT(*)
+        FROM clients cl
+        WHERE cl.team_id IN
+        <foreach collection="teamIds" item="tid" open="(" separator="," close=")">
+            #{tid}
+        </foreach>
+    </select>
+
 </mapper>

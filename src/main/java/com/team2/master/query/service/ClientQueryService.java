@@ -42,10 +42,26 @@ public class ClientQueryService {
         return list;
     }
 
+    public PagedResponse<ClientResponse> getAllClientsPaged(int page, int size) {
+        int offset = page * size;
+        List<ClientResponse> content = clientQueryMapper.findAllPage(size, offset);
+        long totalElements = clientQueryMapper.countAll();
+        enrichTeams(content);
+        return PagedResponse.of(content, totalElements, page, size);
+    }
+
     public List<ClientResponse> getClientsByTeamId(Integer teamId) {
         List<ClientResponse> list = clientQueryMapper.findByTeamId(teamId);
         enrichTeams(list);
         return list;
+    }
+
+    public PagedResponse<ClientResponse> getClientsByTeamIdPaged(Integer teamId, int page, int size) {
+        int offset = page * size;
+        List<ClientResponse> content = clientQueryMapper.findByTeamIdPage(teamId, size, offset);
+        long totalElements = clientQueryMapper.countByTeamId(teamId);
+        enrichTeams(content);
+        return PagedResponse.of(content, totalElements, page, size);
     }
 
     public List<ClientResponse> getClientsByDepartmentId(Integer departmentId) {
@@ -54,6 +70,18 @@ public class ClientQueryService {
         List<ClientResponse> list = clientQueryMapper.findByTeamIds(teamIds);
         enrichTeams(list);
         return list;
+    }
+
+    public PagedResponse<ClientResponse> getClientsByDepartmentIdPaged(Integer departmentId, int page, int size) {
+        List<Integer> teamIds = resolveTeamIdsOfDepartment(departmentId);
+        if (teamIds.isEmpty()) {
+            return PagedResponse.of(List.of(), 0L, page, size);
+        }
+        int offset = page * size;
+        List<ClientResponse> content = clientQueryMapper.findByTeamIdsPage(teamIds, size, offset);
+        long totalElements = clientQueryMapper.countByTeamIds(teamIds);
+        enrichTeams(content);
+        return PagedResponse.of(content, totalElements, page, size);
     }
 
     public List<ClientResponse> getClientsByStatus(ClientStatus status) {

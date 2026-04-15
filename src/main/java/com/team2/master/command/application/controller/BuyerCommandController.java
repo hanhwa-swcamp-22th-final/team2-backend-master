@@ -41,7 +41,7 @@ public class BuyerCommandController {
         BuyerResponse response = BuyerResponse.from(buyer);
         EntityModel<BuyerResponse> model = EntityModel.of(response,
                 linkTo(methodOn(BuyerQueryController.class).getBuyer(buyer.getBuyerId())).withSelfRel(),
-                linkTo(methodOn(BuyerQueryController.class).getAllBuyers()).withRel("buyers"));
+                linkTo(methodOn(BuyerQueryController.class).getAllBuyers(0, 1000)).withRel("buyers"));
         URI location = linkTo(methodOn(BuyerQueryController.class).getBuyer(buyer.getBuyerId())).toUri();
         return ResponseEntity.created(location).body(model);
     }
@@ -60,7 +60,7 @@ public class BuyerCommandController {
         BuyerResponse response = BuyerResponse.from(buyer);
         EntityModel<BuyerResponse> model = EntityModel.of(response,
                 linkTo(methodOn(BuyerQueryController.class).getBuyer(buyer.getBuyerId())).withSelfRel(),
-                linkTo(methodOn(BuyerQueryController.class).getAllBuyers()).withRel("buyers"));
+                linkTo(methodOn(BuyerQueryController.class).getAllBuyers(0, 1000)).withRel("buyers"));
         URI location = linkTo(methodOn(BuyerQueryController.class).getBuyer(buyer.getBuyerId())).toUri();
         return ResponseEntity.created(location).body(model);
     }
@@ -79,7 +79,7 @@ public class BuyerCommandController {
         BuyerResponse response = BuyerResponse.from(buyer);
         return ResponseEntity.ok(EntityModel.of(response,
                 linkTo(methodOn(BuyerQueryController.class).getBuyer(id)).withSelfRel(),
-                linkTo(methodOn(BuyerQueryController.class).getAllBuyers()).withRel("buyers")));
+                linkTo(methodOn(BuyerQueryController.class).getAllBuyers(0, 1000)).withRel("buyers")));
     }
 
     @Operation(summary = "바이어 삭제", description = "바이어를 삭제합니다.")

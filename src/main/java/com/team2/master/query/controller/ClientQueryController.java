@@ -67,35 +67,54 @@ public class ClientQueryController {
                 linkTo(methodOn(ClientQueryController.class).getClients(null, null, null, null, null, 0, 10)).withRel("clients")));
     }
 
-    @Operation(summary = "전체 거래처 목록 조회 (내부용)", description = "페이징 없이 전체 거래처 목록을 반환합니다. 서비스 간 통신용.")
+    @Operation(summary = "전체 거래처 목록 조회", description = "페이징을 적용하여 전체 거래처 목록을 반환합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping("/all")
-    public ResponseEntity<List<ClientResponse>> getAllClients() {
-        return ResponseEntity.ok(clientQueryService.getAllClients());
+    public ResponseEntity<PagedModel<EntityModel<ClientResponse>>> getAllClients(
+            @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(name = "page", defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기") @RequestParam(name = "size", defaultValue = "1000") int size) {
+        PagedResponse<ClientResponse> result = clientQueryService.getAllClientsPaged(page, size);
+        List<ClientResponse> content = result.content() != null ? result.content() : List.of();
+        List<EntityModel<ClientResponse>> models = content.stream()
+                .map(c -> EntityModel.of(c,
+                        linkTo(methodOn(ClientQueryController.class).getClient(c.getId())).withSelfRel()))
+                .toList();
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, result.totalElements());
+        return ResponseEntity.ok(PagedModel.of(models, metadata));
     }
 
-    @Operation(summary = "팀별 거래처 조회", description = "특정 팀에 배정된 거래처 목록을 조회합니다.")
+    @Operation(summary = "팀별 거래처 조회", description = "특정 팀에 배정된 거래처 목록을 페이징 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping("/team/{teamId}")
-    public ResponseEntity<CollectionModel<EntityModel<ClientResponse>>> getClientsByTeam(@Parameter(description = "팀 ID") @PathVariable("teamId") Integer teamId) {
-        List<EntityModel<ClientResponse>> models = clientQueryService.getClientsByTeamId(teamId).stream()
+    public ResponseEntity<PagedModel<EntityModel<ClientResponse>>> getClientsByTeam(
+            @Parameter(description = "팀 ID") @PathVariable("teamId") Integer teamId,
+            @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(name = "page", defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기") @RequestParam(name = "size", defaultValue = "1000") int size) {
+        PagedResponse<ClientResponse> result = clientQueryService.getClientsByTeamIdPaged(teamId, page, size);
+        List<ClientResponse> content = result.content() != null ? result.content() : List.of();
+        List<EntityModel<ClientResponse>> models = content.stream()
                 .map(c -> EntityModel.of(c,
                         linkTo(methodOn(ClientQueryController.class).getClient(c.getId())).withSelfRel()))
                 .toList();
-        return ResponseEntity.ok(CollectionModel.of(models,
-                linkTo(methodOn(ClientQueryController.class).getClientsByTeam(teamId)).withSelfRel()));
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, result.totalElements());
+        return ResponseEntity.ok(PagedModel.of(models, metadata));
     }
 
-    @Operation(summary = "부서별 거래처 조회", description = "특정 부서에 소속된 팀들이 담당하는 거래처 목록을 조회합니다.")
+    @Operation(summary = "부서별 거래처 조회", description = "특정 부서에 소속된 팀들이 담당하는 거래처 목록을 페이징 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping("/department/{departmentId}")
-    public ResponseEntity<CollectionModel<EntityModel<ClientResponse>>> getClientsByDepartment(@Parameter(description = "부서 ID") @PathVariable("departmentId") Integer departmentId) {
-        List<EntityModel<ClientResponse>> models = clientQueryService.getClientsByDepartmentId(departmentId).stream()
+    public ResponseEntity<PagedModel<EntityModel<ClientResponse>>> getClientsByDepartment(
+            @Parameter(description = "부서 ID") @PathVariable("departmentId") Integer departmentId,
+            @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(name = "page", defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기") @RequestParam(name = "size", defaultValue = "1000") int size) {
+        PagedResponse<ClientResponse> result = clientQueryService.getClientsByDepartmentIdPaged(departmentId, page, size);
+        List<ClientResponse> content = result.content() != null ? result.content() : List.of();
+        List<EntityModel<ClientResponse>> models = content.stream()
                 .map(c -> EntityModel.of(c,
                         linkTo(methodOn(ClientQueryController.class).getClient(c.getId())).withSelfRel()))
                 .toList();
-        return ResponseEntity.ok(CollectionModel.of(models,
-                linkTo(methodOn(ClientQueryController.class).getClientsByDepartment(departmentId)).withSelfRel()));
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, result.totalElements());
+        return ResponseEntity.ok(PagedModel.of(models, metadata));
     }
 
     /**

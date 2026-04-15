@@ -28,4 +28,17 @@ public interface ClientQueryMapper {
                           @Param("clientStatus") String clientStatus,
                           @Param("teamId") Integer teamId,
                           @Param("teamIds") List<Integer> teamIds);
+
+    List<ClientResponse> findAllPage(@Param("size") int size, @Param("offset") int offset);
+    long countAll();
+
+    List<ClientResponse> findByTeamIdPage(@Param("teamId") Integer teamId,
+                                          @Param("size") int size,
+                                          @Param("offset") int offset);
+    long countByTeamId(@Param("teamId") Integer teamId);
+
+    List<ClientResponse> findByTeamIdsPage(@Param("teamIds") List<Integer> teamIds,
+                                           @Param("size") int size,
+                                           @Param("offset") int offset);
+    long countByTeamIds(@Param("teamIds") List<Integer> teamIds);
 }

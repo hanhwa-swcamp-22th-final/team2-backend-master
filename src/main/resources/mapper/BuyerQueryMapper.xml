@@ -45,4 +45,28 @@
         WHERE b.client_id = #{clientId}
     </select>
 
+    <select id="findAllPage" resultMap="BuyerResponseMap">
+        <include refid="selectBuyerBase"/>
+        ORDER BY b.buyer_id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM buyers b
+    </select>
+
+    <select id="findByClientIdPage" resultMap="BuyerResponseMap">
+        <include refid="selectBuyerBase"/>
+        WHERE b.client_id = #{clientId}
+        ORDER BY b.buyer_id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countByClientId" resultType="long">
+        SELECT COUNT(*)
+        FROM buyers b
+        WHERE b.client_id = #{clientId}
+    </select>
+
 </mapper>
