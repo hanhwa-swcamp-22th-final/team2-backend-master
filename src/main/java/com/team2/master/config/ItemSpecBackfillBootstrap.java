@@ -56,7 +56,8 @@ public class ItemSpecBackfillBootstrap {
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void normalizeOnReady() {
-        int updated = 0;
+        // 1) 캐노니컬 매핑된 품목의 W/D/H 강제 설정
+        int canonicalApplied = 0;
         for (Map.Entry<String, ItemDimensions> entry : CANONICAL.entrySet()) {
             Item item = itemRepository.findByItemCode(entry.getKey()).orElse(null);
             if (item == null) continue;
@@ -69,11 +70,26 @@ public class ItemSpecBackfillBootstrap {
                     null, null, null, null, null, null
             );
             itemRepository.save(item);
-            updated++;
+            canonicalApplied++;
         }
-        if (updated > 0) {
+
+        // 2) 전체 품목 itemSpec 정합성: W/D/H 셋 다 있으면 derived 로, 아니면 NULL
+        // 레거시 자유 텍스트("0.38mm/Clear" 등) 는 영구 제거. 정책상 itemSpec 은 W×D×H derived 만.
+        int specCleaned = 0;
+        for (Item item : itemRepository.findAll()) {
+            String desired = (item.getItemWidth() != null && item.getItemDepth() != null && item.getItemHeight() != null)
+                    ? assembleSpec(item.getItemWidth(), item.getItemDepth(), item.getItemHeight())
+                    : null;
+            if (java.util.Objects.equals(desired, item.getItemSpec())) continue;
+            item.setItemSpec(desired); // updateInfo 는 null 무시 → null set 가능한 직접 setter 사용
+            itemRepository.save(item);
+            specCleaned++;
+        }
+
+        if (canonicalApplied > 0 || specCleaned > 0) {
             itemRepository.flush();
-            log.info("ItemSpecBackfillBootstrap: normalized W/D/H + spec for {} items", updated);
+            log.info("ItemSpecBackfillBootstrap: canonical W/D/H applied to {} items, itemSpec normalized for {} items",
+                    canonicalApplied, specCleaned);
         }
     }
 

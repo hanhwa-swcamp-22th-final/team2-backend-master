@@ -102,6 +102,11 @@ public class Item {
         if (this.itemHeight == null && height != null) this.itemHeight = height;
     }
 
+    /** 정합성 정정용 — itemSpec 강제 set (null 도 set 가능). updateInfo 는 null 무시이므로 별도 메서드. */
+    public void setItemSpec(String itemSpec) {
+        this.itemSpec = itemSpec;
+    }
+
     public void changeStatus(ItemStatus newStatus) {
         if (this.itemStatus == newStatus) {
             throw new IllegalStateException("이미 " + newStatus + " 상태입니다.");
