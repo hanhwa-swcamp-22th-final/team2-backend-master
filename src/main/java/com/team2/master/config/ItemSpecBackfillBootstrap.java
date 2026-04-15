@@ -13,11 +13,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * 운영 DB item_spec 자유 텍스트가 일관 포맷이 아니어서 PDF/주문서 표시 품질 저하.
- * 물리 치수가 의미있는 품목(솔라모듈/유리 등)에 대해 W/D/H + 정돈된 itemSpec 으로 1회 upsert.
+ * 운영 DB item_spec 자유 텍스트가 일관 포맷이 아니어서 PDF/문서 표 출력 품질 저하.
+ * 물리 치수가 의미있는 품목(솔라모듈/유리 등)에 대해 W/D/H 를 canonical 값으로 강제 설정.
+ *
+ * itemSpec 은 ItemCommandService.assembleSpec 정책과 동일하게 W/D/H 셋 다 채워지면
+ * "1722 × 1134 × 35 mm" 형식으로 자동 조립 (Item 엔티티 onUpdate hook 외부에서 직접 set).
  *
  * 정책:
- * - 매핑된 item_code 의 W/D/H 와 itemSpec 을 canonical 값으로 강제 설정 (idempotent)
+ * - 매핑된 item_code 의 W/D/H 를 canonical 값으로 강제 설정 (idempotent)
+ * - itemSpec 은 W/D/H 로부터 derived — 별도 자유 텍스트 입력 없음
  * - 매핑되지 않은 item_code 는 무시 (cable, sealant 등 W×D×H 가 의미 없는 품목)
  * - 사용자가 admin 화면에서 수정한 값도 매번 재시작마다 canonical 로 되돌아감 — 운영팀이
  *   admin 화면에서 자유롭게 편집하려면 매핑 제거 또는 ENV flag 도입 필요 (현재 시드 정합성 우선)
@@ -27,15 +31,20 @@ public class ItemSpecBackfillBootstrap {
 
     private static final Logger log = LoggerFactory.getLogger(ItemSpecBackfillBootstrap.class);
 
-    /** 물리 치수가 의미있는 품목의 canonical W/D/H + 정돈된 spec. INT 컬럼이라 mm 단위 정수. */
+    /** 물리 치수가 의미있는 품목의 canonical W/D/H. INT 컬럼이라 mm 단위 정수. */
     private static final Map<String, ItemDimensions> CANONICAL = new LinkedHashMap<>();
     static {
         // 솔라모듈 — 시중 표준 두께 35mm 가정
-        CANONICAL.put("ITM010", new ItemDimensions(1722, 1134, 35, "Mono PERC 400W"));
-        CANONICAL.put("ITM011", new ItemDimensions(2094, 1134, 35, "Mono PERC 500W"));
-        CANONICAL.put("ITM012", new ItemDimensions(2384, 1303, 35, "Mono PERC 600W"));
+        CANONICAL.put("ITM010", new ItemDimensions(1722, 1134, 35));
+        CANONICAL.put("ITM011", new ItemDimensions(2094, 1134, 35));
+        CANONICAL.put("ITM012", new ItemDimensions(2384, 1303, 35));
         // 강화유리 — 두께 3.2mm 는 INT 이라 3mm 로 절사
-        CANONICAL.put("ITM006", new ItemDimensions(1722, 1134, 3, "Tempered AR Coated Low Iron"));
+        CANONICAL.put("ITM006", new ItemDimensions(1722, 1134, 3));
+    }
+
+    /** ItemCommandService.assembleSpec 와 동일한 포맷으로 W/D/H 를 itemSpec 문자열로 조립. */
+    private static String assembleSpec(int w, int d, int h) {
+        return w + " × " + d + " × " + h + " mm";
     }
 
     private final ItemRepository itemRepository;
@@ -53,8 +62,9 @@ public class ItemSpecBackfillBootstrap {
             if (item == null) continue;
             ItemDimensions d = entry.getValue();
             if (matchesCanonical(item, d)) continue;
+            String derivedSpec = assembleSpec(d.width(), d.depth(), d.height());
             item.updateInfo(
-                    null, null, d.spec(),
+                    null, null, derivedSpec,
                     d.width(), d.depth(), d.height(),
                     null, null, null, null, null, null
             );
@@ -71,8 +81,8 @@ public class ItemSpecBackfillBootstrap {
         return d.width().equals(it.getItemWidth())
                 && d.depth().equals(it.getItemDepth())
                 && d.height().equals(it.getItemHeight())
-                && d.spec().equals(it.getItemSpec());
+                && assembleSpec(d.width(), d.depth(), d.height()).equals(it.getItemSpec());
     }
 
-    private record ItemDimensions(Integer width, Integer depth, Integer height, String spec) {}
+    private record ItemDimensions(Integer width, Integer depth, Integer height) {}
 }
