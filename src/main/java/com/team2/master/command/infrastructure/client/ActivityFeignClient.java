@@ -27,7 +27,6 @@ public interface ActivityFeignClient {
     );
 
     record ContactInternalRequest(
-            Long clientId,
             Long writerId,
             String contactName,
             String contactPosition,

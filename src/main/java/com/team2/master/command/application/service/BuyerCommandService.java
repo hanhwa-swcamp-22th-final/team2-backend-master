@@ -108,7 +108,6 @@ public class BuyerCommandService {
             try {
                 ActivityFeignClient.ContactInternalRequest payload =
                         new ActivityFeignClient.ContactInternalRequest(
-                                buyer.getClient().getClientId().longValue(),
                                 user.userId().longValue(),
                                 buyer.getBuyerName(),
                                 buyer.getBuyerPosition(),
