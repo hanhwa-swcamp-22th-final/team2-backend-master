@@ -69,8 +69,23 @@ public class CreateClientRequest {
 
     @NotBlank(message = "거래처 담당자(바이어)는 필수입니다.")
     @Size(max = 50)
-    @Schema(description = "거래처 담당자(바이어)", example = "Mr. Ahmad Razak")
+    @Schema(description = "거래처 담당자(바이어) 이름", example = "Mr. Ahmad Razak")
     private String clientManager;
+
+    @Size(max = 100)
+    @Schema(description = "바이어 직책", example = "Purchasing Manager")
+    private String buyerPosition;
+
+    @NotBlank(message = "바이어 이메일은 필수입니다.")
+    @jakarta.validation.constraints.Email(message = "올바른 이메일 형식을 입력하세요.")
+    @Size(max = 255)
+    @Schema(description = "바이어 이메일", example = "ahmad.razak@abc.com")
+    private String buyerEmail;
+
+    @Size(max = 50)
+    @Pattern(regexp = "^$|^\\+?[\\d\\s()-]{7,20}$", message = "올바른 바이어 전화번호 형식을 입력하세요.")
+    @Schema(description = "바이어 전화번호", example = "+60 12-345-6789")
+    private String buyerTel;
 
     @Schema(description = "팀 ID (팀 → 부서 역참조)", example = "1")
     private Integer teamId;

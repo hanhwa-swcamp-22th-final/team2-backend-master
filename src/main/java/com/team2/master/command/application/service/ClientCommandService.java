@@ -1,5 +1,6 @@
 package com.team2.master.command.application.service;
 
+import com.team2.master.command.application.dto.CreateBuyerRequest;
 import com.team2.master.command.application.dto.CreateClientRequest;
 import com.team2.master.command.application.dto.UpdateClientRequest;
 import com.team2.master.command.domain.entity.*;
@@ -7,9 +8,11 @@ import com.team2.master.command.domain.entity.enums.ClientStatus;
 import com.team2.master.exception.ResourceNotFoundException;
 import com.team2.master.command.domain.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ClientCommandService {
@@ -19,6 +22,7 @@ public class ClientCommandService {
     private final PortRepository portRepository;
     private final PaymentTermRepository paymentTermRepository;
     private final CurrencyRepository currencyRepository;
+    private final BuyerCommandService buyerCommandService;
 
     @Transactional
     public Client createClient(CreateClientRequest request) {
@@ -69,7 +73,24 @@ public class ClientCommandService {
             client.assignCurrency(currency);
         }
 
-        return clientRepository.save(client);
+        Client saved = clientRepository.save(client);
+
+        // 거래처 등록 시 최초 바이어 1건 동시 생성 → Activity Contact 동기화는 BuyerCommandService 가 담당.
+        try {
+            CreateBuyerRequest buyerRequest = CreateBuyerRequest.builder()
+                    .clientId(saved.getClientId())
+                    .buyerName(request.getClientManager())
+                    .buyerPosition(request.getBuyerPosition())
+                    .buyerEmail(request.getBuyerEmail())
+                    .buyerTel(request.getBuyerTel())
+                    .build();
+            buyerCommandService.createBuyer(buyerRequest);
+        } catch (Exception e) {
+            log.warn("거래처 최초 바이어 자동 생성 실패 [clientId={}, reason={}]",
+                    saved.getClientId(), e.getMessage());
+        }
+
+        return saved;
     }
 
     @Transactional

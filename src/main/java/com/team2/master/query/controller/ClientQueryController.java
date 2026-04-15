@@ -15,6 +15,9 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,7 +44,9 @@ public class ClientQueryController {
             @Parameter(description = "부서 ID 필터 (팀 경유)") @RequestParam(name = "departmentId", required = false) Integer departmentId,
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(name = "page", defaultValue = "0") int page,
             @Parameter(description = "페이지 크기") @RequestParam(name = "size", defaultValue = "10") int size) {
-        PagedResponse<ClientListResponse> result = clientQueryService.getClients(clientName, countryId, clientStatus, teamId, departmentId, page, size);
+        // SALES 는 본인 팀 거래처만. ADMIN 은 전체 (팀 필터 명시 시 지정 팀만).
+        Integer effectiveTeamId = resolveEffectiveTeamId(teamId);
+        PagedResponse<ClientListResponse> result = clientQueryService.getClients(clientName, countryId, clientStatus, effectiveTeamId, departmentId, page, size);
         List<ClientListResponse> content = result.content() != null ? result.content() : List.of();
         List<EntityModel<ClientListResponse>> models = content.stream()
                 .map(EntityModel::of).toList();
@@ -91,5 +96,24 @@ public class ClientQueryController {
                 .toList();
         return ResponseEntity.ok(CollectionModel.of(models,
                 linkTo(methodOn(ClientQueryController.class).getClientsByDepartment(departmentId)).withSelfRel()));
+    }
+
+    /**
+     * ADMIN: 명시 teamId 그대로 전달 (null 이면 전체).
+     * SALES 등 비ADMIN: 명시 teamId 무시, JWT teamId 강제. 팀 미소속이면 0 반환(결과 0건).
+     */
+    private Integer resolveEffectiveTeamId(Integer requestedTeamId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) return requestedTeamId;
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        if (isAdmin) return requestedTeamId;
+        if (auth.getPrincipal() instanceof Jwt jwt) {
+            Integer teamId = jwt.getClaim("teamId") != null
+                    ? ((Number) jwt.getClaim("teamId")).intValue()
+                    : null;
+            return teamId != null ? teamId : 0;
+        }
+        return requestedTeamId;
     }
 }
