@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -87,6 +88,7 @@ public class CreateClientRequest {
     @Schema(description = "바이어 전화번호", example = "+60 12-345-6789")
     private String buyerTel;
 
+    @Setter
     @Schema(description = "팀 ID (팀 → 부서 역참조)", example = "1")
     private Integer teamId;
 

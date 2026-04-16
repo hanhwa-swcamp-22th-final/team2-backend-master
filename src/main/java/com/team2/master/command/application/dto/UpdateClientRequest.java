@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Schema(description = "거래처 수정 요청")
 @Getter
@@ -67,6 +68,7 @@ public class UpdateClientRequest {
     @Schema(description = "거래처 담당자(바이어)", example = "Mr. Ahmad Razak")
     private String clientManager;
 
+    @Setter
     @Schema(description = "팀 ID (팀 → 부서 역참조)", example = "1")
     private Integer teamId;
 }

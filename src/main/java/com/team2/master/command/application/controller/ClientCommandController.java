@@ -18,9 +18,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.function.Consumer;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -40,6 +44,7 @@ public class ClientCommandController {
     @PreAuthorize("hasAnyRole('ADMIN','SALES')")
     @PostMapping
     public ResponseEntity<EntityModel<ClientResponse>> createClient(@Valid @RequestBody CreateClientRequest request) {
+        applyCallerTeamId(request::setTeamId, request.getTeamId());
         Client client = clientCommandService.createClient(request);
         ClientResponse response = ClientResponse.from(client);
         EntityModel<ClientResponse> model = EntityModel.of(response,
@@ -60,6 +65,7 @@ public class ClientCommandController {
     public ResponseEntity<EntityModel<ClientResponse>> updateClient(
             @Parameter(description = "거래처 ID") @PathVariable("id") Integer id,
             @Valid @RequestBody UpdateClientRequest request) {
+        applyCallerTeamId(request::setTeamId, request.getTeamId());
         Client client = clientCommandService.updateClient(id, request);
         return ResponseEntity.ok(EntityModel.of(ClientResponse.from(client),
                 linkTo(methodOn(ClientQueryController.class).getClient(id)).withSelfRel(),
@@ -81,5 +87,26 @@ public class ClientCommandController {
         Client client = clientCommandService.changeStatus(id, status);
         return ResponseEntity.ok(EntityModel.of(ClientResponse.from(client),
                 linkTo(methodOn(ClientQueryController.class).getClient(id)).withSelfRel()));
+    }
+
+    /**
+     * 비ADMIN: 요청 teamId 무시, JWT teamId 강제 주입 (팀 스코프 보장).
+     * ADMIN: 요청 teamId 있으면 유지, 없으면 JWT teamId fallback.
+     * 이렇게 해야 STAFF/MANAGER가 등록/수정한 거래처가 자신의 팀 스코프 조회에 노출됨.
+     */
+    private void applyCallerTeamId(Consumer<Integer> setter, Integer requested) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) return;
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        Integer jwtTeamId = null;
+        if (auth.getPrincipal() instanceof Jwt jwt && jwt.getClaim("teamId") != null) {
+            jwtTeamId = ((Number) jwt.getClaim("teamId")).intValue();
+        }
+        if (isAdmin) {
+            if (requested == null && jwtTeamId != null) setter.accept(jwtTeamId);
+        } else if (jwtTeamId != null) {
+            setter.accept(jwtTeamId);
+        }
     }
 }
