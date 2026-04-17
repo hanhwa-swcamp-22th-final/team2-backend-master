@@ -44,9 +44,10 @@ public class ClientQueryController {
             @Parameter(description = "부서 ID 필터 (팀 경유)") @RequestParam(name = "departmentId", required = false) Integer departmentId,
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(name = "page", defaultValue = "0") int page,
             @Parameter(description = "페이지 크기") @RequestParam(name = "size", defaultValue = "10") int size) {
-        // SALES 는 본인 팀 거래처만. ADMIN 은 전체 (팀 필터 명시 시 지정 팀만).
+        // ADMIN 은 전체, 비ADMIN 은 같은 부서 거래처만.
         Integer effectiveTeamId = resolveEffectiveTeamId(teamId);
-        PagedResponse<ClientListResponse> result = clientQueryService.getClients(clientName, countryId, clientStatus, effectiveTeamId, departmentId, page, size);
+        Integer effectiveDepartmentId = resolveEffectiveDepartmentId(departmentId);
+        PagedResponse<ClientListResponse> result = clientQueryService.getClients(clientName, countryId, clientStatus, effectiveTeamId, effectiveDepartmentId, page, size);
         List<ClientListResponse> content = result.content() != null ? result.content() : List.of();
         List<EntityModel<ClientListResponse>> models = content.stream()
                 .map(EntityModel::of).toList();
@@ -119,7 +120,9 @@ public class ClientQueryController {
 
     /**
      * ADMIN: 명시 teamId 그대로 전달 (null 이면 전체).
-     * SALES 등 비ADMIN: 명시 teamId 무시, JWT teamId 강제. 팀 미소속이면 0 반환(결과 0건).
+     * SALES 등 비ADMIN: 같은 부서(departmentId) 소속 거래처 조회.
+     *   → departmentId 기반 필터를 사용하도록 effectiveDepartmentId 반환.
+     *   → teamId 는 null 로 설정하여 부서 내 전체 팀 거래처 포함.
      */
     private Integer resolveEffectiveTeamId(Integer requestedTeamId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -127,12 +130,25 @@ public class ClientQueryController {
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
         if (isAdmin) return requestedTeamId;
+        // 비ADMIN: teamId 필터 대신 departmentId 필터를 사용하므로 teamId 는 null 반환
+        return null;
+    }
+
+    /**
+     * 비ADMIN 사용자의 departmentId 를 JWT 에서 추출.
+     */
+    private Integer resolveEffectiveDepartmentId(Integer requestedDepartmentId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) return requestedDepartmentId;
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        if (isAdmin) return requestedDepartmentId;
         if (auth.getPrincipal() instanceof Jwt jwt) {
-            Integer teamId = jwt.getClaim("teamId") != null
-                    ? ((Number) jwt.getClaim("teamId")).intValue()
+            Integer deptId = jwt.getClaim("departmentId") != null
+                    ? ((Number) jwt.getClaim("departmentId")).intValue()
                     : null;
-            return teamId != null ? teamId : 0;
+            return deptId != null ? deptId : requestedDepartmentId;
         }
-        return requestedTeamId;
+        return requestedDepartmentId;
     }
 }
