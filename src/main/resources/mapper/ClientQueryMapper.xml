@@ -49,6 +49,9 @@
         <result property="clientManager"  column="client_manager"/>
         <result property="paymentTermsId" column="payment_term_id"/>
         <result property="currencyId"     column="currency_id"/>
+        <result property="clientAddress"  column="client_address"/>
+        <result property="clientTel"      column="client_tel"/>
+        <result property="clientEmail"    column="client_email"/>
     </resultMap>
 
     <sql id="selectClientBase">
@@ -96,7 +99,10 @@
             p.port_name,
             cl.client_manager,
             cl.payment_term_id,
-            cl.currency_id
+            cl.currency_id,
+            cl.client_address,
+            cl.client_tel,
+            cl.client_email
         FROM clients cl
         LEFT JOIN countries c   ON cl.country_id = c.country_id
         LEFT JOIN ports p       ON cl.port_id    = p.port_id

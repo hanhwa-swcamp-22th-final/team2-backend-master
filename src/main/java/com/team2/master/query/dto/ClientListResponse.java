@@ -46,4 +46,10 @@ public class ClientListResponse {
     private Integer paymentTermsId;
     @Schema(description = "통화 ID", example = "1")
     private Integer currencyId;
+    @Schema(description = "주소", example = "123 Main St, Seoul")
+    private String clientAddress;
+    @Schema(description = "전화번호", example = "+82-2-1234-5678")
+    private String clientTel;
+    @Schema(description = "이메일", example = "contact@abc.com")
+    private String clientEmail;
 }
