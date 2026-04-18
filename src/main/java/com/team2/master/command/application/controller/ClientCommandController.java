@@ -83,7 +83,8 @@ public class ClientCommandController {
     public ResponseEntity<EntityModel<ClientResponse>> changeStatus(
             @Parameter(description = "거래처 ID") @PathVariable("id") Integer id,
             @Valid @RequestBody ChangeStatusRequest request) {
-        ClientStatus status = ClientStatus.valueOf(request.getStatus());
+        // 프론트는 소문자 dbValue 전송. enum 이름 기준 valueOf 로 받으면 400.
+        ClientStatus status = ClientStatus.fromDbValue(request.getStatus());
         Client client = clientCommandService.changeStatus(id, status);
         return ResponseEntity.ok(EntityModel.of(ClientResponse.from(client),
                 linkTo(methodOn(ClientQueryController.class).getClient(id)).withSelfRel()));

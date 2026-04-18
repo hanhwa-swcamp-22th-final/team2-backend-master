@@ -73,7 +73,9 @@ public class ItemCommandController {
     public ResponseEntity<EntityModel<Item>> changeStatus(
             @Parameter(description = "품목 ID") @PathVariable("id") Integer id,
             @Valid @RequestBody ChangeStatusRequest request) {
-        ItemStatus status = ItemStatus.valueOf(request.getStatus());
+        // 프론트는 소문자 dbValue("active"/"inactive") 를 보낸다. enum 이름 기준 valueOf 는
+        // IllegalArgumentException 을 일으켜 400 Bad Request 로 떨어지므로 fromDbValue 사용.
+        ItemStatus status = ItemStatus.fromDbValue(request.getStatus());
         Item item = itemCommandService.changeStatus(id, status);
         return ResponseEntity.ok(EntityModel.of(item,
                 linkTo(methodOn(ItemQueryController.class).getItem(id)).withSelfRel()));
