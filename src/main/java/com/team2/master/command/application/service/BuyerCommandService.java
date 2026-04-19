@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -86,24 +89,43 @@ public class BuyerCommandService {
             return;
         }
 
-        List<AuthFeignClient.UserRef> salesUsers;
+        // 동기화 대상 = 거래처 팀의 영업 담당자 + 전사 ADMIN.
+        // 4차 QA: 최관리(ADMIN) 컨택 리스트에 새 바이어가 안 뜬다는 보고 반영.
+        List<AuthFeignClient.UserRef> targets = new ArrayList<>();
+        Set<Integer> seenUserIds = new HashSet<>();
         try {
-            salesUsers = authFeignClient.getUsersByRole(
+            List<AuthFeignClient.UserRef> salesUsers = authFeignClient.getUsersByRole(
                     internalApiToken, "sales", "active", teamId, null);
+            if (salesUsers != null) {
+                for (AuthFeignClient.UserRef u : salesUsers) {
+                    if (u.userId() != null && seenUserIds.add(u.userId())) targets.add(u);
+                }
+            }
         } catch (Exception e) {
-            log.warn("Auth 사용자 조회 실패 — contact 동기화 skip [buyerId={}, reason={}]",
+            log.warn("Auth sales 조회 실패 — sales sync skip [buyerId={}, reason={}]",
                     buyer.getBuyerId(), e.getMessage());
-            return;
+        }
+        try {
+            List<AuthFeignClient.UserRef> adminUsers = authFeignClient.getUsersByRole(
+                    internalApiToken, "admin", "active", null, null);
+            if (adminUsers != null) {
+                for (AuthFeignClient.UserRef u : adminUsers) {
+                    if (u.userId() != null && seenUserIds.add(u.userId())) targets.add(u);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Auth admin 조회 실패 — admin sync skip [buyerId={}, reason={}]",
+                    buyer.getBuyerId(), e.getMessage());
         }
 
-        if (salesUsers == null || salesUsers.isEmpty()) {
-            log.info("거래처 팀({})에 영업 담당자 없음 — contact 동기화 skip [buyerId={}]",
+        if (targets.isEmpty()) {
+            log.info("거래처 팀({}) sales + ADMIN 대상 없음 — contact 동기화 skip [buyerId={}]",
                     teamId, buyer.getBuyerId());
             return;
         }
 
         int successCount = 0;
-        for (AuthFeignClient.UserRef user : salesUsers) {
+        for (AuthFeignClient.UserRef user : targets) {
             if (user.userId() == null) continue;
             try {
                 ActivityFeignClient.ContactInternalRequest payload =
@@ -122,6 +144,6 @@ public class BuyerCommandService {
             }
         }
         log.info("Activity contact sync 완료 [buyerId={}, success={}/{}]",
-                buyer.getBuyerId(), successCount, salesUsers.size());
+                buyer.getBuyerId(), successCount, targets.size());
     }
 }
