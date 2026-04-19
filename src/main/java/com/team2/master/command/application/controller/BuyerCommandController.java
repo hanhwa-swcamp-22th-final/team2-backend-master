@@ -25,7 +25,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @Tag(name = "바이어 Command", description = "바이어 등록/수정/삭제 API")
 @RestController
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
+// 영업담당자(sales) 가 자기 거래처의 바이어를 직접 등록/수정/삭제할 수 있어야 한다.
+// 기존 ADMIN 전용 가드는 거래처 상세 "바이어 추가" 버튼이 sales 계정에서 403 로 막히던 원인.
+@PreAuthorize("hasAnyRole('ADMIN','SALES')")
 public class BuyerCommandController {
 
     private final BuyerCommandService buyerCommandService;
