@@ -34,6 +34,9 @@ public class BuyerResponse {
     @Schema(description = "수정일시")
     private LocalDateTime updatedAt;
 
+    // 프론트 소비자가 buyerId 를 기대 — id 와 buyerId 둘 다 직렬화.
+    public Integer getBuyerId() { return id; }
+
     public static BuyerResponse from(Buyer buyer) {
         return BuyerResponse.builder()
                 .id(buyer.getBuyerId())

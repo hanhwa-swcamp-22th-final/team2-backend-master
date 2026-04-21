@@ -74,6 +74,10 @@ public class ClientResponse {
     public String getNameKr() { return clientNameKr; }
     public Integer getPaymentTermsId() { return paymentTermId; }
     public LocalDate getRegDate() { return clientRegDate; }
+    // 프론트엔드/외부 소비자가 clientId 를 기대하므로 JSON 에 id 와 clientId 둘 다 내려간다.
+    // id 만 있던 시절엔 PO/CI/PL 생성 시 clientId=null → 0 으로 떨어져 메일 발송·활동-PO 연결이
+    // 전부 깨졌음 (2026-04-21 시연 블로커). Lombok @Getter 가 생성한 getId() 는 그대로 둔다.
+    public Integer getClientId() { return id; }
 
     public static ClientResponse from(Client client) {
         return ClientResponse.builder()
