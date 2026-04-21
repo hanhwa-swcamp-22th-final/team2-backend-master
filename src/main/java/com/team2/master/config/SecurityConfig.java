@@ -46,6 +46,7 @@ public class SecurityConfig {
                 ).permitAll()
                 // /api/**\/internal/** 는 InternalApiTokenFilter 가 이미 검증함. Gateway 에서 외부 차단.
                 .requestMatchers("/api/buyers/internal/**").permitAll()
+                .requestMatchers("/api/clients/internal/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
